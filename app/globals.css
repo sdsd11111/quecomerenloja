@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-clay: #8b3a2a;
+  --color-gold: #c8922a;
+  --color-cream: #faf3e0;
+  --color-green: #4a7c59;
+  --color-ink: #1a1208;
+  --color-muted: #746653;
+  --color-line: #e5dccb;
+  --color-paper: #fffdf8;
+  --color-bronze: #88602e;
+  --color-slate: #263a42;
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-inter), Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 4px;
+}
+
+.andean {
+  background:
+    radial-gradient(ellipse at 75% 45%, #914329 0, transparent 48%),
+    linear-gradient(120deg, #351b15, #642a20 65%, #3d2119);
+}
+
+.andean::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 22px, #d6ab70 23px 24px, transparent 25px 47px),
+    repeating-linear-gradient(-45deg, transparent 0 22px, #d6ab70 23px 24px, transparent 25px 47px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
