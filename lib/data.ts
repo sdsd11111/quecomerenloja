@@ -103,5 +103,14 @@ export const RESTAURANTS: Restaurant[] = [
 ];
 
 export const POPULAR_DISHES = [
-  "Repe", "Cecina", "Alverja con guineo", "Humitas", "Tamales", "Hornado", "Churrasco", "Café de Loja",
+  "Repe lojano",
+  "Restaurantes Loja",
+  "Tamales lojanos",
+  "Cafeterías Loja",
+  "Desayunos en Loja",
+  "Cecina lojana",
+  "Alitas Loja",
+  "Pizzas en Loja",
+  "Chifa Loja",
+  "Hamburguesas Loja",
 ];

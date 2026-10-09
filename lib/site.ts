@@ -27,11 +27,12 @@ export const CATEGORIES: {
   icon: string;
   bg: string;
   href: string;
+  badge?: string;
 }[] = [
-  { key: "alta", name: "Alta Cocina", sub: "Experiencias para recordar", icon: "🍽️", bg: "bg-clay", href: "/restaurantes?categoria=alta" },
-  { key: "cafe", name: "Café de Loja", sub: "Origen, aroma y conversación", icon: "☕", bg: "bg-bronze", href: "/cafe-de-loja" },
-  { key: "tradicional", name: "Comida Tradicional", sub: "Nuestras huecas, nuestra esencia", icon: "🌽", bg: "bg-green", href: "/restaurantes?categoria=tradicional" },
-  { key: "noche", name: "Bares y Noche", sub: "La ciudad después del atardecer", icon: "🎵", bg: "bg-slate", href: "/bares-y-noche" },
+  { key: "tradicional", name: "Platos Típicos & Huecas", sub: "Repe lojano (5K b/m), cecina y tamales", icon: "🌽", bg: "bg-green", href: "/restaurantes?categoria=tradicional", badge: "Más buscado" },
+  { key: "cafe", name: "Desayunos & Cafeterías", sub: "Café de altura, tamales y humitas", icon: "☕", bg: "bg-bronze", href: "/cafe-de-loja", badge: "+900% demanda" },
+  { key: "alta", name: "Mejores Restaurantes", sub: "Cenas, gastronomía de autor y tradición", icon: "🍽️", bg: "bg-clay", href: "/restaurantes", badge: "5.000 b/m" },
+  { key: "noche", name: "Pizzas, Alitas & Noche", sub: "Alitas (+900%), pizzas, burgers y chifas", icon: "🍕", bg: "bg-slate", href: "/comida-rapida-loja", badge: "Comida rápida" },
 ];
 
 export const PLANS = [

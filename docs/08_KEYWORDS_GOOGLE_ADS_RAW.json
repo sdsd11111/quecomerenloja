@@ -1,0 +1,892 @@
+[
+  {
+    "kw": "repe lojano",
+    "avg": 5000,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa de la humita y el tamal lojano",
+    "avg": 5000,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "3",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "restaurantes loja",
+    "avg": 5000,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "0.48",
+    "top_high": "0.85"
+  },
+  {
+    "kw": "restaurantes en loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "6",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "cecina lojana",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "-90%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "tamales lojanos",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "cafeterias en loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "cafeterias loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "casa de la humita y el tamal lojano",
+    "avg": 500,
+    "three_m": "900%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "casa del tamal lojano",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "comida loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "-90%",
+    "comp": "Bajo",
+    "comp_idx": "12",
+    "top_low": "0.10",
+    "top_high": "0.71"
+  },
+  {
+    "kw": "el palacio del tamal lojano",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "el tamal lojano",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "hamburguesas loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "6",
+    "top_low": "0.40",
+    "top_high": "0.71"
+  },
+  {
+    "kw": "humita y tamal lojano",
+    "avg": 500,
+    "three_m": "900%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa del tamal lojano",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "2",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "mejores restaurantes en loja",
+    "avg": 500,
+    "three_m": "900%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizzerias en loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "8",
+    "top_low": "0.17",
+    "top_high": "0.54"
+  },
+  {
+    "kw": "pizzerias loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "10",
+    "top_low": "0.16",
+    "top_high": "0.50"
+  },
+  {
+    "kw": "tamal lojano quito",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "2",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizzas en loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "8",
+    "top_low": "0.17",
+    "top_high": "0.54"
+  },
+  {
+    "kw": "alitas loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "6",
+    "top_low": "0.19",
+    "top_high": "0.58"
+  },
+  {
+    "kw": "platos tipicos de loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizza loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "10",
+    "top_low": "0.16",
+    "top_high": "0.50"
+  },
+  {
+    "kw": "chifa loja",
+    "avg": 500,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "5",
+    "top_low": "0.21",
+    "top_high": "0.94"
+  },
+  {
+    "kw": "comida en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "9",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "donde comer en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "2",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "desayunos en loja",
+    "avg": 50,
+    "three_m": "900%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "comida a domicilio loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "29",
+    "top_low": "0.11",
+    "top_high": "0.69"
+  },
+  {
+    "kw": "arsenia restaurante loja",
+    "avg": 50,
+    "three_m": "-100%",
+    "yoy": "-100%",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "carne cecina lojana",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "casa de la humita y tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "casa humita y tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "comida a domicilio en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Medio",
+    "comp_idx": "48",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "comida mexicana loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "comida rapida loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "14",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "desayunos loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "-90%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "el tamal lojano quito",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "hamburguesas en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "7",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "ingredientes del tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa de la humita quito",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "3",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa de la humita y tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa de la humita y tamal lojano telefono",
+    "avg": 50,
+    "three_m": "-100%",
+    "yoy": "-100%",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa de las humitas y el tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "6",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa del tamal lojano quito",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "3",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la casa del tamal y la humita",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "la humita y el tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "loja comida",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "lugares para comer en loja",
+    "avg": 50,
+    "three_m": "900%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "2",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "marisquerias en loja",
+    "avg": 50,
+    "three_m": "900%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "mirador restaurante loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "morelia restaurante loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "parrilladas en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizzeria en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "11",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "receta de tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "receta de tamales lojanos",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "receta tamal lojano",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "restaurante morelia loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "restaurantes elegantes en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "tamal lojano receta",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "tamales lojanos quito",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "tamales lojanos receta",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "zona restaurante loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "alitas bbq loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "8",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "alitas wings loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "giro pizza loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "hamburguesas cuadradas loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "2",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "loja platos tipicos",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "mondragone pizzeria loja",
+    "avg": 50,
+    "three_m": "∞",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizza a domicilio loja",
+    "avg": 50,
+    "three_m": "∞",
+    "yoy": "0%",
+    "comp": "Medio",
+    "comp_idx": "40",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizza loja a domicilio",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "31",
+    "top_low": "0.15",
+    "top_high": "0.40"
+  },
+  {
+    "kw": "pizzeria forno di fango loja",
+    "avg": 50,
+    "three_m": "∞",
+    "yoy": "∞",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "pizzeria loja",
+    "avg": 50,
+    "three_m": "900%",
+    "yoy": "900%",
+    "comp": "Bajo",
+    "comp_idx": "8",
+    "top_low": "0.20",
+    "top_high": "0.69"
+  },
+  {
+    "kw": "mariscos loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "chifa dragon rojo loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "-90%",
+    "comp": "Bajo",
+    "comp_idx": "1",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "chifa hong kong loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "5",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "chifa oriental loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "5",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "almuerzos loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "4",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "donde desayunar en loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "asados loja",
+    "avg": 50,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Bajo",
+    "comp_idx": "0",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "donde comer en loja granada",
+    "avg": 0,
+    "three_m": "0%",
+    "yoy": "0%",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "huecas en loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "menu del dia loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "donde merendar en loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "almuerzos ejecutivos loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "asaderos loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "donde cenar en loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "meriendas loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  },
+  {
+    "kw": "cafeterias de especialidad loja",
+    "avg": 0,
+    "three_m": "--",
+    "yoy": "--",
+    "comp": "Desconocido",
+    "comp_idx": "",
+    "top_low": "",
+    "top_high": ""
+  }
+]

@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
@@ -11,15 +11,18 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "QuÃ© Comer en Loja | Ruta GastronÃ³mica Verificada", template: "%s | QuÃ© Comer en Loja" },
-  description: "Descubre quÃ© comer en Loja: cocina tradicional, cafÃ©s y restaurantes. Consulta menÃºs del dÃ­a y contacta directamente por WhatsApp, sin apps ni comisiones.",
+  title: {
+    default: "Dónde Comer en Loja | Restaurantes, Platos Típicos y Huecas",
+    template: "%s | Qué Comer en Loja",
+  },
+  description: "Guía definitiva para comer en Loja: mejores restaurantes en Loja, auténtico repe lojano, cecina, cafeterías, desayunos, alitas, pizzas y chifas sin intermediarios.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "es_EC",
     siteName: SITE.name,
-    title: "QuÃ© Comer en Loja | Ruta GastronÃ³mica Verificada",
-    description: "La ruta gastronÃ³mica de Loja, en tu bolsillo. MenÃºs del dÃ­a y contacto directo con el restaurante.",
+    title: "Dónde Comer en Loja | Guía de Restaurantes, Huecas y Repe Lojano",
+    description: "Encuentra los mejores restaurantes en Loja, cafeterías, desayunos típicos, repe lojano y comida rápida local. Menús del día y contacto directo.",
     url: SITE.url,
   },
 };
