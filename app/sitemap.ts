@@ -6,24 +6,49 @@ import { SITE } from "@/lib/site";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const fixed = [
-    "",
-    "/restaurantes",
-    "/menu-del-dia",
-    "/cafe-de-loja",
-    "/bares-y-noche",
-    "/platos/repe-lojano",
-    "/platos/cecina-lojana",
-    "/platos/tamales-lojanos",
-    "/comida-rapida-loja",
-    "/para-negocios",
-    "/blog",
-    "/contacto",
+  const hoy = new Date().toISOString().split("T")[0];
+
+  // Páginas estáticas y estratégicas con prioridades y frecuencias de actualización
+  const estaticas = [
+    { ruta: "", prioridad: 1.0, freq: "daily" as const },
+    { ruta: "/restaurantes", prioridad: 0.95, freq: "daily" as const },
+    { ruta: "/menu-del-dia", prioridad: 0.95, freq: "daily" as const },
+    { ruta: "/platos/repe-lojano", prioridad: 0.9, freq: "weekly" as const },
+    { ruta: "/platos/cecina-lojana", prioridad: 0.9, freq: "weekly" as const },
+    { ruta: "/platos/tamales-lojanos", prioridad: 0.9, freq: "weekly" as const },
+    { ruta: "/cafe-de-loja", prioridad: 0.85, freq: "weekly" as const },
+    { ruta: "/comida-rapida-loja", prioridad: 0.85, freq: "weekly" as const },
+    { ruta: "/bares-y-noche", prioridad: 0.8, freq: "weekly" as const },
+    { ruta: "/blog", prioridad: 0.8, freq: "weekly" as const },
+    { ruta: "/para-negocios", prioridad: 0.7, freq: "monthly" as const },
+    { ruta: "/contacto", prioridad: 0.6, freq: "monthly" as const },
   ];
+
   const restaurants = await listRestaurants();
+
   return [
-    ...fixed.map((p) => ({ url: `${SITE.url}${p}` })),
-    ...restaurants.map((r) => ({ url: `${SITE.url}/restaurantes/${r.slug}` })),
-    ...POSTS.map((p) => ({ url: `${SITE.url}/blog/${p.slug}`, lastModified: p.date })),
+    // URLs principales de navegación y temáticas
+    ...estaticas.map((e) => ({
+      url: `${SITE.url}${e.ruta}`,
+      lastModified: hoy,
+      changeFrequency: e.freq,
+      priority: e.prioridad,
+    })),
+
+    // Restaurantes dinámicos de la base de datos
+    ...restaurants.map((r) => ({
+      url: `${SITE.url}/restaurantes/${r.slug}`,
+      lastModified: hoy,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
+
+    // Artículos de blog y guías de contenido
+    ...POSTS.map((p) => ({
+      url: `${SITE.url}/blog/${p.slug}`,
+      lastModified: p.date ?? hoy,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    })),
   ];
 }
