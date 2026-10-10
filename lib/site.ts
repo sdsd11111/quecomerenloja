@@ -29,10 +29,10 @@ export const CATEGORIES: {
   href: string;
   badge?: string;
 }[] = [
-  { key: "tradicional", name: "Platos Típicos & Huecas", sub: "Repe lojano (5K b/m), cecina y tamales", icon: "🌽", bg: "bg-green", href: "/restaurantes?categoria=tradicional", badge: "Más buscado" },
-  { key: "cafe", name: "Desayunos & Cafeterías", sub: "Café de altura, tamales y humitas", icon: "☕", bg: "bg-bronze", href: "/cafe-de-loja", badge: "+900% demanda" },
-  { key: "alta", name: "Mejores Restaurantes", sub: "Cenas, gastronomía de autor y tradición", icon: "🍽️", bg: "bg-clay", href: "/restaurantes", badge: "5.000 b/m" },
-  { key: "noche", name: "Pizzas, Alitas & Noche", sub: "Alitas (+900%), pizzas, burgers y chifas", icon: "🍕", bg: "bg-slate", href: "/comida-rapida-loja", badge: "Comida rápida" },
+  { key: "tradicional", name: "Platos Típicos & Huecas", sub: "Repe lojano (5K b/m), cecina y tamales", icon: "🌽", bg: "bg-petroleo", href: "/restaurantes?categoria=tradicional", badge: "Más buscado" },
+  { key: "cafe", name: "Desayunos & Cafeterías", sub: "Café de altura, tamales y humitas", icon: "☕", bg: "bg-[#1A4545]", href: "/cafe-de-loja", badge: "+900% demanda" },
+  { key: "alta", name: "Mejores Restaurantes", sub: "Cenas, gastronomía de autor y tradición", icon: "🍽️", bg: "bg-[#205252]", href: "/restaurantes", badge: "5.000 b/m" },
+  { key: "noche", name: "Pizzas, Alitas & Noche", sub: "Alitas (+900%), pizzas, burgers y chifas", icon: "🍕", bg: "bg-grafito", href: "/comida-rapida-loja", badge: "Comida rápida" },
 ];
 
 export const PLANS = [

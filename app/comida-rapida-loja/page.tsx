@@ -1,68 +1,121 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Wrap, PageHero } from "@/components/PageHero";
-import { listByCategory } from "@/lib/repository";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import Image from "next/image";
+import { Wrap } from "@/components/PageHero";
+import { getPlatosByMomento } from "@/lib/platos-data";
+import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
 
 export const metadata: Metadata = {
-  title: "Comida Rápida en Loja | Alitas, Pizzas y Hamburguesas",
-  description: "Guía de comida rápida en Loja: alitas crocantes (+900% en tendencia), pizzerías artesanales al horno de leña, hamburguesas smash y piqueos nocturnos.",
-  alternates: {
-    canonical: "/comida-rapida-loja",
-  },
+  title: "Dónde Cenar en Loja | Comida Rápida, Alitas (+900%), Pizzas y Chifas",
+  description: "Guía de cenas y comida de noche en Loja: alitas con salsas artesanales (+900% tendencia), pizzerías a la leña, hamburguesas smash y chifas tradicionales.",
+  alternates: { canonical: "/comida-rapida-loja" },
   openGraph: {
-    title: "Comida Rápida en Loja: Alitas, Pizzas y Hamburguesas",
-    description: "Encuentra dónde comer alitas en Loja (+900% crecimiento), pizzas y hamburguesas. Contacto directo y entrega sin comisiones.",
+    title: "Dónde Cenar en Loja: Alitas, Pizzas, Burgers y Chifas",
+    description: "Descubre dónde cenar y pedir comida rápida en Loja hoy: alitas crujientes, pizzas a la leña y comida nocturna sin intermediarios.",
     url: "https://quecomerenloja.com/comida-rapida-loja",
+    images: [{ url: "/hero-loja.jpg", width: 1200, height: 630, alt: "Comida nocturna y cenas en Loja Ecuador" }],
   },
 };
 
-const FAST_FOOD_TOPICS = [
-  "🍗 Alitas Loja (+900% tendencia · $0.58 CPC)",
-  "🍕 Pizzas en Loja (500 b/m · $0.54 CPC)",
-  "🍔 Hamburguesas Loja (500 b/m · $0.71 CPC)",
-  "🍟 Piqueos y comida nocturna",
-  "🥢 Chifas tradicionales (CPC $0.94)",
-];
-
-const FAST_FOOD_FAQS = [
-  {
-    q: "¿Por qué las alitas son tan populares hoy en Loja?",
-    a: "Las búsquedas de 'alitas loja' han crecido más de un +900% según datos de Google, impulsadas por locales locales que ofrecen promociones de alitas con salsas artesanales (maracuyá, BBQ picante, miel y mostaza, búfalo) ideales para salidas juveniles y cenas de amigos.",
-  },
-  {
-    q: "¿Dónde encontrar las mejores pizzas en Loja?",
-    a: "Loja cuenta con excelentes pizzerías artesanales que hornean a la leña, especialmente en los sectores de San Sebastián, El Valle y avenidas principales. La masa madre y los quesos andinos de la provincia le dan un toque crujiente único.",
-  },
-  {
-    q: "¿Qué tipo de hamburguesas se comen en Loja?",
-    a: "La tendencia se divide entre las tradicionales hamburguesas callejeras con huevo frito y abundante salsa, y la nueva ola de smash burgers artesanales con carne de res local de primera calidad y pan brioche.",
-  },
-];
-
 export const dynamic = "force-dynamic";
 
-export default async function ComidaRapidaPage() {
-  const nightPlaces = await listByCategory("noche");
+const NIGHT_ITEMS = [
+  {
+    name: "Alitas con Salsas Artesanales",
+    tagline: "+900% explosión de demanda en Loja",
+    desc: "Alitas crujientes bañadas en maracuyá picante, BBQ ahumada, honey mustard o salsa búfalo, servidas con papas rústicas y aderezo ranch.",
+    price: "$5.00 – $9.00 (combos)",
+    icon: "🍗",
+    image: "/hero-loja.jpg",
+    badge: "+900% Tendencia",
+  },
+  {
+    name: "Pizzas Artesanales a la Leña",
+    tagline: "500 b/m en Google Loja",
+    desc: "Masa madre de fermentación lenta, salsa de tomate natural y quesos de la región horneadas en horno de barro a la vista.",
+    price: "$8.00 – $14.00",
+    icon: "🍕",
+    image: "/hero-loja.jpg",
+    badge: "500 búsquedas/mes",
+  },
+  {
+    name: "Smash Burgers & Hamburguesas",
+    tagline: "Carne lojana de primera y pan brioche",
+    desc: "Carne de res lojana prensada a la plancha con costra caramelizada, queso cheddar fundido, tocineta ahumada y cebolla caramelizada.",
+    price: "$4.50 – $7.50",
+    icon: "🍔",
+    image: "/hero-loja.jpg",
+    badge: "Top Noche",
+  },
+  {
+    name: "Chifas Tradicionales de Loja",
+    tagline: "El nicho comercial récord (CPC $0.94)",
+    desc: "Arroz chaulafán humeante al wok, tallarín especial saltado con lomo y pollo, wantanes crujientes con salsa agridulce y grandes porciones.",
+    price: "$4.00 – $8.00",
+    icon: "🥢",
+    image: "/hero-loja.jpg",
+    badge: "Máximo Valor Comercial",
+  },
+];
 
+const NIGHT_SLOTS = [
+  {
+    id: "slot-noche-1",
+    zone: "Sector San Sebastián / Centro",
+    title: "Cupo Oficial: Alitas & Cervecería Artesanal",
+    desc: "Espacio reservado para el local de alitas más buscado por jóvenes, universitarios y turistas para cenas y planes de fin de semana.",
+    status: "Disponible para Socio",
+    highlight: "Primer puesto en intención 'alitas loja (+900%)'",
+  },
+  {
+    id: "slot-noche-2",
+    zone: "Av. Salvador Bustamante / El Valle",
+    title: "Cupo Oficial: Pizzería a la Leña & Pastas",
+    desc: "Espacio reservado para pizzería artesanal italiana o al horno de leña con servicio para cenar y delivery directo sin comisión.",
+    status: "Disponible para Socio",
+    highlight: "Capta 500 búsquedas mensuales de 'pizzas en loja'",
+  },
+  {
+    id: "slot-noche-3",
+    zone: "Zona Rosa / La Pradera / Nueva Loja",
+    title: "Cupo Oficial: Chifa Tradicional & Wok",
+    desc: "Espacio exclusivo para chifa de alta concurrencia nocturna ante personas que buscan chaulafán y comida abundante para llevar o cenar.",
+    status: "Disponible para Socio",
+    highlight: "Puesto de oro en 'chifa loja' (CPC récord $0.94)",
+  },
+];
+
+const FAQS_NIGHT = [
+  {
+    q: "¿Qué es lo que más busca la gente para cenar en Loja?",
+    a: "La mayor demanda nocturna de Loja se concentra en alitas crujientes (con un crecimiento récord de +900%), pizzas artesanales al horno de leña, hamburguesas smash y chifas tradicionales.",
+  },
+  {
+    q: "¿Hasta qué hora abren los locales de comida rápida y cena en Loja?",
+    a: "La mayoría de locales de alitas, hamburguesas y pizzas atienden desde las 17:30 hasta las 23:00 de domingo a jueves, y extienden hasta la medianoche o 01:00 AM los viernes y sábados.",
+  },
+  {
+    q: "¿Hay opciones de delivery sin comisiones en Loja?",
+    a: "Sí. En Qué Comer en Loja conectamos directamente al cliente con el WhatsApp oficial del restaurante para pedir delivery sin sobreprecio ni las comisiones abusivas del 20-30% de las apps tradicionales.",
+  },
+];
+
+export default function ComidaRapidaCenasPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebPage",
-        "name": "Comida Rápida en Loja: Alitas, Pizzas y Hamburguesas",
-        "description": "Directorio y guía de alitas, pizzerías y hamburgueserías en Loja, Ecuador.",
+        "name": "Dónde Cenar en Loja | Alitas, Pizzas, Burgers y Chifas",
         "url": "https://quecomerenloja.com/comida-rapida-loja",
+        "description": "Guía de cenas, comida rápida y antojos nocturnos en Loja, Ecuador.",
       },
       {
         "@type": "FAQPage",
-        "mainEntity": FAST_FOOD_FAQS.map((f) => ({
+        "mainEntity": FAQS_NIGHT.map((f) => ({
           "@type": "Question",
           "name": f.q,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": f.a,
-          },
+          "acceptedAnswer": { "@type": "Answer", "text": f.a },
         })),
       },
     ],
@@ -75,115 +128,227 @@ export default async function ComidaRapidaPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PageHero
-        eyebrow="+900% EN ALITAS · 1.500 BÚSQUEDAS/MES COMBINADAS"
-        title={
-          <>
-            Comida Rápida en Loja: <em className="font-serif italic font-normal text-[#e1b45f]">Alitas, Pizzas y Hamburguesas.</em>
-          </>
-        }
-      >
-        La guía para las noches y fines de semana en Loja. Descubre las mejores alitas con salsas caseras, pizzas crocantes al horno y hamburguesas artesanales sin intermediarios.
-      </PageHero>
-
-      {/* Breadcrumb SEO */}
-      <Wrap className="py-4 text-xs text-muted">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2">
-            <li><Link href="/" className="hover:underline">Inicio</Link></li>
-            <li>/</li>
-            <li><Link href="/restaurantes" className="hover:underline">Dónde Comer</Link></li>
-            <li>/</li>
-            <li className="font-semibold text-ink">Comida Rápida en Loja</li>
-          </ol>
-        </nav>
-      </Wrap>
-
-      <Wrap className="py-10">
-        <div className="mb-8 flex flex-wrap gap-2">
-          {FAST_FOOD_TOPICS.map((t) => (
-            <span key={t} className="rounded-full border border-[#e2d5c3] bg-white px-4 py-1.5 text-xs font-medium text-[#6d604d] shadow-sm">
-              {t}
-            </span>
-          ))}
+      {/* ── HERO CENAS Y NOCHE EN LOJA ── */}
+      <section className="relative min-h-[75vh] flex flex-col justify-center overflow-hidden py-16 text-white">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero-loja.jpg"
+            alt="Cenas y ambiente nocturno en Loja Ecuador"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/35" />
         </div>
 
-        {/* Bloque de Tendencias Reales */}
-        <div className="mb-12 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-[#e5dcd0] bg-white p-6 shadow-sm">
-            <span className="text-3xl">🍗</span>
-            <div className="mt-2 flex items-center justify-between">
-              <h3 className="font-serif text-xl font-bold text-ink">Alitas Loja</h3>
-              <span className="rounded-full bg-[#fcedeb] px-2 py-0.5 text-[10px] font-bold text-[#b52a1d]">+900% YoY</span>
+        <Wrap className="relative z-10 my-auto">
+          <div className="max-w-[760px]">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-citrico/30 bg-black/40 px-4 py-1.5 text-[11px] font-semibold tracking-wider text-citrico backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> CENAS & PLANES NOCTURNOS EN LOJA
             </div>
-            <p className="mt-3 text-xs text-muted leading-relaxed">
-              La comida nocturna con mayor crecimiento del año en Loja. Variedad de salsas, combos para grupos y promociones universitarias.
-            </p>
-          </div>
 
-          <div className="rounded-2xl border border-[#e5dcd0] bg-white p-6 shadow-sm">
-            <span className="text-3xl">🍕</span>
-            <div className="mt-2 flex items-center justify-between">
-              <h3 className="font-serif text-xl font-bold text-ink">Pizzas en Loja</h3>
-              <span className="rounded-full bg-[#faeed8] px-2 py-0.5 text-[10px] font-bold text-[#7d501b]">500 b/m</span>
+            <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tight text-white leading-[1.08] drop-shadow-md">
+              Dónde Cenar en Loja: <em className="font-serif font-normal italic text-citrico">Alitas, Pizzas, Burgers y Chifas.</em>
+            </h1>
+
+            <p className="mt-5 max-w-[620px] text-base md:text-lg text-white font-medium leading-relaxed drop-shadow">
+              Cuando cae la noche en Loja, la ciudad se enciende con el sabor de las alitas crocantes (+900% en tendencia), pizzas recién horneadas a la leña, hamburguesas smash y comida para compartir con amigos.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/buscar?q=noche"
+                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
+              >
+                Ver opciones nocturnas →
+              </Link>
+              <Link
+                href="/para-negocios"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition"
+              >
+                ¿Tienes un local nocturno? Postula tu cupo →
+              </Link>
             </div>
-            <p className="mt-3 text-xs text-muted leading-relaxed">
-              Pizzerías al horno de leña, masas maduradas lentamente e ingredientes de la campiña lojana.
-            </p>
           </div>
+        </Wrap>
+      </section>
 
-          <div className="rounded-2xl border border-[#e5dcd0] bg-white p-6 shadow-sm">
-            <span className="text-3xl">🍔</span>
-            <div className="mt-2 flex items-center justify-between">
-              <h3 className="font-serif text-xl font-bold text-ink">Hamburguesas</h3>
-              <span className="rounded-full bg-[#eef3e9] px-2 py-0.5 text-[10px] font-bold text-[#355621]">500 b/m</span>
+      {/* ── SECCIÓN 2: LOS ANTOJOS NOCTURNOS MÁS BUSCADOS ── */}
+      <section className="py-20 bg-porcelana">
+        <Wrap>
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo block mb-1">
+                TENDENCIAS DE GOOGLE LOJA
+              </span>
+              <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
+                Lo Que Más se Come de Noche en Loja
+              </h2>
+              <p className="text-xs md:text-sm text-muted mt-2 max-w-[600px]">
+                Datos comprobados de Google Ads: alitas con récord de crecimiento (+900%) y pizzerías con cientos de búsquedas cada mes.
+              </p>
             </div>
-            <p className="mt-3 text-xs text-muted leading-relaxed">
-              Desde las clásicas burgers tradicionales de plaza hasta propuestas smash con queso fundido y papas rústicas.
-            </p>
+            <Link href="/restaurantes" className="text-xs font-bold text-petroleo hover:underline">
+              Ver todos los restaurantes →
+            </Link>
           </div>
-        </div>
 
-        {/* Directorio de locales de noche y comida rápida */}
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">LOCALES NOCTURNOS</span>
-            <h2 className="text-3xl font-bold tracking-tight text-ink">
-              Dónde Comer Comida Rápida y Piqueos en Loja
-            </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {NIGHT_ITEMS.map((item) => (
+              <div
+                key={item.name}
+                className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-petroleo hover:shadow-xl"
+              >
+                <div>
+                  <div className="relative mb-5 h-44 w-full overflow-hidden rounded-xl">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                      className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <span className="absolute bottom-2.5 left-2.5 rounded-full bg-citrico px-2.5 py-0.5 text-[9px] font-extrabold text-petroleo shadow">
+                      {item.badge}
+                    </span>
+                  </div>
+
+                  <span className="text-2xl block mb-2">{item.icon}</span>
+                  <h3 className="font-serif text-xl font-bold text-grafito group-hover:text-petroleo transition-colors">
+                    {item.name}
+                  </h3>
+                  <small className="block text-[11px] font-semibold text-petroleo mt-0.5">{item.tagline}</small>
+                  <p className="text-xs text-muted mt-2.5 leading-relaxed">{item.desc}</p>
+                </div>
+
+                <div className="mt-6 border-t border-niebla/60 pt-3 flex items-center justify-between">
+                  <span className="text-xs font-bold text-grafito">{item.price}</span>
+                  <Link
+                    href={`/buscar?q=${encodeURIComponent(item.name.split(" ")[0])}`}
+                    className="text-xs font-bold text-petroleo hover:underline"
+                  >
+                    Buscar dónde →
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-          <Link href="/restaurantes" className="text-xs font-bold text-clay hover:underline">
-            Ver todos los restaurantes →
-          </Link>
-        </div>
+        </Wrap>
+      </section>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {nightPlaces.map((r) => <RestaurantCard key={r.slug} r={r} />)}
-        </div>
+      {/* ── SECCIÓN 2.5: PLATOS FUERTES Y CENAS TRADICIONALES (HUB & SPOKE INTERLINKING) ── */}
+      <section className="py-16 bg-porcelana/60 border-t border-niebla">
+        <Wrap>
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
+            <div>
+              <span className="inline-block rounded-full bg-citrico/30 px-3 py-1 text-[10px] font-extrabold tracking-wider text-petroleo uppercase mb-2">
+                GUÍAS COMPLETAS POR PLATO
+              </span>
+              <h2 className="text-[clamp(26px,3vw,36px)] font-bold tracking-tight text-grafito">
+                Especialidades Tradicionales para la Noche
+              </h2>
+              <p className="text-xs md:text-sm text-muted mt-1.5 max-w-2xl">
+                ¿Prefieres una cena típica contundente? Descubre dónde disfrutar de platos insignias de Loja al caer la noche.
+              </p>
+            </div>
+          </div>
 
-        {/* FAQs */}
-        <div className="mt-16 border-t border-line pt-12">
-          <div className="mx-auto max-w-3xl">
-            <span className="block text-center text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">PREGUNTAS FRECUENTES</span>
-            <h2 className="text-center text-3xl font-bold tracking-tight text-ink">
-              Preguntas sobre Comida Rápida en Loja
-            </h2>
-            <div className="mt-8 space-y-4">
-              {FAST_FOOD_FAQS.map((f) => (
-                <details key={f.q} className="group rounded-xl border border-[#e5dcce] bg-white p-5 shadow-sm transition open:shadow-md">
-                  <summary className="flex cursor-pointer items-center justify-between font-serif text-base font-semibold text-ink">
-                    <span>{f.q}</span>
-                    <span className="ml-4 text-clay transition-transform group-open:rotate-180">▾</span>
+          <PlatoCarouselRow
+            platos={getPlatosByMomento("cena")}
+            hubUrl="/restaurantes?categoria=cenas"
+            verMasTexto="Ver locales para cenar"
+          />
+        </Wrap>
+      </section>
+
+      {/* ── SECCIÓN 3: VITRINA B2B PARA LOCALES NOCTURNOS ── */}
+      <section className="py-20 border-t border-niebla bg-white overflow-hidden">
+        <Wrap>
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
+            <div className="max-w-[650px]">
+              <span className="inline-block rounded-full bg-citrico/30 px-3 py-1 text-[10px] font-extrabold tracking-wider text-petroleo uppercase mb-2">
+                ★ SOCIOS VERIFICADOS · CENAS & NOCHE
+              </span>
+              <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
+                Locales Nocturnos Recomendados
+              </h2>
+              <p className="text-xs md:text-sm text-muted mt-2">
+                Espacios exclusivos para pizzerías, locales de alitas y chifas. Tu local aparece como la primera recomendación de cena ante comensales y turistas.
+              </p>
+            </div>
+            <Link
+              href="/para-negocios"
+              className="rounded-xl bg-petroleo px-5 py-3 text-xs font-bold text-white hover:bg-[#0E2E2E] transition"
+            >
+              Postular mi local nocturno →
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {NIGHT_SLOTS.map((slot) => (
+              <div
+                key={slot.id}
+                className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-7 transition hover:border-petroleo hover:shadow-lg"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted">{slot.zone}</span>
+                    <span className="rounded-full bg-niebla/70 px-2.5 py-0.5 text-[9px] font-bold text-petroleo">
+                      {slot.status}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-lg font-bold text-grafito mt-4">
+                    {slot.title}
+                  </h3>
+                  <small className="block font-semibold text-[11px] text-petroleo mt-1">✓ {slot.highlight}</small>
+                  <p className="text-xs text-muted mt-3 leading-relaxed">{slot.desc}</p>
+                </div>
+
+                <div className="mt-6 border-t border-niebla pt-4 flex items-center justify-between">
+                  <span className="text-[11px] text-muted">¿Tu marca aquí?</span>
+                  <Link
+                    href="/para-negocios"
+                    className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo transition hover:brightness-105"
+                  >
+                    Reservar cupo →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Wrap>
+      </section>
+
+      {/* ── FAQ NOCHE Y CENAS ── */}
+      <section className="py-16 border-t border-niebla bg-porcelana/50">
+        <Wrap>
+          <div className="mx-auto max-w-[760px]">
+            <div className="text-center mb-8">
+              <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo block mb-1">
+                PREGUNTAS FRECUENTES
+              </span>
+              <h2 className="text-2xl font-bold tracking-tight text-grafito">
+                Dudas sobre Cenas y Comida de Noche en Loja
+              </h2>
+            </div>
+
+            <div className="space-y-3.5">
+              {FAQS_NIGHT.map((faq) => (
+                <details key={faq.q} className="group rounded-xl border border-niebla bg-white p-5 transition open:shadow-sm">
+                  <summary className="flex cursor-pointer items-center justify-between font-serif text-base font-semibold text-grafito">
+                    <span>{faq.q}</span>
+                    <span className="ml-4 text-petroleo transition-transform group-open:rotate-180">▾</span>
                   </summary>
-                  <p className="mt-3 text-xs leading-relaxed text-muted border-t border-[#f2ede4] pt-3">
-                    {f.a}
+                  <p className="mt-3 text-xs leading-relaxed text-muted border-t border-niebla/40 pt-3">
+                    {faq.a}
                   </p>
                 </details>
               ))}
             </div>
           </div>
-        </div>
-      </Wrap>
+        </Wrap>
+      </section>
     </>
   );
 }

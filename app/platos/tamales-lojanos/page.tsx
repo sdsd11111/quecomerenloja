@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Wrap, PageHero } from "@/components/PageHero";
-import { listRestaurants } from "@/lib/repository";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import Image from "next/image";
+import { Wrap } from "@/components/PageHero";
+import { PlazasDisponiblesPlato } from "@/components/PlatoTemplateSections";
+import { MapaLeafletLoja } from "@/components/MapaLeafletLoja";
 
 export const metadata: Metadata = {
   title: "Tamales y Humitas en Loja | La Casa del Tamal Lojano y Cafeterías",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     title: "Tamales Lojanos y Humitas: Desayunos y Tradición de Loja",
     description: "Guía de tamales lojanos y la famosa casa de la humita y el tamal en Loja (+900% crecimiento). Dónde desayunar con café lojano.",
     url: "https://quecomerenloja.com/platos/tamales-lojanos",
+    images: [{ url: "/tamales-humitas.jpg", width: 1200, height: 630, alt: "Tamales Lojanos y Humitas en Loja" }],
   },
 };
 
@@ -38,17 +40,7 @@ const TAMAL_FAQS = [
 
 export const dynamic = "force-dynamic";
 
-export default async function TamalesLojanosPage() {
-  const all = await listRestaurants();
-  const tamalPlaces = all.filter(
-    (r) =>
-      r.dish.toLowerCase().includes("tamal") ||
-      r.dish.toLowerCase().includes("humita") ||
-      r.keywords.toLowerCase().includes("humita") ||
-      r.keywords.toLowerCase().includes("tamal") ||
-      r.category === "cafe"
-  );
-
+export default function TamalesLojanosPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -90,148 +82,189 @@ export default async function TamalesLojanosPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PageHero
-        eyebrow="+900% CRECIMIENTO · DESAYUNOS & MERIENDAS DE LOJA"
-        title={
-          <>
-            Tamales Lojanos & Humitas: <em className="font-serif italic font-normal text-[#e1b45f]">El aroma inconfundible de la achira.</em>
-          </>
-        }
-      >
-        La tradición mañanera más buscada en Loja. Conoce las huecas más populares, la historia de la hoja de achira y dónde pedir un tamal caliente con café de altura.
-      </PageHero>
+      {/* ── 1. HERO AL 70% DE PANTALLA CON IMAGEN LIMPIA DE FONDO (SIN OVERLAY OSCURO) ── */}
+      <section className="relative min-h-[70vh] flex flex-col justify-end overflow-hidden pb-10 pt-20">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/tamales-humitas.jpg"
+            alt="Tamales lojanos tradicionales y humitas"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
+
+        {/* Tarjeta de título flotante integrada abajo a la izquierda para máxima legibilidad sin tapar la foto */}
+        <Wrap className="relative z-10 w-full">
+          <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
+            <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
+              +900% CRECIMIENTO · DESAYUNOS DE LOJA
+            </span>
+
+            <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
+              Tamales Lojanos & Humitas:{" "}
+              <em className="font-serif italic font-normal text-petroleo">
+                El aroma inconfundible de la achira.
+              </em>
+            </h1>
+
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+              La tradición mañanera más buscada en Loja. Conoce las huecas más populares, la historia de la hoja de achira y dónde pedir un tamal caliente con café de altura.
+            </p>
+
+            <div className="mt-5 flex items-center gap-3">
+              <Link
+                href="/desayunos-en-loja"
+                className="rounded-xl bg-petroleo px-4 py-2.5 text-xs font-bold text-white hover:bg-[#0E2E2E] transition shadow-sm"
+              >
+                ← Guía de Desayunos en Loja
+              </Link>
+              <Link
+                href="/cafe-de-loja"
+                className="rounded-xl border border-niebla bg-white px-4 py-2.5 text-xs font-bold text-petroleo hover:bg-porcelana transition"
+              >
+                Cafeterías de especialidad →
+              </Link>
+            </div>
+          </div>
+        </Wrap>
+      </section>
 
       {/* Breadcrumb SEO */}
-      <Wrap className="py-4 text-xs text-muted">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2">
-            <li><Link href="/" className="hover:underline">Inicio</Link></li>
-            <li>/</li>
-            <li><Link href="/restaurantes" className="hover:underline">Dónde Comer</Link></li>
-            <li>/</li>
-            <li className="font-semibold text-ink">Tamales y Humitas</li>
-          </ol>
-        </nav>
-      </Wrap>
+      <div className="border-b border-niebla bg-white">
+        <Wrap className="py-3 text-xs text-muted">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-2 flex-wrap">
+              <li><Link href="/" className="hover:underline">Inicio</Link></li>
+              <li>/</li>
+              <li><Link href="/desayunos-en-loja" className="hover:underline">Desayunos en Loja</Link></li>
+              <li>/</li>
+              <li className="font-semibold text-petroleo">Tamales y Humitas</li>
+            </ol>
+          </nav>
+        </Wrap>
+      </div>
 
-      {/* Origen y Ficha */}
-      <section className="bg-paper py-10">
+      {/* ── 2. DATA DEL PLATO PARA POSICIONAMIENTO Y CULTURA GASTRONÓMICA ── */}
+      <section className="bg-porcelana py-16 border-b border-niebla">
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">EXPLOSIÓN DE DEMANDA (+900%)</span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-ink md:text-4xl">
+            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">
+              EXPLOSIÓN DE DEMANDA (+900%)
+            </span>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
               La Casa de la Humita y el Tamal Lojano
             </h2>
-            <p className="mt-4 text-sm text-muted leading-relaxed">
+            <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
               Las búsquedas sobre <em>"la casa de la humita y el tamal lojano"</em> y <em>"tamales lojanos"</em> han crecido más de un <strong>+900%</strong> en Google este año. Y no es coincidencia: tanto lojanos como viajeros consideran el desayuno con tamal caliente y café de filtro un ritual sagrado de hospitalidad andina.
             </p>
-            <p className="mt-3 text-sm text-muted leading-relaxed">
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               La cocción lenta al vapor dentro de las hojas de achira transmite notas herbales únicas a la masa que ningún molde moderno puede igualar. Es la compañía ideal para una mañana fresca en la centinela del sur.
             </p>
-            <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold">
-              <span className="rounded-lg bg-[#faeed8] px-3.5 py-2 text-[#7d501b]">🍃 Envuelto en hoja de achira</span>
-              <span className="rounded-lg bg-[#f0ebd9] px-3.5 py-2 text-[#684b35]">☕ Maridaje con café de especialidad</span>
-              <span className="rounded-lg bg-[#e4edd8] px-3.5 py-2 text-[#3b5e27]">🧀 Humitas con queso criollo</span>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold">
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🍃 Envuelto en hoja de achira
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                ☕ Maridaje con café de especialidad
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🧀 Humitas con queso criollo
+              </span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#e8dfcf] bg-[#fdf9f0] p-6 shadow-sm">
-            <h3 className="font-serif text-xl font-bold text-ink">Ficha de Tamales y Humitas</h3>
-            <ul className="mt-4 space-y-3 text-xs">
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+          <div className="rounded-3xl border border-niebla bg-white p-7 shadow-sm">
+            <span className="text-[10px] font-extrabold tracking-widest text-muted uppercase">FICHA GASTRONÓMICA</span>
+            <h3 className="font-serif text-xl font-bold text-grafito mt-1">Ficha de Tamales y Humitas</h3>
+            <ul className="mt-5 space-y-3.5 text-xs">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">El Tamal:</span>
-                <strong className="text-ink">Maíz seco, pollo, hoja de achira</strong>
+                <strong className="text-grafito font-semibold">Maíz seco, pollo, hoja de achira</strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">La Humita:</span>
-                <strong className="text-ink">Choclo tierno dulce, queso, hoja de maíz</strong>
+                <strong className="text-grafito font-semibold">Choclo tierno dulce, queso, hoja de maíz</strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Horario típico:</span>
-                <strong className="text-ink">Desayuno (7-10 AM) / Tarde (4-7 PM)</strong>
+                <strong className="text-petroleo font-bold">Desayuno (7-10 AM) / Tarde (4-7 PM)</strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Acompañamiento:</span>
-                <strong className="text-ink">Café de Loja pasado</strong>
+                <strong className="text-grafito font-semibold">Café de Loja pasado</strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Puntos clave:</span>
-                <strong className="text-ink">Calle Lourdes, San Sebastián, Centro</strong>
+                <strong className="text-grafito font-semibold">Calle Lourdes, San Sebastián, Centro</strong>
               </li>
               <li className="flex justify-between">
                 <span className="text-muted">Precio estimado:</span>
-                <strong className="text-clay">$1.25 – $2.00 por unidad</strong>
+                <strong className="text-petroleo font-bold text-sm">$1.25 – $2.00 por unidad</strong>
               </li>
             </ul>
           </div>
         </Wrap>
       </section>
 
-      {/* Dónde comer tamales y humitas */}
-      <section className="bg-[#f5eddc] py-14">
+      {/* ── 3. DÓNDE COMER: 3 CARDS DE PLAZAS LIBRES PARA ALIADOS ── */}
+      <PlazasDisponiblesPlato
+        nombrePlato="Tamales y Humitas"
+        horarioRecomendado="07:00 AM – 11:00 AM y 04:30 PM – 07:30 PM"
+      />
+
+      {/* ── 4. DESCUBRE EL RESTAURANTE MÁS CERCANO (MAPA REAL LEAFLET DE LOJA) ── */}
+      <MapaLeafletLoja nombrePlato="Tamales y Humitas" />
+
+      {/* ── 5. PREGUNTAS FRECUENTES (FORMATO ACORDEÓN LIMPIO IGUAL A LA HOME) ── */}
+      <section className="bg-white py-16 border-t border-niebla">
         <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">CAFETERÍAS & HUECAS</span>
-              <h2 className="text-3xl font-bold tracking-tight text-ink md:text-4xl">
-                Dónde Comer Tamales y Humitas Hoy
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                Cafeterías y locales tradicionales en Loja con tamales frescos y humitas recién salidas de la vaporera.
+          <div className="mx-auto max-w-[760px]">
+            <details className="group rounded-2xl border border-niebla bg-porcelana/30 p-6 transition open:bg-white open:shadow-md">
+              <summary className="flex cursor-pointer items-center justify-between font-serif text-lg font-bold text-grafito">
+                <div className="flex items-center gap-3">
+                  <span className="text-petroleo font-sans text-xs font-extrabold tracking-widest uppercase">FAQ</span>
+                  <span>Preguntas Frecuentes sobre Tamales y Humitas</span>
+                </div>
+                <span className="text-petroleo transition-transform group-open:rotate-180 text-xl font-bold">▾</span>
+              </summary>
+
+              <div className="mt-6 space-y-4 border-t border-niebla/50 pt-4">
+                {TAMAL_FAQS.map((faq) => (
+                  <div key={faq.q} className="rounded-xl border border-niebla/40 bg-white p-4">
+                    <h4 className="font-serif text-sm font-bold text-grafito">{faq.q}</h4>
+                    <p className="mt-2 text-xs leading-relaxed text-muted">{faq.a}</p>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        </Wrap>
+      </section>
+
+      {/* ── 6. CTA TRANSVERSAL CON CAFÉ DE LOJA ── */}
+      <section className="py-12 bg-porcelana border-t border-niebla">
+        <Wrap>
+          <div className="rounded-3xl bg-petroleo p-8 text-white md:flex md:items-center md:justify-between md:p-10 shadow-xl">
+            <div className="max-w-[580px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-citrico">MARIDAJE TRADICIONAL</span>
+              <h3 className="mt-2 text-2xl font-bold font-serif">¿Buscas el mejor café para acompañar tu tamal?</h3>
+              <p className="mt-2 text-xs text-niebla/80 leading-relaxed">
+                Visita nuestra guía de cafeterías de especialidad y café de altura premiado internacionalmente en Loja.
               </p>
             </div>
-            <Link href="/cafe-de-loja" className="text-sm font-bold text-clay hover:underline">
-              Ver cafeterías y desayunos →
-            </Link>
-          </div>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {tamalPlaces.map((r) => (
-              <RestaurantCard key={r.slug} r={r} />
-            ))}
-          </div>
-        </Wrap>
-      </section>
-
-      {/* FAQs Tamales */}
-      <section className="bg-paper py-16 border-t border-line">
-        <Wrap>
-          <div className="mx-auto max-w-3xl">
-            <span className="block text-center text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">PREGUNTAS FRECUENTES</span>
-            <h2 className="text-center text-3xl font-bold tracking-tight text-ink">
-              Preguntas Frecuentes sobre Tamales y Humitas
-            </h2>
-            <div className="mt-10 space-y-4">
-              {TAMAL_FAQS.map((f) => (
-                <details key={f.q} className="group rounded-xl border border-[#e5dcce] bg-white p-5 shadow-sm transition open:shadow-md">
-                  <summary className="flex cursor-pointer items-center justify-between font-serif text-base font-semibold text-ink">
-                    <span>{f.q}</span>
-                    <span className="ml-4 text-clay transition-transform group-open:rotate-180">▾</span>
-                  </summary>
-                  <p className="mt-3 text-xs leading-relaxed text-muted border-t border-[#f2ede4] pt-3">
-                    {f.a}
-                  </p>
-                </details>
-              ))}
+            <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">
+              <Link
+                href="/cafe-de-loja"
+                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-md"
+              >
+                Guía de Cafeterías en Loja →
+              </Link>
             </div>
           </div>
         </Wrap>
       </section>
-
-      {/* CTA Café */}
-      <Wrap className="py-14 text-center">
-        <div className="rounded-2xl bg-[#8c5123] p-8 text-white md:p-12">
-          <h3 className="font-serif text-2xl md:text-3xl font-bold">¿Buscas el mejor café para acompañar tu tamal?</h3>
-          <p className="mx-auto mt-3 max-w-md text-xs md:text-sm text-[#f9ebd9]">
-            Visita nuestra guía de cafeterías de especialidad y café de altura premiado internacionalmente en Loja.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/cafe-de-loja" className="rounded-lg bg-white px-5 py-3 text-xs font-bold text-[#8c5123] hover:bg-[#fff7f0] transition">
-              Guía de Cafeterías en Loja →
-            </Link>
-          </div>
-        </div>
-      </Wrap>
     </>
   );
 }
