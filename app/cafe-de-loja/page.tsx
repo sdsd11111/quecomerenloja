@@ -75,7 +75,7 @@ export default async function Page() {
       />
 
       <PageHero
-        eyebrow="500 BÚSQUEDAS/MES · +900% EN DESAYUNOS EN LOJA"
+        eyebrow="CAFÉ DE ESPECIALIDAD · DESAYUNOS EN LOJA"
         title={
           <>
             Cafeterías en Loja: <em className="font-serif italic font-normal text-[#e1b45f]">Aroma andino, desayunos y tertulia.</em>
@@ -107,7 +107,7 @@ export default async function Page() {
           ))}
         </div>
 
-        {/* Bloque explicativo de demanda real */}
+        {/* Bloque explicativo */}
         <div className="mb-12 grid gap-8 rounded-2xl border border-[#e8ded0] bg-[#fbf7f1] p-6 md:grid-cols-2 md:p-8">
           <div>
             <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">CULTURA CAFETALERA</span>
@@ -115,13 +115,13 @@ export default async function Page() {
               El rito matutino y vespertino del lojano
             </h2>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
-              En Loja, sentarse a tomar un café no es una parada rápida: es un ritual social. Con más de <strong>500 búsquedas mensuales de cafeterías</strong> y un crecimiento del <strong>+900% en búsquedas de desayunos</strong>, los locales de café se han convertido en centros de reunión, teletrabajo y sobremesa.
+              En Loja, sentarse a tomar un café no es una parada rápida: es un ritual social. Con gran tradición en cafés de especialidad de altura y una vibrante cultura de desayunos tradicionales, los locales de café se han convertido en centros de reunión, teletrabajo y sobremesa.
             </p>
           </div>
           <div className="flex flex-col justify-center rounded-xl bg-white p-6 shadow-sm border border-[#eee2d4]">
             <h3 className="font-serif text-lg font-bold text-ink">¿Qué acompaña a una buena taza?</h3>
             <p className="mt-2 text-xs text-muted">
-              Pide un <strong><Link href="/platos/tamales-lojanos" className="text-clay underline font-bold">tamal lojano tradicional (+900% demanda)</Link></strong> o una humita caliente recién salida de la olla con quesillo lojano derretido.
+              Pide un <strong><Link href="/platos/tamales-lojanos" className="text-clay underline font-bold">tamal lojano tradicional</Link></strong> o una humita caliente recién salida de la olla con quesillo lojano derretido.
             </p>
             <div className="mt-4">
               <Link href="/platos/tamales-lojanos" className="inline-flex text-xs font-bold text-clay hover:underline">

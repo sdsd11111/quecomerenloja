@@ -147,8 +147,8 @@ export function ChatbotIA() {
 
   return (
     <>
-      {/* TRIGGER BUTTON FLOTANTE CON COLORES DE MARCA */}
-      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2 transition-all duration-300 ${!btnVisible && !open ? "translate-y-24 opacity-0 pointer-events-none" : ""}`}>
+      {/* TRIGGER BUTTON FLOTANTE CON COLORES DE MARCA (A LA IZQUIERDA) */}
+      <div className={`fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 flex flex-col items-start gap-2 transition-all duration-300 ${!btnVisible && !open ? "translate-y-24 opacity-0 pointer-events-none" : ""}`}>
         {!open && (
           <div className="hidden sm:flex items-center gap-2 bg-white/95 backdrop-blur-md text-grafito text-[11px] font-semibold px-4 py-2 rounded-2xl border border-niebla shadow-xl animate-bounce">
             <span className="h-2 w-2 rounded-full bg-citrico animate-ping" />
@@ -164,14 +164,13 @@ export function ChatbotIA() {
             <>
               <span className="text-xl">🍽️</span>
               <span className="text-sm font-extrabold tracking-wide text-white">¿Qué comer en Loja?</span>
-              <span className="rounded-md bg-citrico px-1.5 py-0.5 text-[9px] font-black uppercase text-petroleo">IA</span>
             </>
           )}
         </button>
       </div>
 
       {open && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[420px] h-[600px] max-h-[85vh] bg-white rounded-3xl shadow-2xl shadow-black/25 border border-niebla flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 left-4 sm:left-6 z-50 w-[94vw] sm:w-[420px] h-[600px] max-h-[85vh] bg-white rounded-3xl shadow-2xl shadow-black/25 border border-niebla flex flex-col overflow-hidden">
           {/* HEADER DEL MODAL CON PALETA PETRÓLEO + CÍTRICO */}
           <div className="bg-petroleo p-4 text-white flex items-center justify-between border-b border-niebla/20">
             <div className="flex items-center gap-3">

@@ -25,28 +25,28 @@ const ALMUERZOS_STRUCTURE = [
     title: "Sopa Tradicional Caliente",
     desc: "Casi todo almuerzo lojano abre con una sopa de cuchara: Repe lojano cremoso, arveja con guineo, sopa de quinua, caldo de gallina criolla o locro de papa.",
     badge: "100% Cuchara Lojana",
-    image: "/repe-lojano.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/sopa-entrada.webp",
   },
   {
     step: "2. Plato Fuerte / Segundo",
     title: "Segundo Balanceado con Proteína",
     desc: "Opciones diarias que rotan: Cecina asada a la brasa, seco de pollo, chuleta a la plancha, bistec de carne, trucha frita o chivo al hueco con arroz y menestra.",
     badge: "Sabor de Casa",
-    image: "/cecina-lojana.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/segundo-fuerte.webp",
   },
   {
     step: "3. Guarnición y Acompañamiento",
     title: "Yuca, Mote o Menestra",
     desc: "La yuca sancochada fresca de valles cercanos, el mote recién cocido y las menestras de lenteja o fréjol acompañan el plato con ensalada fresca.",
     badge: "Frescura Diaria",
-    image: "/arveja-guineo.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/guarniciones-yuca.webp",
   },
   {
     step: "4. Bebida Tradicional",
     title: "Jugo Natural de Fruta Local",
     desc: "Incluido en el menú: Jugo de mora, maracuyá, naranjilla, horchata lojana fresca con hierbas aromáticas o limonada con panela.",
     badge: "Horchata o Fruta",
-    image: "/hero-loja.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/horchata-lojana.webp",
   },
 ];
 
@@ -65,7 +65,7 @@ const ALMUERZO_SLOTS = [
     title: "Cupo Oficial: Hueca Tradicional & Repe",
     desc: "Espacio para hueca representativa de platos típicos de almuerzo (repe blanco, cecina, arveja) para turistas y familias.",
     status: "Disponible para Socio",
-    highlight: "Posicionamiento en búsquedas de comida típica",
+    highlight: "Preferencia destacada en comida típica",
   },
   {
     id: "slot-almuerzo-3",
@@ -121,10 +121,10 @@ export default function AlmuerzosPage() {
       />
 
       {/* ── HERO ALMUERZOS EN LOJA ── */}
-      <section className="relative min-h-[75vh] flex flex-col justify-center overflow-hidden py-16 text-white">
+      <section className="relative min-h-[70vh] flex flex-col justify-center overflow-hidden py-16 text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/hero-loja.jpg"
+            src="https://mvps.b-cdn.net/quecomerenloja/almuerzos/hero-almuerzos.webp"
             alt="Restaurantes y almuerzos en Loja Ecuador"
             fill
             priority
@@ -150,10 +150,10 @@ export default function AlmuerzosPage() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
-                href="/menu-del-dia"
+                href="/restaurantes"
                 className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
               >
-                Ver menús del día de hoy →
+                Ver restaurantes para almorzar →
               </Link>
               <Link
                 href="/para-negocios"
@@ -239,8 +239,8 @@ export default function AlmuerzosPage() {
 
           <PlatoCarouselRow
             platos={getPlatosByMomento("almuerzo")}
-            hubUrl="/menu-del-dia"
-            verMasTexto="Ver menú del día hoy"
+            hubUrl="/restaurantes"
+            verMasTexto="Ver restaurantes para almorzar"
           />
         </Wrap>
       </section>

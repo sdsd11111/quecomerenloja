@@ -6,16 +6,15 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://quecomerenloja.com",
   businessWhatsApp: process.env.NEXT_PUBLIC_BUSINESS_WHATSAPP ?? "",
   sisters: [
-    { label: "guialoja.com", href: "https://guialoja.com" },
     { label: "agendaculturalloja.com", href: "https://agendaculturalloja.com" },
     { label: "agendaturisticaloja.com", href: "https://agendaturisticaloja.com" },
   ],
 };
 
 export const NAV = [
-  { href: "/restaurantes", label: "Dónde comer" },
-  { href: "/menu-del-dia", label: "Menú del día" },
-  { href: "/cafe-de-loja", label: "Café de Loja" },
+  { href: "/desayunos-en-loja", label: "Desayunos" },
+  { href: "/almuerzos-loja", label: "Almuerzos" },
+  { href: "/comida-rapida-loja", label: "Dónde cenar" },
   { href: "/bares-y-noche", label: "Bares y noche" },
   { href: "/blog", label: "Blog" },
 ];

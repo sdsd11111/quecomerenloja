@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/platos/alitas-loja" },
   openGraph: {
     title: "Alitas en Loja: BBQ, Búfalo y Wings | Qué Comer en Loja",
-    description: "Las mejores alitas de Loja Ecuador: alitas BBQ, búfalo y picantes. 500 búsquedas/mes. Los locales más populares para las noches lojanas.",
+    description: "Las mejores alitas de Loja Ecuador: alitas BBQ, búfalo y picantes. Los locales más populares para compartir durante las noches lojanas.",
     url: "https://quecomerenloja.com/platos/alitas-loja",
     images: [{ url: "/hero-loja.jpg", width: 1200, height: 630, alt: "Alitas BBQ en Loja Ecuador" }],
   },
@@ -69,7 +69,7 @@ export default function AlitasLojaPage() {
         <Wrap className="relative z-10 w-full">
           <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
             <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
-              500 BÚSQUEDAS/MES · EL SNACK REY DE LOJA
+              SNACK REY · NOCHES EN LOJA
             </span>
             <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
               Alitas en Loja:{" "}
@@ -111,12 +111,12 @@ export default function AlitasLojaPage() {
       <section className="bg-porcelana py-16 border-b border-niebla">
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">500 BÚSQUEDAS MENSUALES EN GOOGLE</span>
+            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">TENDENCIA NOCTURNA</span>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
               Las alitas conquistan las noches de Loja
             </h2>
             <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
-              Con más de <strong>500 búsquedas mensuales</strong>, las alitas en Loja son uno de los alimentos nocturnos más buscados de la ciudad. La popularidad de las "alitas BBQ loja" y "alitas wings loja" refleja una demanda real de turistas y residentes que buscan un lugar donde comer alitas los fines de semana.
+              Las alitas en Loja son uno de los platillos nocturnos más solicitados de la ciudad. La pasión por las alitas BBQ glaseadas, búfalo picantes y honey mustard reúne a grupos de amigos y familias cada fin de semana.
             </p>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               Los locales más exitosos son aquellos que combinan alitas crujientes con salsas artesanales propias y un ambiente social animado. Las promociones de jueves en "alitas night" son una estrategia muy efectiva para aumentar el flujo entre semana.

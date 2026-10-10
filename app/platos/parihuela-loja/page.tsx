@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Wrap, PageHero } from "@/components/PageHero";
-import { listRestaurants } from "@/lib/repository";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import Image from "next/image";
+import { Wrap } from "@/components/PageHero";
+import { PlazasDisponiblesPlato } from "@/components/PlatoTemplateSections";
+import { MapaLeafletLoja } from "@/components/MapaLeafletLoja";
 
 export const metadata: Metadata = {
   title: "Parihuela en Loja | Dónde Comer Sopa de Mariscos en Loja Ecuador",
@@ -14,6 +15,14 @@ export const metadata: Metadata = {
     description:
       "Descubre dónde comer parihuela en Loja: restaurantes con mariscos frescos, precios y horarios.",
     url: "https://quecomerenloja.com/platos/parihuela-loja",
+    images: [
+      {
+        url: "/parihuela-loja.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Parihuela sopa de mariscos en Loja",
+      },
+    ],
   },
 };
 
@@ -24,7 +33,7 @@ const FAQS = [
   },
   {
     q: "¿Cuánto cuesta la parihuela en Loja?",
-    a: "El precio varía según el tamaño y el tipo de mariscos incluidos. Una porción individual oscila entre $6.00 y $10.00 USD. Las versiones con langostino entero o concha pueden costar hasta $14.00 USD. Los restaurantes marinos del sector de la Av. Orillas del Zamora ofrecen las mejores relaciones calidad-precio.",
+    a: "El precio varía según el tamaño y el tipo de mariscos incluidos. Una porción individual oscila entre $6.00 y $10.00 USD. Las versiones con langostino entero o concha pueden costar hasta $14.00 USD. Los restaurantes marinos de la ciudad ofrecen las mejores relaciones calidad-precio.",
   },
   {
     q: "¿En qué horario se sirve la parihuela en Loja?",
@@ -36,39 +45,27 @@ const FAQS = [
   },
 ];
 
-export const dynamic = "force-dynamic";
-
-export default async function ParihulaLoja() {
-  const all = await listRestaurants();
-  const places = all.filter(
-    (r) =>
-      r.keywords.toLowerCase().includes("marisco") ||
-      r.keywords.toLowerCase().includes("parihuela") ||
-      r.keywords.toLowerCase().includes("camarón") ||
-      r.category === "alta"
-  );
-
+export default function ParihulaLoja() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Recipe",
         name: "Parihuela de Mariscos en Loja",
-        headline: "Sopa de mariscos peruano-ecuatoriana en Loja",
+        headline: "Caldo concentrado de mariscos al estilo lojano",
         description:
-          "Caldo concentrado de camarón, calamar y mejillón aromatizado con ají amarillo, culantro y limón.",
-        recipeCuisine: "Peruana / Ecuatoriana",
+          "Caldo de camarón, calamar y mejillón con ají amarillo, culantro y limón al estilo serrano.",
+        recipeCuisine: "Ecuatoriana / Peruana",
         recipeCategory: "Sopas / Mariscos",
-        keywords: "parihuela loja, sopa mariscos loja, mariscos en loja, restaurantes mariscos loja",
+        keywords: "parihuela loja, sopa mariscos loja, mariscos en loja",
         recipeIngredient: [
-          "Camarones frescos con cáscara",
-          "Calamar en anillas",
-          "Mejillones o conchas negras",
-          "Ají amarillo o ají rocoto",
-          "Culantro (cilantro) fresco",
-          "Tomate, cebolla y ajo",
-          "Caldo de mariscos concentrado",
-          "Limón y ají molido para servir",
+          "Camarones frescos",
+          "Calamar en aros",
+          "Mejillones",
+          "Ají amarillo",
+          "Culantro y limón",
+          "Tomate riñón y cebolla",
+          "Caldo concentrado de mariscos",
         ],
       },
       {
@@ -89,191 +86,239 @@ export default async function ParihulaLoja() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PageHero
-        eyebrow="400 BÚSQUEDAS/MES · MARISCOS EN LOJA ECUADOR"
-        title={
-          <>
-            Parihuela en Loja:{" "}
-            <em className="font-serif italic font-normal text-[#e1b45f]">
-              El caldo de mariscos que Loja adoptó como propio.
-            </em>
-          </>
-        }
-      >
-        Caldo concentrado de camarón, calamar y mejillón, aromatizado con ají
-        amarillo y limón fresco. La parihuela llegó de la costa y se quedó en los
-        mejores restaurantes de Loja: descubre dónde comerla, cuánto cuesta y
-        cuándo vas a encontrar el producto más fresco.
-      </PageHero>
+      {/* ── 1. HERO ── */}
+      <section className="relative min-h-[70vh] flex flex-col justify-end overflow-hidden pb-10 pt-20">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://mvps.b-cdn.net/quecomerenloja/almuerzos/parihuela-mariscos.webp"
+            alt="Parihuela sopa de mariscos en Loja Ecuador"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
 
-      {/* Breadcrumb */}
-      <Wrap className="py-4 text-xs text-muted">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2 flex-wrap">
-            <li><Link href="/" className="hover:underline">Inicio</Link></li>
-            <li>/</li>
-            <li><Link href="/almuerzos-loja" className="hover:underline">Almuerzos en Loja</Link></li>
-            <li>/</li>
-            <li className="font-semibold text-ink">Parihuela en Loja</li>
-          </ol>
-        </nav>
-      </Wrap>
+        <Wrap className="relative z-10 w-full">
+          <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
+            <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
+              MARISCOS · ALMUERZO Y CENA EN LOJA
+            </span>
 
-      {/* Descripción + Ficha */}
-      <section className="bg-paper py-10">
+            <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
+              Parihuela en Loja:{" "}
+              <em className="font-serif italic font-normal text-petroleo">
+                El mar en la sierra más al sur del Ecuador.
+              </em>
+            </h1>
+
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+              Caldo concentrado de camarones, calamar y mejillón con ají
+              amarillo, cilantro y limón. Loja tiene sus propios restaurantes
+              de mariscos que traen producto fresco de la costa ecuatoriana.
+            </p>
+
+            <div className="mt-5 flex items-center gap-3">
+              <Link
+                href="/almuerzos-loja"
+                className="rounded-xl bg-petroleo px-4 py-2.5 text-xs font-bold text-white hover:bg-[#0E2E2E] transition shadow-sm"
+              >
+                ← Guía de Almuerzos en Loja
+              </Link>
+              <Link
+                href="/restaurantes"
+                className="rounded-xl border border-niebla bg-white px-4 py-2.5 text-xs font-bold text-petroleo hover:bg-porcelana transition"
+              >
+                Restaurantes →
+              </Link>
+            </div>
+          </div>
+        </Wrap>
+      </section>
+
+      {/* Breadcrumb SEO */}
+      <div className="border-b border-niebla bg-white">
+        <Wrap className="py-3 text-xs text-muted">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-2 flex-wrap">
+              <li>
+                <Link href="/" className="hover:underline">
+                  Inicio
+                </Link>
+              </li>
+              <li>/</li>
+              <li>
+                <Link href="/almuerzos-loja" className="hover:underline">
+                  Almuerzos en Loja
+                </Link>
+              </li>
+              <li>/</li>
+              <li className="font-semibold text-petroleo">
+                Parihuela en Loja
+              </li>
+            </ol>
+          </nav>
+        </Wrap>
+      </div>
+
+      {/* ── 2. DESCRIPCIÓN Y FICHA ── */}
+      <section className="bg-porcelana py-16 border-b border-niebla">
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-              COSTA EN LA SIERRA
+            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">
+              MARISCOS FRESCOS EN LA SIERRA
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-ink md:text-4xl">
-              La parihuela: el sabor del mar que llegó a Loja
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
+              ¿Por qué hay buena parihuela en Loja si no tiene costa?
             </h2>
-            <p className="mt-4 text-sm text-muted leading-relaxed">
-              Loja está a casi 200 km de la costa, pero el caldo de mariscos lleva
-              décadas siendo parte de su escena gastronómica. La migración y el
-              comercio trajeron las recetas costeñas y los restaurantes lojanos las
-              adaptaron con los ingredientes de la Sierra Sur: ají andino, culantro
-              local y limones de los valles de Malacatos.
+            <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
+              La logística de transporte refrigerado moderno conecta a Loja con
+              los puertos de Machala y Guayaquil en menos de 4 horas. Los
+              mejores restaurantes de mariscos de la ciudad reciben entregas
+              periódicas de camarón, calamar, mejillón y otros productos del
+              mar con estándares de frescura excepcionales.
             </p>
-            <p className="mt-3 text-sm text-muted leading-relaxed">
-              La parihuela se distingue de un simple caldo de mariscos por la
-              concentración de sabor: el caldo se prepara con cáscaras y cabezas
-              de camarón sofritas con ají y tomate, luego se cuela y se añaden los
-              mariscos frescos para cocinarlos apenas lo justo. El resultado es un
-              caldo rojizo, aromático y profundo que se complementa con arroz
-              blanco y patacones de plátano.
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+              La parihuela lojana adopta el estilo peruano-ecuatoriano del
+              caldo concentrado y picante, adaptado al paladar serrano con
+              menos picor y más hierbas aromáticas propias de la sierra sur
+              como el culantro fresco y el orégano lojano.
             </p>
-            <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold">
-              <span className="rounded-lg bg-[#fde8d8] px-3.5 py-2 text-[#8d3921]">🦐 Camarón y calamar frescos</span>
-              <span className="rounded-lg bg-[#fdf5d5] px-3.5 py-2 text-[#7b6515]">🌶️ Ají amarillo rocoto</span>
-              <span className="rounded-lg bg-[#e4edd8] px-3.5 py-2 text-[#3b5e27]">🍋 Limón lojano y culantro</span>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold">
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🦐 Camarón fresco de la costa
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🌶️ Ají amarillo y limón
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🌿 Culantro y orégano lojano
+              </span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#e8dfcf] bg-[#fdf9f0] p-6 shadow-sm">
-            <h3 className="font-serif text-xl font-bold text-ink">Ficha de la Parihuela</h3>
-            <ul className="mt-4 space-y-3 text-xs">
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Tipo de plato:</span>
-                <strong className="text-ink">Sopa / Caldo de mariscos</strong>
-              </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+          <div className="rounded-3xl border border-niebla bg-white p-7 shadow-sm">
+            <span className="text-[10px] font-extrabold tracking-widest text-muted uppercase">
+              FICHA GASTRONÓMICA
+            </span>
+            <h3 className="font-serif text-xl font-bold text-grafito mt-1">
+              Ficha de la Parihuela
+            </h3>
+            <ul className="mt-5 space-y-3.5 text-xs">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Mariscos principales:</span>
-                <strong className="text-ink">Camarón, calamar, mejillón</strong>
+                <strong className="text-grafito font-semibold">
+                  Camarón, calamar, mejillón
+                </strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Caldo base:</span>
-                <strong className="text-ink">Bisque de cáscaras de camarón</strong>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Base del caldo:</span>
+                <strong className="text-grafito font-semibold">
+                  Fumet concentrado + ají amarillo
+                </strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Acompañantes:</span>
-                <strong className="text-ink">Arroz blanco y patacones</strong>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Horario:</span>
+                <strong className="text-petroleo font-bold">
+                  12:00 – 15:30 y 18:00 – 22:00
+                </strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Mejor momento:</span>
-                <strong className="text-ink">Almuerzo y cena (viernes-sábado)</strong>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Frescura producto:</span>
+                <strong className="text-grafito font-semibold">
+                  Traída de costa cada 2-3 días
+                </strong>
+              </li>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Mejor día para ir:</span>
+                <strong className="text-grafito font-semibold">
+                  Viernes y sábado (máximo frescura)
+                </strong>
               </li>
               <li className="flex justify-between">
-                <span className="text-muted">Precio promedio:</span>
-                <strong className="text-clay">$6.00 – $10.00 por porción</strong>
+                <span className="text-muted">Precio estimado:</span>
+                <strong className="text-petroleo font-bold text-sm">
+                  $6.00 – $14.00 por porción
+                </strong>
               </li>
             </ul>
           </div>
         </Wrap>
       </section>
 
-      {/* Dónde comer */}
-      <section className="bg-[#f5eddc] py-14">
+      {/* ── 3. PLAZAS DISPONIBLES ── */}
+      <PlazasDisponiblesPlato
+        nombrePlato="Parihuela y Mariscos"
+        horarioRecomendado="12:00 PM – 03:30 PM y 06:00 PM – 10:00 PM"
+      />
+
+      {/* ── 4. MAPA INTERACTIVO ── */}
+      <MapaLeafletLoja nombrePlato="Parihuela y Mariscos en Loja" />
+
+      {/* ── 5. PREGUNTAS FRECUENTES ── */}
+      <section className="bg-white py-16 border-t border-niebla">
         <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-                RESTAURANTES DE MARISCOS
+          <div className="mx-auto max-w-[760px]">
+            <details className="group rounded-2xl border border-niebla bg-porcelana/30 p-6 transition open:bg-white open:shadow-md">
+              <summary className="flex cursor-pointer items-center justify-between font-serif text-lg font-bold text-grafito">
+                <div className="flex items-center gap-3">
+                  <span className="text-petroleo font-sans text-xs font-extrabold tracking-widest uppercase">
+                    FAQ
+                  </span>
+                  <span>Preguntas Frecuentes sobre Parihuela en Loja</span>
+                </div>
+                <span className="text-petroleo transition-transform group-open:rotate-180 text-xl font-bold">
+                  ▾
+                </span>
+              </summary>
+
+              <div className="mt-6 space-y-4 border-t border-niebla/50 pt-4">
+                {FAQS.map((faq) => (
+                  <div
+                    key={faq.q}
+                    className="rounded-xl border border-niebla/40 bg-white p-4"
+                  >
+                    <h4 className="font-serif text-sm font-bold text-grafito">
+                      {faq.q}
+                    </h4>
+                    <p className="mt-2 text-xs leading-relaxed text-muted">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        </Wrap>
+      </section>
+
+      {/* ── 6. CTA ── */}
+      <section className="py-12 bg-porcelana border-t border-niebla">
+        <Wrap>
+          <div className="rounded-3xl bg-petroleo p-8 text-white md:flex md:items-center md:justify-between md:p-10 shadow-xl">
+            <div className="max-w-[580px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-citrico">
+                ALMUERZOS COMPLETOS EN LOJA
               </span>
-              <h2 className="text-3xl font-bold tracking-tight text-ink md:text-4xl">
-                Dónde Comer Parihuela en Loja
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                Restaurantes en Loja que reciben marisco fresco y preparan parihuela bajo pedido.
+              <h3 className="mt-2 text-2xl font-bold font-serif">
+                ¿Buscas más opciones de almuerzo en Loja?
+              </h3>
+              <p className="mt-2 text-xs text-niebla/80 leading-relaxed">
+                Menú del día, repe lojano, cecina a la brasa, cuy asado y más.
+                Consulta nuestra guía completa de almuerzos en la ciudad.
               </p>
             </div>
-            <Link href="/comida-rapida-loja" className="text-sm font-bold text-clay hover:underline">
-              Ver opciones para la noche →
-            </Link>
-          </div>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {places.map((r) => (
-              <RestaurantCard key={r.slug} r={r} />
-            ))}
-          </div>
-        </Wrap>
-      </section>
-
-      {/* FAQs */}
-      <section className="bg-paper py-16 border-t border-line">
-        <Wrap>
-          <div className="mx-auto max-w-3xl">
-            <span className="block text-center text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-              GUÍA PRÁCTICA
-            </span>
-            <h2 className="text-center text-3xl font-bold tracking-tight text-ink">
-              Preguntas Frecuentes sobre la Parihuela en Loja
-            </h2>
-            <div className="mt-10 space-y-4">
-              {FAQS.map((f) => (
-                <details
-                  key={f.q}
-                  className="group rounded-xl border border-[#e5dcce] bg-white p-5 shadow-sm transition open:shadow-md"
-                >
-                  <summary className="flex cursor-pointer items-center justify-between font-serif text-base font-semibold text-ink">
-                    <span>{f.q}</span>
-                    <span className="ml-4 text-clay transition-transform group-open:rotate-180">▾</span>
-                  </summary>
-                  <p className="mt-3 text-xs leading-relaxed text-muted border-t border-[#f2ede4] pt-3">
-                    {f.a}
-                  </p>
-                </details>
-              ))}
+            <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">
+              <Link
+                href="/almuerzos-loja"
+                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-md"
+              >
+                Guía de Almuerzos en Loja →
+              </Link>
             </div>
           </div>
         </Wrap>
       </section>
-
-      {/* CTA Hub & Spoke — almuerzo + cena */}
-      <Wrap className="py-14 text-center">
-        <div className="rounded-2xl bg-clay p-8 text-white md:p-12">
-          <h3 className="font-serif text-2xl md:text-3xl font-bold">
-            ¿Explorando la gastronomía de Loja?
-          </h3>
-          <p className="mx-auto mt-3 max-w-md text-xs md:text-sm text-[#f5dfd9]">
-            La parihuela es solo uno de los sabores que Loja tiene para ti.
-            Descubre los platos típicos lojanos y las mejores opciones para
-            almorzar y cenar en la ciudad.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/almuerzos-loja"
-              className="rounded-lg bg-white px-5 py-3 text-xs font-bold text-clay hover:bg-[#fff6f2] transition"
-            >
-              Guía de Almuerzos en Loja →
-            </Link>
-            <Link
-              href="/comida-rapida-loja"
-              className="rounded-lg border border-white/40 px-5 py-3 text-xs font-bold hover:bg-white/10 transition"
-            >
-              Dónde Cenar en Loja →
-            </Link>
-            <Link
-              href="/platos/cuy-asado-loja"
-              className="rounded-lg border border-white/40 px-5 py-3 text-xs font-bold hover:bg-white/10 transition"
-            >
-              Cuy Asado en Loja →
-            </Link>
-          </div>
-        </div>
-      </Wrap>
     </>
   );
 }

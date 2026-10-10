@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/platos/pizza-loja" },
   openGraph: {
     title: "Pizzas en Loja: Pizzerías y Pizza a Domicilio | Qué Comer en Loja",
-    description: "Descubre las mejores pizzerías de Loja Ecuador: pizza artesanal, a domicilio y locales para cenar. 500 búsquedas/mes.",
+    description: "Descubre las mejores pizzerías de Loja Ecuador: pizza artesanal, a domicilio y locales para cenar con masa madre e ingredientes frescos.",
     url: "https://quecomerenloja.com/platos/pizza-loja",
     images: [{ url: "/hero-loja.jpg", width: 1200, height: 630, alt: "Pizzas en Loja Ecuador" }],
   },
@@ -74,7 +74,7 @@ export default function PizzaLojaPage() {
         <Wrap className="relative z-10 w-full">
           <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
             <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
-              500 BÚSQUEDAS/MES · NOCHES EN LOJA
+              PIZZAS ARTESANALES · NOCHES EN LOJA
             </span>
             <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
               Pizzas en Loja:{" "}
@@ -121,7 +121,7 @@ export default function PizzaLojaPage() {
               La pizza artesanal conquista las noches lojanas
             </h2>
             <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
-              Loja tiene una escena pizzera creciente con más de <strong>500 búsquedas mensuales</strong> registradas por Google. Las pizzerías artesanales con horno de leña o piedra son las preferidas, combinando ingredientes importados con productos locales frescos del mercado central.
+              Loja tiene una escena pizzera en pleno crecimiento, con locales artesanales y propuestas que combinan la tradición italiana con ingredientes frescos locales. Las pizzerías con horno de leña o piedra son las preferidas por familias, parejas y grupos de amigos.
             </p>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               La pizza a domicilio en Loja ha crecido con nuevos operadores que ofrecen tiempos de entrega de 30 a 45 minutos. Los fines de semana son los días de mayor demanda, especialmente entre las 7 PM y 10 PM.

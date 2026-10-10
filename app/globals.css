@@ -121,7 +121,7 @@ a, button {
 
 /* ── EFECTO PARALLAX CINEMATOGRÁFICO ── */
 .parallax-bg {
-  background-image: url("/hero-loja.jpg");
+  background-image: url("https://mvps.b-cdn.net/quecomerenloja/home/fondo-parallax.webp");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

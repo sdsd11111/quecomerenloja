@@ -73,11 +73,6 @@ export function PlatoCarouselRow({
                     {plato.precioPromedio}
                   </span>
                 )}
-                {plato.volumenBusqueda && (
-                  <span className="absolute top-2.5 left-2.5 rounded-full bg-petroleo/90 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-citrico backdrop-blur-xs">
-                    {plato.volumenBusqueda}
-                  </span>
-                )}
               </div>
 
               <span className="text-xl block mb-1">{plato.emoji}</span>

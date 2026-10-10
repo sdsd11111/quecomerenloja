@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Tamales Lojanos y Humitas: Desayunos y Tradición de Loja",
-    description: "Guía de tamales lojanos y la famosa casa de la humita y el tamal en Loja (+900% crecimiento). Dónde desayunar con café lojano.",
+    description: "Guía de tamales lojanos y la famosa casa de la humita y el tamal en Loja. Dónde desayunar con café lojano de especialidad.",
     url: "https://quecomerenloja.com/platos/tamales-lojanos",
     images: [{ url: "/tamales-humitas.jpg", width: 1200, height: 630, alt: "Tamales Lojanos y Humitas en Loja" }],
   },
@@ -99,7 +99,7 @@ export default function TamalesLojanosPage() {
         <Wrap className="relative z-10 w-full">
           <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
             <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
-              +900% CRECIMIENTO · DESAYUNOS DE LOJA
+              TRADICIÓN MATUTINA · DESAYUNOS DE LOJA
             </span>
 
             <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
@@ -110,7 +110,7 @@ export default function TamalesLojanosPage() {
             </h1>
 
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
-              La tradición mañanera más buscada en Loja. Conoce las huecas más populares, la historia de la hoja de achira y dónde pedir un tamal caliente con café de altura.
+              La tradición mañanera más querida de Loja. Conoce las huecas más populares, la historia de la hoja de achira y dónde pedir un tamal caliente con café de altura.
             </p>
 
             <div className="mt-5 flex items-center gap-3">
@@ -151,13 +151,13 @@ export default function TamalesLojanosPage() {
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
             <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">
-              EXPLOSIÓN DE DEMANDA (+900%)
+              TRADICIÓN Y SABOR AUTÉNTICO
             </span>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
               La Casa de la Humita y el Tamal Lojano
             </h2>
             <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
-              Las búsquedas sobre <em>"la casa de la humita y el tamal lojano"</em> y <em>"tamales lojanos"</em> han crecido más de un <strong>+900%</strong> en Google este año. Y no es coincidencia: tanto lojanos como viajeros consideran el desayuno con tamal caliente y café de filtro un ritual sagrado de hospitalidad andina.
+              Tanto lojanos como viajeros consideran el desayuno con tamal caliente en hoja de achira y café de filtro un ritual sagrado de hospitalidad andina. Es el punto de encuentro matutino de la ciudad.
             </p>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               La cocción lenta al vapor dentro de las hojas de achira transmite notas herbales únicas a la masa que ningún molde moderno puede igualar. Es la compañía ideal para una mañana fresca en la centinela del sur.

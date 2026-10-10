@@ -7,7 +7,7 @@ import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
 
 export const metadata: Metadata = {
   title: "Dónde Desayunar en Loja | Cafeterías, Tamales y Café de Especialidad",
-  description: "Guía definitiva de desayunos en Loja (+900% crecimiento): cafeterías de especialidad en el centro histórico y calle Lourdes, tamales tradicionales, humitas y café de altura.",
+  description: "Guía definitiva de desayunos en Loja: cafeterías de especialidad en el centro histórico y calle Lourdes, tamales tradicionales, humitas y café de altura.",
   alternates: { canonical: "/desayunos-en-loja" },
   openGraph: {
     title: "Dónde Desayunar en Loja: Cafeterías y Desayunos Típicos",
@@ -21,22 +21,22 @@ export const dynamic = "force-dynamic";
 
 const DESAYUNOS_ITEMS = [
   {
-    name: "Tamal Lojano con Café de Altura",
-    tagline: "El desayuno insigne de Loja",
-    desc: "Masa fina de maíz criollo cocinada al vapor en hoja de achira, rellena de pollo mechado con condumio tradicional y acompañada de café recién pasado.",
-    price: "$1.25 – $2.00",
-    icon: "🌽",
-    image: "/tamales-humitas.jpg",
-    href: "/platos/tamales-lojanos",
+    name: "Desayuno Completo Lojano",
+    tagline: "Huevos, cecina, aguacate y café",
+    desc: "El clásico desayuno de mesa: huevos fritos de campo, cecina de cerdo lojana dorada, rodajas de aguacate, pan artesanal y café de altura recién pasado.",
+    price: "$3.50 – $5.00",
+    icon: "🍳",
+    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/desayuno-completo.webp",
+    href: "/restaurantes?categoria=desayunos",
   },
   {
-    name: "Humita Caliente con Quesillo",
-    tagline: "Sabor mañanero del campo",
-    desc: "Elaborada con choclo tierno recién molido y abundante quesillo lojano derretido, horneada o cocinada en sus propias pancas.",
-    price: "$1.00 – $1.50",
-    icon: "🫔",
-    image: "/tamales-humitas.jpg",
-    href: "/cafe-de-loja",
+    name: "Tigrillo & Desayuno Campesino",
+    tagline: "Energía andina de la mañana",
+    desc: "Plátano verde majado al sartén con huevo criollo y abundante quesillo artesanal, servido con bistec o cecina frita.",
+    price: "$3.00 – $4.50",
+    icon: "🥘",
+    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/tigrillo-lojano.webp",
+    href: "/buscar?q=tigrillo",
   },
   {
     name: "Café de Especialidad Filtrado",
@@ -44,17 +44,17 @@ const DESAYUNOS_ITEMS = [
     desc: "Extracciones en V60, Chemex, prensa francesa o gota a gota tradicional con granos arábicos de valles como Puyango, Vilcabamba y Malacatos.",
     price: "$1.50 – $3.00",
     icon: "☕",
-    image: "/cafe-loja-persona.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/cafe-filtrado.webp",
     href: "/cafe-de-loja",
   },
   {
-    name: "Tigrillo & Desayuno Campesino",
-    tagline: "Energía andina de la mañana",
-    desc: "Plátano verde majado al sartén con huevo criollo y abundante quesillo artesanal, servido con bistec o cecina frita.",
-    price: "$3.00 – $4.50",
-    icon: "🍳",
-    image: "/cecina-lojana.jpg",
-    href: "/buscar?q=tigrillo",
+    name: "Bolón con Quesillo & Chicharrón",
+    tagline: "Verde crocante y relleno abundante",
+    desc: "Esfera de plátano verde recién majada y frita con relleno de quesillo derretido y chicharrón crocante, acompañado de ají y café caliente.",
+    price: "$1.75 – $3.50",
+    icon: "🍌",
+    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/bolon-quesillo.webp",
+    href: "/platos/bolones-en-loja",
   },
 ];
 
@@ -73,7 +73,7 @@ const DESAYUNO_SLOTS = [
     title: "Cupo Oficial: Tradición de Tamales & Humitas",
     desc: "Espacio reservado para local tradicional con alta producción matutina de tamales calientes y quimbolitos para locales y turistas.",
     status: "Disponible para Socio",
-    highlight: "Top búsquedas de 'desayunos en loja (+900%)'",
+    highlight: "Alta preferencia en desayunos tradicionales",
   },
   {
     id: "slot-cafe-3",
@@ -129,10 +129,10 @@ export default function DesayunosPage() {
       />
 
       {/* ── HERO DE PÁGINA: DESAYUNOS EN LOJA ── */}
-      <section className="relative min-h-[75vh] flex flex-col justify-center overflow-hidden py-16 text-white">
+      <section className="relative min-h-[70vh] flex flex-col justify-center overflow-hidden py-16 text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/cafe-loja-persona.jpg"
+            src="https://mvps.b-cdn.net/quecomerenloja/desayunos/hero-desayunos.webp"
             alt="Desayunos tradicionales y café en Loja"
             fill
             priority
@@ -145,7 +145,7 @@ export default function DesayunosPage() {
         <Wrap className="relative z-10 my-auto">
           <div className="max-w-[760px]">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-citrico/30 bg-black/40 px-4 py-1.5 text-[11px] font-semibold tracking-wider text-citrico backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> MAÑANAS EN LOJA · DEMANDA (+900%)
+              <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> MAÑANAS EN LOJA · CAFETERÍAS Y TRADICIÓN
             </div>
 
             <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tight text-white leading-[1.08] drop-shadow-md">

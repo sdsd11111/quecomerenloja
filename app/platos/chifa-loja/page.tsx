@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/platos/chifa-loja" },
   openGraph: {
     title: "Chifas en Loja: Chaulafán y Comida China | Qué Comer en Loja",
-    description: "Los mejores chifas y comida china en Loja Ecuador. Almuerzos y cenas en familia o a domicilio. 500 búsquedas/mes.",
+    description: "Los mejores chifas y comida china en Loja Ecuador. Almuerzos y cenas abundantes en familia o a domicilio.",
     url: "https://quecomerenloja.com/platos/chifa-loja",
     images: [{ url: "/hero-loja.jpg", width: 1200, height: 630, alt: "Chifas en Loja Ecuador" }],
   },
@@ -74,7 +74,7 @@ export default function ChifaLojaPage() {
         <Wrap className="relative z-10 w-full">
           <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
             <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
-              500 BÚSQUEDAS/MES · TRADICIÓN Y FAMILIA
+              BANQUETES Y FAMILIA · ALMUERZO Y CENA
             </span>
             <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
               Chifas en Loja:{" "}
@@ -121,7 +121,7 @@ export default function ChifaLojaPage() {
               Generaciones compartiendo el sabor del chifa
             </h2>
             <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
-              Con más de <strong>500 búsquedas mensuales</strong> y términos específicos como <em>"chifa dragon rojo loja"</em> o <em>"chifa oriental loja"</em>, los chifas representan una opción insustituible para reuniones familiares y comidas abundantes en la urbe lojana.
+              Con locales emblemáticos en el centro histórico y avenidas principales, los chifas representan una opción insustituible para reuniones familiares y comidas abundantes en la urbe lojana.
             </p>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               Desde porciones individuales hasta banquetes completos, estos locales destacan por su rapidez de servicio, porciones generosas y excelente relación calidad-precio.

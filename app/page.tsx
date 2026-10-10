@@ -9,35 +9,35 @@ export const dynamic = "force-dynamic";
 const TRADITIONAL_DISHES = [
   {
     name: "Repe Lojano",
-    badge: "5.000 b/m",
+    badge: "Plato Insignia",
     highlight: "Sopa insignia de Loja",
     desc: "Cremosa sopa tradicional de guineo verde, quesillo artesanal y cilantro.",
     href: "/platos/repe-lojano",
-    image: "/repe-lojano.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/repe-lojano.webp",
   },
   {
     name: "Cecina Lojana",
-    badge: "500 b/m",
+    badge: "A la Brasa",
     highlight: "Asado a la brasa",
     desc: "Finos filetes de cerdo aliñados y ahumados con yuca caliente y mote.",
     href: "/platos/cecina-lojana",
-    image: "/cecina-lojana.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/cecina-lojana.webp",
   },
   {
     name: "Tamales y Humitas",
-    badge: "+900% demanda",
+    badge: "Desayuno Típico",
     highlight: "Desayuno y lonche",
     desc: "Maíz criollo envuelto en achira con pollo y café de especialidad.",
     href: "/platos/tamales-lojanos",
-    image: "/tamales-humitas.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/tamales-humitas.webp",
   },
   {
     name: "Arveja con Guineo",
-    badge: "Tradición andina",
+    badge: "Tradición Andina",
     highlight: "Cuchara lojana",
     desc: "Guiso espeso de arveja seca, guineo verde y quesillo desmenuzado.",
     href: "/buscar?q=arveja",
-    image: "/arveja-guineo.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/arveja-guineo.webp",
   },
 ];
 
@@ -45,32 +45,32 @@ const TRADITIONAL_DISHES = [
 const CONSUMPTION_MOMENTS = [
   {
     title: "Café de Especialidad & Desayunos",
-    badge: "+900% crecimiento",
+    badge: "Mañanas en Loja",
     tagline: "Despierta con aroma lojano",
     desc: "Cafeterías en el centro histórico, tamales mañaneros al vapor, humitas, quimbolitos y café filtrado de altura.",
     href: "/desayunos-en-loja",
     cta: "Explorar cafeterías y desayunos →",
-    image: "/cafe-loja-persona.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/ruta-desayunos.webp",
     hasParallax: true,
   },
   {
     title: "Almuerzo Ejecutivo & Menú del Día",
-    badge: "Búsqueda activa",
+    badge: "Almuerzos",
     tagline: "Comer rico, rápido y fresco",
     desc: "Menús ejecutivos y platos del día con sopa tradicional, segundo y jugo fresco entre $3.00 y $5.00 USD.",
     href: "/almuerzos-loja",
     cta: "Ver almuerzos y menú del día →",
-    image: "/repe-lojano.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/ruta-almuerzos.webp",
     hasParallax: false,
   },
   {
     title: "Alitas, Pizzas, Burgers & Noche",
-    badge: "+900% tendencia",
+    badge: "Cenas & Noche",
     tagline: "Sabor nocturno y planes con amigos",
     desc: "Alitas crujientes con salsas artesanales, pizzas a la leña, smash burgers y chifas nocturnos.",
     href: "/comida-rapida-loja",
     cta: "Ver comida rápida y noche →",
-    image: "/hero-loja.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/home/ruta-cenas.webp",
     hasParallax: false,
   },
 ];
@@ -83,7 +83,7 @@ const COMMERCIAL_SLOTS = [
     title: "Cupo Oficial: Cafetería de Especialidad",
     desc: "Espacio reservado para cafetería de autor o desayunos tradicionales en Loja. Conexión directa a WhatsApp sin intermediarios.",
     status: "Disponible para Socio",
-    highlight: "Prioridad en búsquedas de café y desayunos",
+    highlight: "Prioridad en café y desayunos",
     badgeColor: "bg-citrico/30 text-petroleo",
   },
   {
@@ -92,7 +92,7 @@ const COMMERCIAL_SLOTS = [
     title: "Cupo Oficial: Tradición Lojana",
     desc: "Espacio para restaurante representativo de repe lojano y cecina asada ante miles de turistas que buscan qué comer.",
     status: "Disponible para Socio",
-    highlight: "Primer puesto en intención de búsqueda tradicional",
+    highlight: "Referente en gastronomía tradicional",
     badgeColor: "bg-citrico/30 text-petroleo",
   },
   {
@@ -110,16 +110,16 @@ const COMMERCIAL_SLOTS = [
     title: "Cupo Oficial: Comida Rápida & Delivery",
     desc: "Espacio reservado para el local de alitas o pizzas más buscado por jóvenes y turistas en Loja.",
     status: "Disponible para Socio",
-    highlight: "+900% demanda en horario nocturno",
+    highlight: "Alta preferencia en horario nocturno",
     badgeColor: "bg-citrico/30 text-petroleo",
   },
   {
     id: "slot-5",
     category: "Chifas & Cocina Fusión",
     title: "Cupo Oficial: Chifa & Platos Tradicionales",
-    desc: "Presencia prioritaria para chifa o cocina fusión con alta demanda en Google.",
+    desc: "Presencia prioritaria para chifa o cocina fusión con alta preferencia en la ciudad.",
     status: "Disponible para Socio",
-    highlight: "Monopolio de búsquedas de chifas en Loja",
+    highlight: "Alta concurrencia en almuerzos y cenas familiares",
     badgeColor: "bg-citrico/30 text-petroleo",
   },
 ];
@@ -128,7 +128,7 @@ const COMMERCIAL_SLOTS = [
 const FAQS = [
   {
     q: "¿Qué plato típico no me puedo perder al visitar Loja?",
-    a: "El Repe Lojano es el estandarte gastronómico indiscutible (con más de 5.000 búsquedas mensuales). También son imperdibles la cecina lojana a la brasa, los tamales con café de especialidad y la arveja con guineo.",
+    a: "El Repe Lojano es el estandarte gastronómico indiscutible y sopa insignia de Loja. También son imperdibles la cecina lojana a la brasa, los tamales con café de especialidad y la arveja con guineo.",
   },
   {
     q: "¿Dónde encontrar los mejores desayunos y cafeterías en Loja?",
@@ -190,7 +190,7 @@ export default async function Home() {
         {/* Imagen de fondo real en alta resolución */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/hero-loja.jpg"
+            src="https://mvps.b-cdn.net/quecomerenloja/home/hero-home.webp"
             alt="Ambiente gastronómico y restaurantes en Loja Ecuador"
             fill
             priority
@@ -230,16 +230,16 @@ export default async function Home() {
 
             <div className="mt-10 flex flex-wrap items-center gap-6 text-xs text-niebla/80 border-t border-white/15 pt-6">
               <div className="flex items-center gap-2">
-                <span className="text-citrico font-bold text-sm">✓ 5.000+</span>
-                <span>búsquedas mensuales</span>
+                <span className="text-citrico font-bold text-sm">✓ 100%</span>
+                <span>sabores auténticos</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-citrico font-bold text-sm">✓ 0%</span>
                 <span>comisiones a locales</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-citrico font-bold text-sm">✓ 100%</span>
-                <span>contacto directo a WhatsApp</span>
+                <span className="text-citrico font-bold text-sm">✓ Directo</span>
+                <span>contacto a WhatsApp</span>
               </div>
             </div>
           </div>
@@ -482,7 +482,7 @@ export default async function Home() {
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-citrico">PLANES DE MEMBRESÍA LOCAL</span>
               <h3 className="mt-2 text-2xl font-bold font-serif">¿Administras un restaurante, hueca o cafetería en Loja?</h3>
               <p className="mt-2 text-xs text-niebla/80 leading-relaxed">
-                Captamos más de 5.000 búsquedas al mes de turistas que preguntan qué comer. Asegura tu presencia verificada con reserva directa a tu WhatsApp por solo $40 o $60/mes.
+                Conectamos diariamente a miles de turistas y lojanos que buscan dónde comer. Asegura tu presencia verificada con reserva directa a tu WhatsApp por solo $40 o $60/mes.
               </p>
             </div>
             <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">

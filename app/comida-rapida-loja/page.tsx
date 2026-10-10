@@ -6,8 +6,8 @@ import { getPlatosByMomento } from "@/lib/platos-data";
 import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
 
 export const metadata: Metadata = {
-  title: "Dónde Cenar en Loja | Comida Rápida, Alitas (+900%), Pizzas y Chifas",
-  description: "Guía de cenas y comida de noche en Loja: alitas con salsas artesanales (+900% tendencia), pizzerías a la leña, hamburguesas smash y chifas tradicionales.",
+  title: "Dónde Cenar en Loja | Comida Rápida, Alitas, Pizzas y Chifas",
+  description: "Guía de cenas y comida de noche en Loja: alitas con salsas artesanales, pizzerías a la leña, hamburguesas smash y chifas tradicionales.",
   alternates: { canonical: "/comida-rapida-loja" },
   openGraph: {
     title: "Dónde Cenar en Loja: Alitas, Pizzas, Burgers y Chifas",
@@ -22,21 +22,21 @@ export const dynamic = "force-dynamic";
 const NIGHT_ITEMS = [
   {
     name: "Alitas con Salsas Artesanales",
-    tagline: "+900% explosión de demanda en Loja",
+    tagline: "Las favoritas para grupos y amigos",
     desc: "Alitas crujientes bañadas en maracuyá picante, BBQ ahumada, honey mustard o salsa búfalo, servidas con papas rústicas y aderezo ranch.",
     price: "$5.00 – $9.00 (combos)",
     icon: "🍗",
-    image: "/hero-loja.jpg",
-    badge: "+900% Tendencia",
+    image: "https://mvps.b-cdn.net/quecomerenloja/cenas/alitas-artesanales.webp",
+    badge: "Favoritas de la Noche",
   },
   {
     name: "Pizzas Artesanales a la Leña",
-    tagline: "500 b/m en Google Loja",
+    tagline: "Horno de leña y masa madre",
     desc: "Masa madre de fermentación lenta, salsa de tomate natural y quesos de la región horneadas en horno de barro a la vista.",
     price: "$8.00 – $14.00",
     icon: "🍕",
-    image: "/hero-loja.jpg",
-    badge: "500 búsquedas/mes",
+    image: "https://mvps.b-cdn.net/quecomerenloja/cenas/pizza-lena.webp",
+    badge: "Artesanales a la Leña",
   },
   {
     name: "Smash Burgers & Hamburguesas",
@@ -44,17 +44,17 @@ const NIGHT_ITEMS = [
     desc: "Carne de res lojana prensada a la plancha con costra caramelizada, queso cheddar fundido, tocineta ahumada y cebolla caramelizada.",
     price: "$4.50 – $7.50",
     icon: "🍔",
-    image: "/hero-loja.jpg",
+    image: "https://mvps.b-cdn.net/quecomerenloja/cenas/smash-burgers.webp",
     badge: "Top Noche",
   },
   {
     name: "Chifas Tradicionales de Loja",
-    tagline: "El nicho comercial récord (CPC $0.94)",
+    tagline: "Banquetes familiares y al wok",
     desc: "Arroz chaulafán humeante al wok, tallarín especial saltado con lomo y pollo, wantanes crujientes con salsa agridulce y grandes porciones.",
     price: "$4.00 – $8.00",
     icon: "🥢",
-    image: "/hero-loja.jpg",
-    badge: "Máximo Valor Comercial",
+    image: "https://mvps.b-cdn.net/quecomerenloja/cenas/chifa-chaulafan.webp",
+    badge: "Banquetes Familiares",
   },
 ];
 
@@ -63,9 +63,9 @@ const NIGHT_SLOTS = [
     id: "slot-noche-1",
     zone: "Sector San Sebastián / Centro",
     title: "Cupo Oficial: Alitas & Cervecería Artesanal",
-    desc: "Espacio reservado para el local de alitas más buscado por jóvenes, universitarios y turistas para cenas y planes de fin de semana.",
+    desc: "Espacio reservado para el local de alitas más visitado por jóvenes, universitarios y turistas para cenas y planes de fin de semana.",
     status: "Disponible para Socio",
-    highlight: "Primer puesto en intención 'alitas loja (+900%)'",
+    highlight: "Alta concurrencia en fines de semana",
   },
   {
     id: "slot-noche-2",
@@ -73,22 +73,22 @@ const NIGHT_SLOTS = [
     title: "Cupo Oficial: Pizzería a la Leña & Pastas",
     desc: "Espacio reservado para pizzería artesanal italiana o al horno de leña con servicio para cenar y delivery directo sin comisión.",
     status: "Disponible para Socio",
-    highlight: "Capta 500 búsquedas mensuales de 'pizzas en loja'",
+    highlight: "Opción estelar para cenas en familia",
   },
   {
     id: "slot-noche-3",
     zone: "Zona Rosa / La Pradera / Nueva Loja",
     title: "Cupo Oficial: Chifa Tradicional & Wok",
-    desc: "Espacio exclusivo para chifa de alta concurrencia nocturna ante personas que buscan chaulafán y comida abundante para llevar o cenar.",
+    desc: "Espacio exclusivo para chifa de alta concurrencia nocturna ante comensales que buscan chaulafán y comida abundante para llevar o cenar.",
     status: "Disponible para Socio",
-    highlight: "Puesto de oro en 'chifa loja' (CPC récord $0.94)",
+    highlight: "Platos al paso y delivery familiar",
   },
 ];
 
 const FAQS_NIGHT = [
   {
     q: "¿Qué es lo que más busca la gente para cenar en Loja?",
-    a: "La mayor demanda nocturna de Loja se concentra en alitas crujientes (con un crecimiento récord de +900%), pizzas artesanales al horno de leña, hamburguesas smash y chifas tradicionales.",
+    a: "Las cenas en Loja se concentran principalmente en alitas crujientes, pizzas artesanales al horno de leña, hamburguesas smash y chifas tradicionales.",
   },
   {
     q: "¿Hasta qué hora abren los locales de comida rápida y cena en Loja?",
@@ -129,10 +129,10 @@ export default function ComidaRapidaCenasPage() {
       />
 
       {/* ── HERO CENAS Y NOCHE EN LOJA ── */}
-      <section className="relative min-h-[75vh] flex flex-col justify-center overflow-hidden py-16 text-white">
+      <section className="relative min-h-[70vh] flex flex-col justify-center overflow-hidden py-16 text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/hero-loja.jpg"
+            src="https://mvps.b-cdn.net/quecomerenloja/cenas/hero-cenas.webp"
             alt="Cenas y ambiente nocturno en Loja Ecuador"
             fill
             priority
@@ -153,7 +153,7 @@ export default function ComidaRapidaCenasPage() {
             </h1>
 
             <p className="mt-5 max-w-[620px] text-base md:text-lg text-white font-medium leading-relaxed drop-shadow">
-              Cuando cae la noche en Loja, la ciudad se enciende con el sabor de las alitas crocantes (+900% en tendencia), pizzas recién horneadas a la leña, hamburguesas smash y comida para compartir con amigos.
+              Cuando cae la noche en Loja, la ciudad se enciende con el sabor de las alitas crocantes, pizzas recién horneadas a la leña, hamburguesas smash y comida para compartir con amigos.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -180,13 +180,13 @@ export default function ComidaRapidaCenasPage() {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
             <div>
               <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo block mb-1">
-                TENDENCIAS DE GOOGLE LOJA
+                SABORES DE LA NOCHE
               </span>
               <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
                 Lo Que Más se Come de Noche en Loja
               </h2>
               <p className="text-xs md:text-sm text-muted mt-2 max-w-[600px]">
-                Datos comprobados de Google Ads: alitas con récord de crecimiento (+900%) y pizzerías con cientos de búsquedas cada mes.
+                Desde alitas con salsas de la casa hasta pizzerías al horno de leña y hamburguesas artesanales listas para disfrutar en pareja o en grupo.
               </p>
             </div>
             <Link href="/restaurantes" className="text-xs font-bold text-petroleo hover:underline">

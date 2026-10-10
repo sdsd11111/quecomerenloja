@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Wrap, PageHero } from "@/components/PageHero";
-import { listRestaurants } from "@/lib/repository";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import Image from "next/image";
+import { Wrap } from "@/components/PageHero";
+import { PlazasDisponiblesPlato } from "@/components/PlatoTemplateSections";
+import { MapaLeafletLoja } from "@/components/MapaLeafletLoja";
 
 export const metadata: Metadata = {
   title: "Arveja con Guineo en Loja | Sopa Típica del Almuerzo Lojano",
@@ -14,6 +15,14 @@ export const metadata: Metadata = {
     description:
       "Caldo lojano de arveja verde con guineo, quesillo artesanal y cilantro. Descubre la receta y los restaurantes donde encontrarla en Loja.",
     url: "https://quecomerenloja.com/platos/arveja-con-guineo",
+    images: [
+      {
+        url: "/arveja-con-guineo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Arveja con guineo sopa lojana",
+      },
+    ],
   },
 };
 
@@ -36,35 +45,25 @@ const FAQS = [
   },
 ];
 
-export const dynamic = "force-dynamic";
-
-export default async function ArvejaConGuineoPage() {
-  const all = await listRestaurants();
-  const places = all.filter(
-    (r) =>
-      r.keywords.toLowerCase().includes("arveja") ||
-      r.keywords.toLowerCase().includes("sopa") ||
-      r.category === "tradicional"
-  );
-
+export default function ArvejaConGuineoPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Recipe",
-        name: "Arveja con Guineo Lojano",
-        headline: "Sopa tradicional de arveja verde y guineo del menú del día en Loja",
+        name: "Arveja con Guineo Lojana",
+        headline: "La sopa de entrada del almuerzo tradicional de Loja",
         description:
-          "Caldo lojano con arveja tierna, guineo en rodajas y quesillo artesanal.",
+          "Caldo de arveja verde tierna con rodajas de guineo verde, quesillo artesanal y cilantro.",
         recipeCuisine: "Lojana / Ecuatoriana",
-        recipeCategory: "Sopas / Almuerzos tradicionales",
-        keywords: "arveja con guineo, sopa lojana, almuerzo loja, comida tipica loja",
+        recipeCategory: "Sopas / Entradas",
+        keywords: "arveja con guineo, sopa lojana, comida tipica loja, platos tipicos loja",
         recipeIngredient: [
           "Arveja verde tierna",
           "Guineo verde en rodajas",
           "Quesillo lojano fresco",
-          "Caldo de hueso o caldo vegetal",
-          "Cilantro fresco picado",
+          "Cilantro picado",
+          "Caldo de hueso o vegetal",
           "Cebolla blanca y ajo",
         ],
       },
@@ -86,184 +85,228 @@ export default async function ArvejaConGuineoPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PageHero
-        eyebrow="SOPA DEL MENÚ DEL DÍA · ALMUERZO LOJANO"
-        title={
-          <>
-            Arveja con Guineo:{" "}
-            <em className="font-serif italic font-normal text-[#e1b45f]">
-              El caldo que reconforta cada mediodía en Loja.
-            </em>
-          </>
-        }
-      >
-        Sopa de arveja verde tierna con rodajas de guineo sancochado y quesillo
-        artesanal lojano. La entrada obligatoria del menú del día que nunca falla
-        en los comedores y huecas tradicionales de la ciudad.
-      </PageHero>
+      {/* ── 1. HERO ── */}
+      <section className="relative min-h-[70vh] flex flex-col justify-end overflow-hidden pb-10 pt-20">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/arveja-con-guineo.jpg"
+            alt="Arveja con guineo sopa tradicional lojana"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
+
+        <Wrap className="relative z-10 w-full">
+          <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
+            <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
+              SOPA DEL MEDIODÍA · ALMUERZO LOJANO
+            </span>
+
+            <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
+              Arveja con Guineo:{" "}
+              <em className="font-serif italic font-normal text-petroleo">
+                La sopa que abraza el alma lojana.
+              </em>
+            </h1>
+
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+              Caldo nutritivo de arveja verde tierna con rodajas de guineo
+              verde, quesillo artesanal y cilantro fresco. La sopa más solicitada
+              del menú del día en Loja.
+            </p>
+
+            <div className="mt-5 flex items-center gap-3">
+              <Link
+                href="/almuerzos-loja"
+                className="rounded-xl bg-petroleo px-4 py-2.5 text-xs font-bold text-white hover:bg-[#0E2E2E] transition shadow-sm"
+              >
+                ← Guía de Almuerzos en Loja
+              </Link>
+              <Link
+                href="/platos/repe-lojano"
+                className="rounded-xl border border-niebla bg-white px-4 py-2.5 text-xs font-bold text-petroleo hover:bg-porcelana transition"
+              >
+                Repe Lojano →
+              </Link>
+            </div>
+          </div>
+        </Wrap>
+      </section>
 
       {/* Breadcrumb SEO */}
-      <Wrap className="py-4 text-xs text-muted">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2 flex-wrap">
-            <li><Link href="/" className="hover:underline">Inicio</Link></li>
-            <li>/</li>
-            <li><Link href="/almuerzos-loja" className="hover:underline">Almuerzos en Loja</Link></li>
-            <li>/</li>
-            <li className="font-semibold text-ink">Arveja con Guineo</li>
-          </ol>
-        </nav>
-      </Wrap>
+      <div className="border-b border-niebla bg-white">
+        <Wrap className="py-3 text-xs text-muted">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-2 flex-wrap">
+              <li><Link href="/" className="hover:underline">Inicio</Link></li>
+              <li>/</li>
+              <li><Link href="/almuerzos-loja" className="hover:underline">Almuerzos en Loja</Link></li>
+              <li>/</li>
+              <li className="font-semibold text-petroleo">Arveja con Guineo</li>
+            </ol>
+          </nav>
+        </Wrap>
+      </div>
 
-      {/* Descripción + Ficha */}
-      <section className="bg-paper py-10">
+      {/* ── 2. DESCRIPCIÓN Y FICHA ── */}
+      <section className="bg-porcelana py-16 border-b border-niebla">
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-              TRADICIÓN DE OLLA
+            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">
+              TRADICIÓN DE CUCHARA
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-ink md:text-4xl">
-              El caldo que Loja prepara desde siempre
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
+              La sopa del almuerzo lojano más pedida
             </h2>
-            <p className="mt-4 text-sm text-muted leading-relaxed">
-              En los mercados y comedores familiares de Loja, la arveja con guineo
-              forma parte del imaginario gastronómico que define el mediodía. No
-              es una moda: es la cocina de abuela escalada a centenares de platos
-              diarios que se sirven desde las 12:00 hasta que se acaba la olla.
+            <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
+              La arveja con guineo es un plato de cuchara que representa la
+              cocina hogareña lojana en su máxima expresión. A diferencia del
+              repe blanco que se machaca, aquí la arveja y el guineo se cuecen
+              lentamente en caldo de hueso para lograr un sabor profundo y
+              nutritivo.
             </p>
-            <p className="mt-3 text-sm text-muted leading-relaxed">
-              A diferencia del{" "}
-              <strong>
-                <Link href="/platos/repe-lojano" className="text-clay underline font-semibold">
-                  repe lojano
-                </Link>
-              </strong>{" "}
-              (que se machaca), aquí el guineo se conserva en rodajas y la arveja
-              aporta el color verde brillante característico del caldo. Con quesillo
-              lojano por encima y un chorrito de limón, es pura alma lojana.
+            <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+              El toque final es el quesillo lojano artesanal que se agrega al
+              servir y que se derrite suavemente en el caldo caliente, creando
+              esa experiencia cremosa y reconfortante que hace único a este
+              plato de la gastronomía del sur del Ecuador.
             </p>
-            <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold">
-              <span className="rounded-lg bg-[#e4edd8] px-3.5 py-2 text-[#3b5e27]">🫛 Arveja verde tierna</span>
-              <span className="rounded-lg bg-[#f0ebd9] px-3.5 py-2 text-[#684b35]">🍌 Guineo verde en rodajas</span>
-              <span className="rounded-lg bg-[#fdf2e0] px-3.5 py-2 text-[#7d501b]">🧀 Quesillo artesanal</span>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold">
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🫛 Arveja verde tierna
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🍌 Guineo verde en rodajas
+              </span>
+              <span className="rounded-xl border border-niebla bg-white px-3.5 py-2 text-petroleo shadow-2xs">
+                🧀 Quesillo artesanal lojano
+              </span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#e8dfcf] bg-[#fdf9f0] p-6 shadow-sm">
-            <h3 className="font-serif text-xl font-bold text-ink">Ficha del Plato</h3>
-            <ul className="mt-4 space-y-3 text-xs">
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Tipo de preparación:</span>
-                <strong className="text-ink">Caldo / Sopa</strong>
-              </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+          <div className="rounded-3xl border border-niebla bg-white p-7 shadow-sm">
+            <span className="text-[10px] font-extrabold tracking-widest text-muted uppercase">
+              FICHA GASTRONÓMICA
+            </span>
+            <h3 className="font-serif text-xl font-bold text-grafito mt-1">
+              Ficha de la Arveja con Guineo
+            </h3>
+            <ul className="mt-5 space-y-3.5 text-xs">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Base del caldo:</span>
-                <strong className="text-ink">Hueso de res o caldo vegetal</strong>
+                <strong className="text-grafito font-semibold">
+                  Hueso de res / caldo vegetal
+                </strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Ingrediente estrella:</span>
-                <strong className="text-ink">Arveja tierna + Guineo verde</strong>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Textura:</span>
+                <strong className="text-grafito font-semibold">
+                  Caldo líquido (no cremoso)
+                </strong>
               </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
-                <span className="text-muted">Toque final:</span>
-                <strong className="text-ink">Quesillo y cilantro fresco</strong>
-              </li>
-              <li className="flex justify-between border-b border-[#f1e6d4] pb-2">
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
                 <span className="text-muted">Momento del día:</span>
-                <strong className="text-ink">Almuerzo (mediodía)</strong>
+                <strong className="text-petroleo font-bold">
+                  Almuerzo (sopa de entrada)
+                </strong>
+              </li>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Dónde encontrarla:</span>
+                <strong className="text-grafito font-semibold">
+                  Mercados, comedores, huecas
+                </strong>
+              </li>
+              <li className="flex justify-between border-b border-niebla/60 pb-2.5">
+                <span className="text-muted">Días frecuentes:</span>
+                <strong className="text-grafito font-semibold">
+                  Todos los días en mercados
+                </strong>
               </li>
               <li className="flex justify-between">
-                <span className="text-muted">Precio típico:</span>
-                <strong className="text-clay">$2.00 – $3.50 (incluida en menú)</strong>
+                <span className="text-muted">Precio estimado:</span>
+                <strong className="text-petroleo font-bold text-sm">
+                  $1.50 – $3.00 (en menú del día)
+                </strong>
               </li>
             </ul>
           </div>
         </Wrap>
       </section>
 
-      {/* Dónde comer */}
-      <section className="bg-[#f5eddc] py-14">
+      {/* ── 3. PLAZAS DISPONIBLES ── */}
+      <PlazasDisponiblesPlato
+        nombrePlato="Arveja con Guineo"
+        horarioRecomendado="11:30 AM – 02:30 PM (almuerzo diario)"
+      />
+
+      {/* ── 4. MAPA INTERACTIVO ── */}
+      <MapaLeafletLoja nombrePlato="Arveja con Guineo" />
+
+      {/* ── 5. PREGUNTAS FRECUENTES ── */}
+      <section className="bg-white py-16 border-t border-niebla">
         <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-                HUECAS Y COMEDORES
+          <div className="mx-auto max-w-[760px]">
+            <details className="group rounded-2xl border border-niebla bg-porcelana/30 p-6 transition open:bg-white open:shadow-md">
+              <summary className="flex cursor-pointer items-center justify-between font-serif text-lg font-bold text-grafito">
+                <div className="flex items-center gap-3">
+                  <span className="text-petroleo font-sans text-xs font-extrabold tracking-widest uppercase">
+                    FAQ
+                  </span>
+                  <span>Preguntas Frecuentes sobre Arveja con Guineo</span>
+                </div>
+                <span className="text-petroleo transition-transform group-open:rotate-180 text-xl font-bold">
+                  ▾
+                </span>
+              </summary>
+
+              <div className="mt-6 space-y-4 border-t border-niebla/50 pt-4">
+                {FAQS.map((faq) => (
+                  <div
+                    key={faq.q}
+                    className="rounded-xl border border-niebla/40 bg-white p-4"
+                  >
+                    <h4 className="font-serif text-sm font-bold text-grafito">
+                      {faq.q}
+                    </h4>
+                    <p className="mt-2 text-xs leading-relaxed text-muted">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        </Wrap>
+      </section>
+
+      {/* ── 6. CTA ── */}
+      <section className="py-12 bg-porcelana border-t border-niebla">
+        <Wrap>
+          <div className="rounded-3xl bg-petroleo p-8 text-white md:flex md:items-center md:justify-between md:p-10 shadow-xl">
+            <div className="max-w-[580px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-citrico">
+                SOPAS DE LOJA
               </span>
-              <h2 className="text-3xl font-bold tracking-tight text-ink md:text-4xl">
-                Dónde Comer Arveja con Guineo en Loja
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                Comedores y restaurantes que sirven este caldo en el menú del día.
+              <h3 className="mt-2 text-2xl font-bold font-serif">
+                ¿Conoces el repe lojano, el otro gran plato de cuchara?
+              </h3>
+              <p className="mt-2 text-xs text-niebla/80 leading-relaxed">
+                El repe blanco es la sopa insignia de Loja y el orgullo de nuestra gastronomía. Descubre su historia y dónde comerlo.
               </p>
             </div>
-            <Link href="/almuerzos-loja" className="text-sm font-bold text-clay hover:underline">
-              Ver guía completa de almuerzos →
-            </Link>
-          </div>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {places.map((r) => (
-              <RestaurantCard key={r.slug} r={r} />
-            ))}
-          </div>
-        </Wrap>
-      </section>
-
-      {/* FAQs */}
-      <section className="bg-paper py-16 border-t border-line">
-        <Wrap>
-          <div className="mx-auto max-w-3xl">
-            <span className="block text-center text-[10px] font-extrabold uppercase tracking-[2.8px] text-clay">
-              DUDAS FRECUENTES
-            </span>
-            <h2 className="text-center text-3xl font-bold tracking-tight text-ink">
-              Preguntas Frecuentes sobre la Arveja con Guineo
-            </h2>
-            <div className="mt-10 space-y-4">
-              {FAQS.map((f) => (
-                <details
-                  key={f.q}
-                  className="group rounded-xl border border-[#e5dcce] bg-white p-5 shadow-sm transition open:shadow-md"
-                >
-                  <summary className="flex cursor-pointer items-center justify-between font-serif text-base font-semibold text-ink">
-                    <span>{f.q}</span>
-                    <span className="ml-4 text-clay transition-transform group-open:rotate-180">▾</span>
-                  </summary>
-                  <p className="mt-3 text-xs leading-relaxed text-muted border-t border-[#f2ede4] pt-3">
-                    {f.a}
-                  </p>
-                </details>
-              ))}
+            <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">
+              <Link
+                href="/platos/repe-lojano"
+                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-md"
+              >
+                Guía del Repe Lojano →
+              </Link>
             </div>
           </div>
         </Wrap>
       </section>
-
-      {/* CTA Hub & Spoke */}
-      <Wrap className="py-14 text-center">
-        <div className="rounded-2xl bg-clay p-8 text-white md:p-12">
-          <h3 className="font-serif text-2xl md:text-3xl font-bold">
-            ¿Quieres más opciones para el almuerzo en Loja?
-          </h3>
-          <p className="mx-auto mt-3 max-w-md text-xs md:text-sm text-[#f5dfd9]">
-            Explora el repe lojano, la cecina a la brasa o los menús del día con precios actualizados.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/almuerzos-loja"
-              className="rounded-lg bg-white px-5 py-3 text-xs font-bold text-clay hover:bg-[#fff6f2] transition"
-            >
-              Guía de Almuerzos en Loja →
-            </Link>
-            <Link
-              href="/platos/repe-lojano"
-              className="rounded-lg border border-white/40 px-5 py-3 text-xs font-bold hover:bg-white/10 transition"
-            >
-              Ver el Repe Lojano →
-            </Link>
-          </div>
-        </div>
-      </Wrap>
     </>
   );
 }

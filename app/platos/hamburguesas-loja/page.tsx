@@ -7,7 +7,7 @@ import { MapaLeafletLoja } from "@/components/MapaLeafletLoja";
 
 export const metadata: Metadata = {
   title: "Hamburguesas en Loja | Las Mejores Smash Burgers y Clásicas Artesanales",
-  description: "Guía de hamburguesas en Loja Ecuador: smash burgers, clásicas artesanales y opciones a domicilio. 500 búsquedas/mes. Los mejores locales de Loja para cenar.",
+  description: "Guía de hamburguesas en Loja Ecuador: smash burgers, clásicas artesanales y opciones a domicilio. Los mejores locales de Loja para cenar.",
   alternates: { canonical: "/platos/hamburguesas-loja" },
   openGraph: {
     title: "Hamburguesas en Loja: Smash Burgers y Artesanales | Qué Comer en Loja",
@@ -69,7 +69,7 @@ export default function HamburguesasLojaPage() {
         <Wrap className="relative z-10 w-full">
           <div className="max-w-[700px] rounded-3xl bg-white/95 p-6 md:p-8 backdrop-blur-md shadow-2xl border border-white/60">
             <span className="inline-block rounded-full bg-citrico/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-petroleo mb-2.5">
-              500 BÚSQUEDAS/MES · LAS FAVORITAS DE LOJA
+              BURGER HOUSE · NOCHES EN LOJA
             </span>
             <h1 className="text-[clamp(30px,4vw,50px)] font-bold tracking-tight text-grafito leading-[1.1]">
               Hamburguesas en Loja:{" "}
@@ -111,12 +111,12 @@ export default function HamburguesasLojaPage() {
       <section className="bg-porcelana py-16 border-b border-niebla">
         <Wrap className="grid gap-10 md:grid-cols-[1.2fr_1fr] items-center">
           <div>
-            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">500 BÚSQUEDAS MENSUALES</span>
+            <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">PASIÓN ARTESANAL</span>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-grafito md:text-4xl">
               La cultura de la hamburguesa artesanal llega a Loja
             </h2>
             <p className="mt-4 text-xs md:text-sm text-muted leading-relaxed">
-              Las hamburguesas en Loja han experimentado una transformación en los últimos años, pasando de opciones básicas a propuestas artesanales con carne de calidad, panes brioche caseros y salsas especiales. Las "hamburguesas cuadradas loja" se han vuelto virales en redes sociales atrayendo a una nueva generación de comensales.
+              Las hamburguesas en Loja han experimentado una transformación destacada en los últimos años, con propuestas artesanales de carne premium, panes brioche horneados a diario y salsas de autor. Las opciones de hamburguesas cuadradas y recetas innovadoras conquistan a los amantes del buen comer nocturno.
             </p>
             <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
               El smash burger —técnica de aplastar el medallón en plancha caliente para crear una costra caramelizada— es la tendencia que domina los nuevos emprendimientos gastronómicos de Loja.

@@ -172,43 +172,6 @@ export function Header() {
               ))}
             </ul>
           </div>
-
-          {/* Platos Populares rápidos */}
-          <div className="border-t border-niebla/60 pt-5">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted block mb-3">
-              Platos Típicos Top
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <Link
-                href="/platos/repe-lojano"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-niebla bg-porcelana/50 p-2.5 text-xs font-semibold text-grafito hover:border-petroleo transition text-center"
-              >
-                🥣 Repe Lojano
-              </Link>
-              <Link
-                href="/platos/cecina-lojana"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-niebla bg-porcelana/50 p-2.5 text-xs font-semibold text-grafito hover:border-petroleo transition text-center"
-              >
-                🥩 Cecina
-              </Link>
-              <Link
-                href="/platos/tamales-lojanos"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-niebla bg-porcelana/50 p-2.5 text-xs font-semibold text-grafito hover:border-petroleo transition text-center"
-              >
-                🌽 Tamales
-              </Link>
-              <Link
-                href="/cafe-de-loja"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-niebla bg-porcelana/50 p-2.5 text-xs font-semibold text-grafito hover:border-petroleo transition text-center"
-              >
-                ☕ Café de Loja
-              </Link>
-            </div>
-          </div>
         </div>
 
         {/* Footer del Drawer: CTA para restaurantes */}
