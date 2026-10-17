@@ -15,6 +15,10 @@ export interface PuntoGastronomico {
   horario: string;
   disponible: boolean;
   distanciaKm?: number;
+  esAliadoReal?: boolean;
+  telefono?: string | null;
+  imagenUrl?: string | null;
+  rangoPrecio?: string | null;
 }
 
 // Coordenadas reales de puntos gastronómicos clave en Loja
@@ -118,7 +122,7 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Inicializar Leaflet dinámicamente en el cliente
+  // Cargar aliados de la base de datos y unirlos con los puntos predefinidos
   useEffect(() => {
     let isMounted = true;
 
@@ -128,8 +132,6 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
 
       const L = await import("leaflet");
 
-      // Si el elemento DOM ya tiene una instancia previa de Leaflet (por hot reload o React StrictMode), limpiarla
-      // eslint-disable-next-line @typescript-base/no-explicit-any
       const containerWithId = mapContainerRef.current as any;
       if (containerWithId._leaflet_id) {
         containerWithId._leaflet_id = null;
@@ -154,13 +156,13 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
         maxZoom: 19,
       }).addTo(map);
 
-      // Iconos personalizados con SVG para no depender de URLs rotas de leaflet
-      const puntoIcon = L.divIcon({
+      // Icono para plazas default
+      const plazaIcon = L.divIcon({
         className: "custom-leaflet-marker",
         html: `
           <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
             <div style="background-color:#153E3E; color:#FFFFFF; border:2px solid #FFFFFF; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3); font-size:18px;">
-              🍽️
+              📍
             </div>
             <div style="width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:7px solid #153E3E; margin-top:-1px;"></div>
           </div>
@@ -170,12 +172,66 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
         popupAnchor: [0, -42],
       });
 
+      // Icono destacado para Aliados Gastronómicos Verificados
+      const aliadoIcon = L.divIcon({
+        className: "custom-aliado-marker",
+        html: `
+          <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
+            <div style="background-color:#065F46; color:#D0DB61; border:2px solid #FFFFFF; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(6,95,70,0.5); font-size:20px; font-weight:bold;">
+              ★
+            </div>
+            <div style="width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-top:8px solid #065F46; margin-top:-1px;"></div>
+          </div>
+        `,
+        iconSize: [40, 48],
+        iconAnchor: [20, 48],
+        popupAnchor: [0, -48],
+      });
+
       const markersGroup = L.layerGroup().addTo(map);
       markersGroupRef.current = markersGroup;
 
-      // Agregar marcadores de puntos gastronómicos
-      PUNTOS_LOJA_DEFAULT.forEach((pto) => {
-        const marker = L.marker([pto.lat, pto.lng], { icon: puntoIcon });
+      // Obtener aliados reales desde la API
+      let puntosTotales: PuntoGastronomico[] = [...PUNTOS_LOJA_DEFAULT];
+      try {
+        const res = await fetch("/api/aliados");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.aliados)) {
+          const aliadosGeoref: PuntoGastronomico[] = data.aliados
+            .filter((a: any) => a.ubicacionLat && a.ubicacionLng)
+            .map((a: any) => ({
+              id: `aliado-${a.id}`,
+              nombre: a.nombre,
+              sector: a.ubicacion,
+              lat: Number(a.ubicacionLat),
+              lng: Number(a.ubicacionLng),
+              tipo: a.tipo === "CAFETERIA" ? "☕ Cafetería Verificada" : "🍽️ Restaurante Verificado",
+              descripcion: a.descripcion || "Socio oficial de la guía gastronómica de Loja.",
+              horario: a.servicios || "Atención habitual de gastronomía",
+              disponible: true,
+              esAliadoReal: true,
+              telefono: a.telefono,
+              imagenUrl: a.imagenUrl,
+              rangoPrecio: a.rangoPrecio,
+            }));
+
+          if (aliadosGeoref.length > 0) {
+            puntosTotales = [...aliadosGeoref, ...PUNTOS_LOJA_DEFAULT];
+          }
+        }
+      } catch (err) {
+        console.warn("No se pudieron cargar aliados para el mapa, usando defaults", err);
+      }
+
+      if (isMounted) {
+        setPuntos(puntosTotales);
+      }
+
+      // Renderizar marcadores
+      puntosTotales.forEach((pto) => {
+        const marker = L.marker([pto.lat, pto.lng], {
+          icon: pto.esAliadoReal ? aliadoIcon : plazaIcon,
+        });
 
         marker.on("click", () => {
           setSelectedPoint(pto);
@@ -201,7 +257,6 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
         mapInstanceRef.current = null;
       }
       if (mapContainerRef.current) {
-        // eslint-disable-next-line @typescript-base/no-explicit-any
         (mapContainerRef.current as any)._leaflet_id = null;
       }
     };
@@ -226,7 +281,7 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
         setLoadingLoc(false);
 
         // Calcular distancias a cada punto y ordenar por cercanía
-        const puntosConDistancia = PUNTOS_LOJA_DEFAULT.map((pto) => ({
+        const puntosConDistancia = puntos.map((pto) => ({
           ...pto,
           distanciaKm: calcularDistanciaKm(latitude, longitude, pto.lat, pto.lng),
         })).sort((a, b) => (a.distanciaKm || 0) - (b.distanciaKm || 0));
@@ -288,10 +343,12 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
           setStatusMsg("No se pudo obtener la posición. Mostrando el mapa general de Loja.");
         }
         // Fallback: centrar en el primer punto
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.flyTo([-3.996, -79.205], 15);
+        if (mapInstanceRef.current && puntos.length > 0) {
+          mapInstanceRef.current.flyTo([puntos[0].lat, puntos[0].lng], 15);
         }
-        setSelectedPoint(PUNTOS_LOJA_DEFAULT[0]);
+        if (puntos.length > 0) {
+          setSelectedPoint(puntos[0]);
+        }
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -368,19 +425,29 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
                 className={`group flex flex-col justify-between rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer ${
                   selectedPoint?.id === pto.id
                     ? "border-petroleo bg-white shadow-md ring-2 ring-petroleo/10"
+                    : pto.esAliadoReal
+                    ? "border-emerald-200 bg-emerald-50/30 hover:border-emerald-500 hover:bg-white"
                     : "border-niebla bg-white/80 hover:border-petroleo/50 hover:bg-white"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-porcelana text-sm">
-                      🍽️
-                    </span>
+                    {pto.imagenUrl ? (
+                      <img
+                        src={pto.imagenUrl}
+                        alt={pto.nombre}
+                        className="h-9 w-9 shrink-0 rounded-xl object-cover border border-niebla shadow-2xs"
+                      />
+                    ) : (
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-porcelana text-sm border border-niebla">
+                        {pto.esAliadoReal ? "★" : "📍"}
+                      </span>
+                    )}
                     <div>
-                      <h4 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
+                      <h4 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors line-clamp-1">
                         {pto.nombre}
                       </h4>
-                      <span className="text-[11px] text-muted block mt-0.5">
+                      <span className="text-[11px] text-muted block mt-0.5 line-clamp-1">
                         📍 {pto.sector}
                       </span>
                     </div>
@@ -396,7 +463,13 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
                 </div>
 
                 <div className="mt-3 border-t border-niebla/50 pt-2 flex items-center justify-between text-[11px]">
-                  <span className="text-petroleo font-bold">Cupo Disponible</span>
+                  {pto.esAliadoReal ? (
+                    <span className="text-emerald-800 font-extrabold text-[10px] bg-emerald-100/60 px-2 py-0.5 rounded-full">
+                      ✓ Aliado Oficial
+                    </span>
+                  ) : (
+                    <span className="text-petroleo font-bold">Plaza Libre</span>
+                  )}
                   <span className="text-muted group-hover:text-petroleo font-semibold">
                     Ver en mapa →
                   </span>
@@ -448,9 +521,16 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
               </button>
 
               <div className="flex items-center gap-2 mb-3">
-                <span className="rounded-full bg-citrico/40 px-2.5 py-0.5 text-[10px] font-extrabold text-petroleo uppercase">
-                  Plaza Gastronómica Libre
-                </span>
+                {selectedPoint.esAliadoReal ? (
+                  <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-900 uppercase">
+                    ✓ Socio Verificado
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-citrico/40 px-2.5 py-0.5 text-[10px] font-extrabold text-petroleo uppercase">
+                    Plaza Gastronómica Libre
+                  </span>
+                )}
+
                 {selectedPoint.distanciaKm !== undefined && (
                   <span className="rounded-full bg-petroleo text-white px-2 py-0.5 text-[10px] font-bold">
                     A {selectedPoint.distanciaKm < 1
@@ -459,6 +539,16 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
                   </span>
                 )}
               </div>
+
+              {selectedPoint.imagenUrl && (
+                <div className="mb-4 overflow-hidden rounded-2xl border border-niebla h-36 w-full">
+                  <img
+                    src={selectedPoint.imagenUrl}
+                    alt={selectedPoint.nombre}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
 
               <h3 className="font-serif text-xl font-bold text-grafito">
                 {selectedPoint.nombre}
@@ -471,30 +561,53 @@ export function MapaLeafletLoja({ nombrePlato }: { nombrePlato: string }) {
               </p>
 
               <div className="mt-4 rounded-xl border border-niebla bg-porcelana/40 p-3 text-[11px] text-muted flex items-center justify-between">
-                <span>🕒 Horario de atención:</span>
+                <span>🕒 Atención:</span>
                 <strong className="text-grafito">{selectedPoint.horario}</strong>
               </div>
 
-              <div className="mt-4 rounded-2xl border-2 border-dashed border-niebla bg-white p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-grafito">¿Administras este restaurante?</span>
-                  <span className="rounded-full bg-citrico px-2 py-0.5 text-[9px] font-black text-petroleo">Cupo Abierto</span>
+              {selectedPoint.rangoPrecio && (
+                <div className="mt-2 rounded-xl border border-niebla bg-porcelana/40 p-3 text-[11px] text-muted flex items-center justify-between">
+                  <span>💰 Rango de precio:</span>
+                  <strong className="text-petroleo font-bold">{selectedPoint.rangoPrecio}</strong>
                 </div>
-                <p className="text-[11px] text-muted mt-1 leading-relaxed">
-                  Conecta tu negocio directamente con los turistas que buscan "{nombrePlato}" en esta zona sin comisiones de apps.
-                </p>
-              </div>
+              )}
 
-              <div className="mt-6 flex items-center gap-3">
-                <Link
-                  href="/para-negocios"
-                  className="flex-1 rounded-xl bg-petroleo py-3 text-center text-xs font-bold text-white hover:bg-[#0E2E2E] transition shadow-md"
-                >
-                  Reclamar esta plaza →
-                </Link>
+              {!selectedPoint.esAliadoReal && (
+                <div className="mt-4 rounded-2xl border-2 border-dashed border-niebla bg-white p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-grafito">¿Administras este restaurante?</span>
+                    <span className="rounded-full bg-citrico px-2 py-0.5 text-[9px] font-black text-petroleo">Cupo Abierto</span>
+                  </div>
+                  <p className="text-[11px] text-muted mt-1 leading-relaxed">
+                    Conecta tu negocio directamente con los turistas que buscan "{nombrePlato}" en esta zona sin comisiones de apps.
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-6 flex flex-col gap-2">
+                {selectedPoint.esAliadoReal && selectedPoint.telefono ? (
+                  <a
+                    href={`https://wa.me/${selectedPoint.telefono.replace(/\D/g, "")}?text=${encodeURIComponent(
+                      `Hola ${selectedPoint.nombre}, vi su local en el mapa de Qué Comer en Loja. Deseo información de sus platos y reservas.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-700 py-3 text-xs font-bold text-white hover:bg-emerald-800 transition shadow-md"
+                  >
+                    <span>💬 Contactar por WhatsApp</span>
+                  </a>
+                ) : !selectedPoint.esAliadoReal ? (
+                  <Link
+                    href="/para-negocios"
+                    className="flex w-full items-center justify-center rounded-xl bg-petroleo py-3 text-center text-xs font-bold text-white hover:bg-[#0E2E2E] transition shadow-md"
+                  >
+                    Reclamar esta plaza →
+                  </Link>
+                ) : null}
+
                 <button
                   onClick={() => setSelectedPoint(null)}
-                  className="rounded-xl border border-niebla px-4 py-3 text-xs font-bold text-muted hover:bg-porcelana transition cursor-pointer"
+                  className="rounded-xl border border-niebla py-2.5 text-xs font-bold text-muted hover:bg-porcelana transition cursor-pointer"
                 >
                   Cerrar
                 </button>

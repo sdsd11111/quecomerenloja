@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Wrap } from "./PageHero";
 
@@ -21,7 +21,48 @@ export function PlazasDisponiblesPlato({
   nombrePlato: string;
   horarioRecomendado?: string;
 }) {
-  const slots: SlotData[] = [
+  const [aliados, setAliados] = useState<any[]>([]);
+  const [cargado, setCargado] = useState(false);
+
+  // Cargar aliados reales de la DB filtrados por el plato
+  useEffect(() => {
+    let cancel = false;
+    const slug = nombrePlato
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    fetch(`/api/aliados?plato=${encodeURIComponent(slug)}&platoNombre=${encodeURIComponent(nombrePlato)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancel && data.success && Array.isArray(data.aliados)) {
+          if (data.aliados.length > 0) {
+            setAliados(data.aliados.slice(0, 3));
+          } else {
+            // Si aún no hay aliados con este plato específico, traer los destacados generales
+            fetch('/api/aliados')
+              .then((r) => r.json())
+              .then((allData) => {
+                if (!cancel && allData.success && Array.isArray(allData.aliados)) {
+                  setAliados(allData.aliados.slice(0, 2));
+                }
+              });
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancel) setCargado(true);
+      });
+
+    return () => {
+      cancel = true;
+    };
+  }, [nombrePlato]);
+
+  const slotsVacantes: SlotData[] = [
     {
       id: 1,
       tipo: "Plaza Destacada 01",
@@ -38,14 +79,6 @@ export function PlazasDisponiblesPlato({
       subtitulo: "San Sebastián / El Valle",
       desc: `Destaca tu sazón casera y receta familiar ante miles de turistas que buscan ${nombrePlato} cada semana.`,
     },
-    {
-      id: 3,
-      tipo: "Plaza Destacada 03",
-      badge: "Cupo Disponible",
-      titulo: `Cafetería o Comedor Aliado`,
-      subtitulo: "Sector Terminal / Gran Colombia",
-      desc: `Aparece verificado con botón directo a tu WhatsApp para reservas y pedidos sin intermediarios ni comisiones.`,
-    },
   ];
 
   return (
@@ -61,8 +94,8 @@ export function PlazasDisponiblesPlato({
             </h2>
             <p className="text-xs md:text-sm text-muted mt-1.5 max-w-2xl">
               {horarioRecomendado
-                ? `Horario típico: ${horarioRecomendado}. Conoce las plazas gastronómicas verificadas para disfrutar este plato.`
-                : `Conoce las plazas gastronómicas verificadas para disfrutar este plato tradicional recién hecho.`}
+                ? `Horario típico: ${horarioRecomendado}. Conoce los aliados gastronómicos verificados y plazas disponibles para disfrutar este plato.`
+                : `Conoce los aliados gastronómicos verificados y plazas disponibles para disfrutar este plato tradicional recién hecho.`}
             </p>
           </div>
           <Link
@@ -73,9 +106,92 @@ export function PlazasDisponiblesPlato({
           </Link>
         </div>
 
-        {/* Grid de 3 cards estilo plaza libre con logo */}
+        {/* Grid de aliados reales verificados + slots de postulación */}
         <div className="grid gap-6 md:grid-cols-3">
-          {slots.map((slot) => (
+          {/* Tarjetas de aliados reales */}
+          {aliados.map((a) => {
+            const tel = (a.telefono || '').replace(/\D/g, '');
+            const waUrl = tel
+              ? `https://wa.me/${tel}?text=${encodeURIComponent(
+                  `Hola ${a.nombre}, los vi en la guía de Qué Comer en Loja para ${nombrePlato}. Deseo información.`
+                )}`
+              : null;
+
+            return (
+              <div
+                key={`aliado-${a.id}`}
+                className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-7 shadow-sm transition-all duration-300 hover:border-petroleo hover:shadow-xl hover:-translate-y-1"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      ✓ Aliado Verificado
+                    </span>
+                    {a.destacado && (
+                      <span className="rounded-full bg-citrico/40 px-2.5 py-0.5 text-[9px] font-extrabold text-petroleo">
+                        ★ Destacado
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="my-5 flex items-center gap-4">
+                    {a.imagenUrl ? (
+                      <img
+                        src={a.imagenUrl}
+                        alt={a.nombre}
+                        className="h-14 w-14 shrink-0 rounded-2xl object-cover border border-niebla shadow-xs group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-niebla bg-porcelana text-2xl shadow-xs group-hover:scale-105 transition-transform">
+                        🍽️
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-grafito group-hover:text-petroleo transition-colors">
+                        {a.nombre}
+                      </h3>
+                      <span className="text-[11px] font-medium text-muted block mt-0.5">
+                        📍 {a.ubicacion}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs leading-relaxed text-muted line-clamp-3 mb-3">
+                    {a.descripcion}
+                  </p>
+
+                  {a.rangoPrecio && (
+                    <div className="text-[11px] font-semibold text-petroleo mb-1">
+                      💰 {a.rangoPrecio}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-5 border-t border-niebla/70 pt-4 flex flex-col gap-2">
+                  {waUrl ? (
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg bg-emerald-700 px-3.5 py-2 text-[11px] font-bold text-white text-center transition hover:bg-emerald-800 shadow-2xs"
+                    >
+                      💬 Contactar por WhatsApp
+                    </a>
+                  ) : (
+                    <Link
+                      href="/para-negocios"
+                      className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo text-center transition hover:brightness-105 shadow-2xs"
+                    >
+                      Consultar Información
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Tarjetas de plazas libres para postulación */}
+          {slotsVacantes.slice(0, Math.max(1, 3 - aliados.length)).map((slot) => (
             <div
               key={slot.id}
               className="group flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-7 transition-all duration-300 hover:border-petroleo hover:bg-white hover:shadow-xl"
@@ -90,7 +206,6 @@ export function PlazasDisponiblesPlato({
                   </span>
                 </div>
 
-                {/* Símbolo / Logo de espacio libre */}
                 <div className="my-6 flex items-center gap-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-niebla bg-white text-2xl shadow-xs group-hover:scale-105 transition-transform">
                     🍽️

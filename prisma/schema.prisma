@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model aliado_habitaciones {
+  id              Int      @id @default(autoincrement())
+  aliadoId        Int
+  nombre          String   @db.VarChar(150)
+  precio          String?  @db.VarChar(100)
+  caracteristicas String?  @db.Text
+  imagenes        String?  @db.Text
+  orden           Int      @default(0)
+  createdAt       DateTime @default(now())
+  aliados         aliados  @relation(fields: [aliadoId], references: [id], onDelete: Cascade)
+
+  @@index([aliadoId])
+}
+
+model aliados {
+  id                  Int                   @id @default(autoincrement())
+  nombre              String                @db.VarChar(150)
+  tipo                aliados_tipo          @default(HOSPEDAJE)
+  imagenUrl           String?               @db.VarChar(500)
+  servicios           String?               @db.Text
+  telefono            String?               @db.VarChar(50)
+  destacado           Boolean               @default(true)
+  activo              Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  cuartos             String?               @db.Text
+  descripcion         String                @db.Text
+  mapaUrl             String?               @db.VarChar(500)
+  rangoPrecio         String?               @db.VarChar(100)
+  redesUrl            String?               @db.VarChar(255)
+  ubicacion           String                @db.VarChar(255)
+  websiteUrl          String?               @db.VarChar(255)
+  ubicacionLat        Float?
+  ubicacionLng        Float?
+  estrellas           Int?
+  numeroCuartos       Int?
+  aliado_habitaciones aliado_habitaciones[]
+  solicitudes_reserva solicitudes_reserva[]
+
+  @@index([tipo, activo])
+}
+
+model atractivos_cantonales {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(150)
+  canton      String   @db.VarChar(100)
+  descripcion String   @db.Text
+  distancia   String   @db.VarChar(100)
+  ruta        String   @db.VarChar(255)
+  imagenUrl   String?  @db.VarChar(500)
+  mapaUrl     String?  @db.VarChar(500)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([canton, activo])
+}
+
+model banners_hero {
+  id            Int      @id @default(autoincrement())
+  titulo        String   @db.VarChar(200)
+  subtitulo     String?  @db.VarChar(255)
+  link          String   @default("/eventos") @db.VarChar(500)
+  botonTexto    String   @default("Ver evento") @db.VarChar(50)
+  imagenDesktop String   @db.VarChar(500)
+  imagenMobile  String?  @db.VarChar(500)
+  orden         Int      @default(0)
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([activo, orden])
+}
+
+model categorias {
+  id      Int       @id @default(autoincrement())
+  slug    String    @unique @db.VarChar(50)
+  nombre  String    @db.VarChar(100)
+  eventos eventos[]
+}
+
+model chat_messages {
+  id            Int           @id @default(autoincrement())
+  sessionId     String        @db.VarChar(64)
+  sender        String        @db.VarChar(10)
+  contenido     String        @db.Text
+  aliadosIds    String?       @db.LongText
+  eventosIds    String?       @db.LongText
+  atractivosIds String?       @db.LongText
+  createdAt     DateTime      @default(now())
+  chat_sessions chat_sessions @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model chat_sessions {
+  id                  Int                   @id @default(autoincrement())
+  sessionId           String                @unique @db.VarChar(64)
+  ubicacionLat        Float?
+  ubicacionLng        Float?
+  zonaDetectada       String?               @db.VarChar(150)
+  ciudad              String?               @db.VarChar(100)
+  provincia           String?               @db.VarChar(100)
+  pais                String?               @db.VarChar(50)
+  userAgent           String?               @db.VarChar(500)
+  ipAddress           String?               @db.VarChar(60)
+  totalMensajes       Int                   @default(0)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  direccionDetallada  String?               @db.VarChar(500)
+  contextoResumen     String?               @db.Text
+  intencionDetectada  String?               @db.VarChar(50)
+  nombreUsuario       String?               @db.VarChar(150)
+  chat_messages       chat_messages[]
+  solicitudes_reserva solicitudes_reserva[]
+
+  @@index([createdAt])
+  @@index([zonaDetectada])
+}
+
+model eventos {
+  id                           Int                           @id @default(autoincrement())
+  nombre                       String                        @db.VarChar(255)
+  slug                         String                        @unique @db.VarChar(300)
+  fecha                        DateTime
+  lugar                        String                        @db.VarChar(255)
+  descripcion                  String                        @db.Text
+  imagenUrl                    String?                       @db.VarChar(500)
+  estado                       eventos_estado                @default(PENDIENTE)
+  nombreGestor                 String                        @db.VarChar(200)
+  createdAt                    DateTime                      @default(now())
+  categoriaId                  Int?
+  zonaId                       Int?
+  confianzaClasificacion       Float?
+  multimedia                   String?                       @db.LongText
+  videoUrl                     String?                       @db.VarChar(500)
+  institucionRelacionada       String?                       @db.VarChar(150)
+  fecha_fin                    DateTime?
+  updatedAt                    DateTime
+  mapaUrl                      String?                       @db.VarChar(500)
+  patrocinadores               String?                       @db.LongText
+  editToken                    String?                       @unique @db.VarChar(100)
+  edit_token_expires_at        DateTime?
+  categorias                   categorias?                   @relation(fields: [categoriaId], references: [id])
+  zonas                        zonas?                        @relation(fields: [zonaId], references: [id])
+  publicaciones_redes_sociales publicaciones_redes_sociales?
+
+  @@index([categoriaId])
+  @@index([estado])
+  @@index([fecha_fin])
+  @@index([fecha])
+  @@index([zonaId])
+}
+
+model instituciones {
+  id                   Int                    @id @default(autoincrement())
+  nombre               String                 @unique @db.VarChar(150)
+  slug                 String                 @unique @db.VarChar(100)
+  password             String                 @db.VarChar(255)
+  activa               Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  numeros_notificacion numeros_notificacion[]
+}
+
+model numeros_notificacion {
+  id             Int            @id @default(autoincrement())
+  nombre         String         @db.VarChar(100)
+  numero         String         @db.VarChar(20)
+  activo         Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  institucion_id Int?
+  instituciones  instituciones? @relation(fields: [institucion_id], references: [id], onDelete: Cascade)
+
+  @@index([institucion_id])
+  @@index([numero])
+}
+
+model posts_social {
+  id                   Int                 @id @default(autoincrement())
+  origen               String              @db.VarChar(50)
+  urlOriginal          String?             @db.VarChar(500)
+  textoOriginal        String?             @db.Text
+  titulo               String?             @db.VarChar(255)
+  descripcion          String?             @db.Text
+  imagenUrl            String?             @db.VarChar(500)
+  fechaPublicacion     DateTime?
+  lugar                String?             @db.VarChar(255)
+  estado               posts_social_estado @default(PENDIENTE)
+  grupoId              String?             @db.VarChar(100)
+  moderadoPor          String?             @db.VarChar(100)
+  moderadoAt           DateTime?
+  moderationComentario String?             @db.Text
+  confianzaIA          Float?
+  fechaDeteccion       DateTime            @default(now())
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime
+  multimedia           String?             @db.LongText
+
+  @@index([estado])
+  @@index([fechaDeteccion])
+  @@index([origen])
+}
+
+model publicaciones_redes_sociales {
+  id            Int                                 @id @default(autoincrement())
+  evento_id     Int                                 @unique
+  plataformas   String                              @db.VarChar(200)
+  tipo          String                              @db.VarChar(50)
+  programado_at DateTime
+  publicado_at  DateTime?
+  estado        publicaciones_redes_sociales_estado @default(PENDIENTE)
+  respuestaApi  String?                             @db.LongText
+  error         String?                             @db.Text
+  created_at    DateTime                            @default(now())
+  updated_at    DateTime
+  eventos       eventos                             @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+
+  @@index([estado])
+  @@index([programado_at])
+}
+
+model recomendaciones {
+  id        Int      @id @default(autoincrement())
+  mensaje   String   @db.Text
+  contacto  String?  @db.VarChar(150)
+  createdAt DateTime @default(now())
+}
+
+model solicitudes_reserva {
+  id              Int            @id @default(autoincrement())
+  sessionId       String?        @db.VarChar(64)
+  aliadoId        Int
+  nombreCliente   String         @db.VarChar(150)
+  telefonoCliente String         @db.VarChar(50)
+  fechaInicio     String?        @db.VarChar(50)
+  fechaFin        String?        @db.VarChar(50)
+  numPersonas     Int            @default(1)
+  detalle         String?        @db.Text
+  estado          String         @default("PENDIENTE") @db.VarChar(30)
+  createdAt       DateTime       @default(now())
+  aliados         aliados        @relation(fields: [aliadoId], references: [id], onDelete: Cascade)
+  chat_sessions   chat_sessions? @relation(fields: [sessionId], references: [sessionId])
+
+  @@index([aliadoId])
+  @@index([createdAt])
+  @@index([sessionId], map: "solicitudes_reserva_sessionId_fkey")
+}
+
+model wa_mensajes_procesados {
+  id               String   @id @db.VarChar(128)
+  grupoId          String   @db.VarChar(100)
+  messageTimestamp BigInt?
+  urlsEncontradas  Int      @default(0)
+  postsCreados     Int      @default(0)
+  procesadoAt      DateTime @default(now())
+
+  @@index([grupoId], map: "wa_msg_grupo_idx")
+  @@index([procesadoAt], map: "wa_msg_procesado_idx")
+}
+
+model zonas {
+  id      Int        @id @default(autoincrement())
+  nombre  String     @unique @db.VarChar(100)
+  tipo    zonas_tipo
+  eventos eventos[]
+}
+
+enum zonas_tipo {
+  URBANA
+  RURAL
+}
+
+enum aliados_tipo {
+  HOSPEDAJE
+  GASTRONOMIA
+  CAFETERIA
+  EXPERIENCIA
+  TRANSPORTE
+  CANTON_GAD
+  CULTURA_ARTE
+  COMERCIO
+  OTRO
+}
+
+enum publicaciones_redes_sociales_estado {
+  PENDIENTE
+  PROGRAMADO
+  PUBLICADO
+  FALLIDO
+  CANCELADO
+}
+
+enum eventos_estado {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+enum posts_social_estado {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}

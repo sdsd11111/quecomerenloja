@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { League_Spartan, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { Footer } from "@/components/Footer";
-import { ChatbotIA } from "@/components/ChatbotIA";
 import { SITE } from "@/lib/site";
 
 const leagueSpartan = League_Spartan({
@@ -77,10 +78,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#contenido" className="fixed -top-24 left-5 z-50 bg-white p-3 focus:top-3">
           Saltar al contenido
         </a>
+        <LanguageProvider>
         <Header />
         <main id="contenido">{children}</main>
         <Footer />
-        <ChatbotIA />
+        <ChatbotWidget origen="quecomerenloja" />
+            </LanguageProvider>
       </body>
     </html>
   );

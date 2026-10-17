@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Wrap } from "@/components/PageHero";
 import { getPlatosByMomento } from "@/lib/platos-data";
 import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
+import { getAliadosByMomento } from "@/lib/aliados-db";
 
 export const metadata: Metadata = {
   title: "Dónde Almorzar en Loja | Menú del Día y Almuerzos Ejecutivos",
@@ -92,7 +93,8 @@ const FAQS_ALMUERZOS = [
   },
 ];
 
-export default function AlmuerzosPage() {
+export default async function AlmuerzosPage() {
+  const aliadosAlmuerzo = await getAliadosByMomento("almuerzo");
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -269,7 +271,89 @@ export default function AlmuerzosPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            {ALMUERZO_SLOTS.map((slot) => (
+            {aliadosAlmuerzo.map((aliado) => {
+              const telLimpio = (aliado.telefono || "").replace(/\D/g, "");
+              const waUrl = telLimpio
+                ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(
+                    `Hola ${aliado.nombre}, vi su restaurante en la sección de Almuerzos de Qué Comer en Loja. Deseo información sobre el menú del día y reservas.`
+                  )}`
+                : null;
+
+              return (
+                <div
+                  key={`almuerzo-aliado-${aliado.id}`}
+                  className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-7 shadow-sm transition hover:border-petroleo hover:shadow-xl hover:-translate-y-1"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        🍽️ Socio Verificado
+                      </span>
+                      {aliado.destacado && (
+                        <span className="rounded-full bg-citrico/30 px-2.5 py-0.5 text-[9px] font-extrabold text-petroleo">
+                          ★ Destacado
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="my-4 flex items-center gap-3">
+                      {aliado.imagenUrl ? (
+                        <img
+                          src={aliado.imagenUrl}
+                          alt={aliado.nombre}
+                          className="size-14 rounded-2xl object-cover border border-niebla shadow-xs"
+                        />
+                      ) : (
+                        <div className="size-14 rounded-2xl bg-porcelana border border-niebla flex items-center justify-center text-2xl shadow-xs">
+                          🍽️
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-serif text-lg font-bold text-grafito leading-tight">
+                          {aliado.nombre}
+                        </h3>
+                        <span className="text-xs text-muted block mt-0.5">
+                          📍 {aliado.ubicacion}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-muted leading-relaxed line-clamp-3">
+                      {aliado.descripcion}
+                    </p>
+
+                    {aliado.rangoPrecio && (
+                      <div className="mt-3 text-[11px] font-semibold text-petroleo">
+                        💰 {aliado.rangoPrecio}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-6 border-t border-niebla pt-4 flex flex-col gap-2">
+                    {waUrl ? (
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg bg-emerald-700 px-3.5 py-2 text-[11px] font-bold text-white text-center transition hover:bg-emerald-800 shadow-xs"
+                      >
+                        💬 Contactar por WhatsApp
+                      </a>
+                    ) : (
+                      <Link
+                        href="/restaurantes"
+                        className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo text-center transition hover:brightness-105"
+                      >
+                        Ver Restaurante →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Plazas disponibles de postulación para completar el grid */}
+            {ALMUERZO_SLOTS.slice(0, Math.max(1, 3 - aliadosAlmuerzo.length)).map((slot) => (
               <div
                 key={slot.id}
                 className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-7 transition hover:border-petroleo hover:shadow-lg"
