@@ -16,6 +16,7 @@ export const NAV = [
   { href: "/almuerzos-loja", label: "Almuerzos" },
   { href: "/comida-rapida-loja", label: "Dónde cenar" },
   { href: "/bares-y-noche", label: "Bares y noche" },
+  { href: "/eventos-gastronomicos", label: "Eventos & Ferias 🎪" },
   { href: "/blog", label: "Blog" },
 ];
 

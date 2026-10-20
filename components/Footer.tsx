@@ -6,6 +6,7 @@ const EXPLORAR_LINKS = [
   { href: "/desayunos-en-loja", label: "Desayunos" },
   { href: "/almuerzos-loja", label: "Almuerzos" },
   { href: "/comida-rapida-loja", label: "Dónde cenar" },
+  { href: "/eventos-gastronomicos", label: "Ferias & Eventos 🎪" },
   { href: "/blog", label: "Blog" },
 ];
 

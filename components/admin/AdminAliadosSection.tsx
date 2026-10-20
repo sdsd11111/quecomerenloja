@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { PLATOS } from '@/lib/platos-data';
 import { normalizarMenuTexto, type NormalizacionResultado, type PlatoExtraido } from '@/lib/menu-normalizer';
+import { extractGpsFromGoogleMaps } from '@/lib/maps-extractor';
 
 export interface AliadoItem {
   id?: number;
@@ -77,6 +78,11 @@ export function AdminAliadosSection() {
   const [menuResultado, setMenuResultado] = useState<NormalizacionResultado | null>(null);
   const [copiadoSlug, setCopiadoSlug] = useState<string | null>(null);
   const [showOportunidadesModal, setShowOportunidadesModal] = useState(false);
+
+  // Estados para Subida BunnyCDN y Extracción GPS
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [gpsFeedback, setGpsFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
   const fetchAliados = async () => {
     setLoading(true);
@@ -218,6 +224,68 @@ export function AdminAliadosSection() {
       ubicacionLng: lng,
       ubicacion: prev.ubicacion ? prev.ubicacion : `${nombreZona}, Loja`,
     }));
+  };
+
+  // Extraer GPS automáticamente desde URL o texto de Google Maps
+  const handleExtraerGps = (urlOTexto?: string) => {
+    const fuente = urlOTexto !== undefined ? urlOTexto : (form.mapaUrl || '');
+    if (!fuente.trim()) {
+      setGpsFeedback({ type: 'err', text: 'Pega un link de Google Maps primero.' });
+      return;
+    }
+    const coords = extractGpsFromGoogleMaps(fuente);
+    if (coords) {
+      setForm((prev) => ({
+        ...prev,
+        ubicacionLat: coords.lat,
+        ubicacionLng: coords.lng,
+      }));
+      setGpsFeedback({
+        type: 'ok',
+        text: `✓ GPS extraído con éxito: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`,
+      });
+      setTimeout(() => setGpsFeedback(null), 4000);
+    } else {
+      setGpsFeedback({
+        type: 'err',
+        text: 'No se encontraron coordenadas en este enlace. Si es un link corto (maps.app.goo.gl), ábrelo en tu navegador y copia la URL completa de la barra.',
+      });
+    }
+  };
+
+  // Subir imagen a BunnyCDN vía /api/admin/upload
+  const handleUploadFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Solo se permiten archivos de imagen (JPG, PNG, WEBP, AVIF)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen no debe superar los 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const data = new FormData();
+      data.append('file', file);
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: data,
+      });
+
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setForm((prev) => ({ ...prev, imagenUrl: json.url }));
+      } else {
+        alert(json.error || 'Error al subir imagen a BunnyCDN');
+      }
+    } catch (err: any) {
+      console.error('Error subiendo imagen:', err);
+      alert('Error de red al conectar con el servidor para subir la imagen');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -812,14 +880,14 @@ export function AdminAliadosSection() {
                 </div>
 
                 {/* GEOLOCALIZACIÓN GPS PARA MAPA LEAFLET */}
-                <div className="sm:col-span-2 bg-blue-50/40 border border-blue-200/60 rounded-2xl p-4 space-y-3">
+                <div className="sm:col-span-2 bg-blue-50/50 border border-blue-200 rounded-2xl p-4 space-y-3">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div>
                       <span className="text-xs font-bold text-blue-950 uppercase tracking-wider block">
                         🗺️ Coordenadas GPS (Para el Mapa de Cercanía)
                       </span>
                       <span className="text-[11px] text-gray-500">
-                        Permite calcular qué tan cerca está el restaurante del usuario.
+                        Extrae la ubicación directamente pegando el link de Google Maps o elige una zona rápida.
                       </span>
                     </div>
 
@@ -830,7 +898,7 @@ export function AdminAliadosSection() {
                           key={z.nombre}
                           type="button"
                           onClick={() => handleSelectZona(z.lat, z.lng, z.nombre)}
-                          className="text-[10px] bg-white border border-blue-200 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded font-semibold transition"
+                          className="text-[10px] bg-white border border-blue-200 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded font-semibold transition cursor-pointer"
                         >
                           📍 {z.nombre.split(' ')[0]}
                         </button>
@@ -838,7 +906,55 @@ export function AdminAliadosSection() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Input rápido para extraer GPS pegando link de Google Maps */}
+                  <div className="bg-white border border-blue-200 rounded-xl p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Pega aquí el link de Google Maps (ej: https://maps.app.goo.gl/... o coordenadas)..."
+                      value={form.mapaUrl || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setForm({ ...form, mapaUrl: val });
+                        // Si pega una URL o coordenadas, intentar extraer directamente
+                        const parsed = extractGpsFromGoogleMaps(val);
+                        if (parsed) {
+                          setForm((prev) => ({
+                            ...prev,
+                            mapaUrl: val,
+                            ubicacionLat: parsed.lat,
+                            ubicacionLng: parsed.lng,
+                          }));
+                          setGpsFeedback({
+                            type: 'ok',
+                            text: `✓ Extraído automáticamente: ${parsed.lat.toFixed(5)}, ${parsed.lng.toFixed(5)}`,
+                          });
+                          setTimeout(() => setGpsFeedback(null), 3000);
+                        }
+                      }}
+                      className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleExtraerGps()}
+                      className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs px-3.5 py-2 rounded-lg transition shrink-0 flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>📍</span> Extraer GPS
+                    </button>
+                  </div>
+
+                  {gpsFeedback && (
+                    <div
+                      className={`text-xs px-3 py-1.5 rounded-lg font-medium border ${
+                        gpsFeedback.type === 'ok'
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                          : 'bg-amber-50 border-amber-200 text-amber-900'
+                      }`}
+                    >
+                      {gpsFeedback.text}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3 pt-1">
                     <div>
                       <label className="block text-[11px] font-bold text-gray-600 mb-1">
                         Latitud GPS (ej: -3.99615)
@@ -898,18 +1014,115 @@ export function AdminAliadosSection() {
                   />
                 </div>
 
-                {/* Imagen URL */}
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-                    URL de Imagen Principal
-                  </label>
-                  <input
-                    type="url"
-                    value={form.imagenUrl || ''}
-                    onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/... o enlace de BunnyCDN"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-petroleo"
-                  />
+                {/* Imagen Principal con Drag & Drop hacia BunnyCDN */}
+                <div className="sm:col-span-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider">
+                      Foto / Portada del Negocio (BunnyCDN)
+                    </label>
+                    <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      ☁️ Servidor BunnyCDN Optimizado
+                    </span>
+                  </div>
+
+                  {/* Drag and drop zone */}
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      const droppedFiles = e.dataTransfer.files;
+                      if (droppedFiles && droppedFiles.length > 0) {
+                        handleUploadFile(droppedFiles[0]);
+                      }
+                    }}
+                    className={`relative border-2 border-dashed rounded-2xl p-4 sm:p-5 transition text-center cursor-pointer ${
+                      isDragging
+                        ? 'border-emerald-500 bg-emerald-50/80 scale-[1.01]'
+                        : 'border-gray-300 hover:border-emerald-400 bg-gray-50/60 hover:bg-emerald-50/30'
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          handleUploadFile(e.target.files[0]);
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={uploadingImage}
+                    />
+
+                    {uploadingImage ? (
+                      <div className="py-4 flex flex-col items-center justify-center gap-2">
+                        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-xs font-bold text-emerald-900">
+                          Subiendo imagen a BunnyCDN Storage...
+                        </span>
+                      </div>
+                    ) : form.imagenUrl ? (
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={form.imagenUrl}
+                            alt="Vista previa"
+                            className="size-16 sm:size-20 rounded-xl object-cover border border-gray-200 shadow-xs"
+                          />
+                          <div className="text-left">
+                            <span className="text-xs font-bold text-gray-900 block">
+                              ✓ Imagen Cargada
+                            </span>
+                            <span className="text-[11px] text-gray-500 font-mono break-all line-clamp-1 max-w-xs sm:max-w-md">
+                              {form.imagenUrl}
+                            </span>
+                            <span className="text-[10px] text-emerald-700 font-medium">
+                              Haz clic o arrastra otra imagen para reemplazar
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setForm({ ...form, imagenUrl: '' });
+                          }}
+                          className="relative z-20 text-xs text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 font-semibold transition cursor-pointer"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="py-3 flex flex-col items-center justify-center gap-1.5">
+                        <div className="size-10 rounded-full bg-emerald-100/80 text-emerald-800 flex items-center justify-center text-xl">
+                          📸
+                        </div>
+                        <div className="text-xs font-bold text-gray-800">
+                          Arrastra y suelta aquí la imagen del local, o <span className="text-emerald-700 underline">haz clic para examinar</span>
+                        </div>
+                        <div className="text-[10px] text-gray-500">
+                          Formatos soportados: WEBP, JPG, PNG, AVIF (Hasta 5MB)
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Input alternativo directo por si ya tienen una URL */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-[10px] text-gray-500 shrink-0 font-medium">O pega una URL directa:</span>
+                    <input
+                      type="url"
+                      value={form.imagenUrl || ''}
+                      onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-petroleo font-mono"
+                    />
+                  </div>
                 </div>
 
                 {/* Descripción */}

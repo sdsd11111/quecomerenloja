@@ -95,27 +95,24 @@ a, button {
   html {
     scroll-behavior: auto;
   }
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
 }
 
 /* ── MARQUESINA CONTINUA SUAVE (Para Socios Verificados) ── */
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+@keyframes infinite-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 12px));
+  }
 }
 
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 35s linear infinite;
+.animate-infinite-slide {
+  animation: infinite-slide 32s linear infinite;
+  will-change: transform;
 }
 
-.animate-marquee:hover {
+.animate-infinite-slide:hover {
   animation-play-state: paused;
 }
 

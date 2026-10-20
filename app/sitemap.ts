@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const estaticas = [
     { ruta: "", prioridad: 1.0, freq: "daily" as const },
     { ruta: "/restaurantes", prioridad: 0.95, freq: "daily" as const },
+    { ruta: "/eventos-gastronomicos", prioridad: 0.9, freq: "daily" as const },
     // Hubs de momento
     { ruta: "/desayunos-en-loja", prioridad: 0.9, freq: "weekly" as const },
     { ruta: "/almuerzos-loja", prioridad: 0.9, freq: "weekly" as const },

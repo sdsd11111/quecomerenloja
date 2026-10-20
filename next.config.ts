@@ -8,6 +8,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "mvps.b-cdn.net",
       },
+      {
+        protocol: "https",
+        hostname: "www.agendaculturalloja.com",
+      },
+      {
+        protocol: "https",
+        hostname: "agendaculturalloja.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
 };
