@@ -16,7 +16,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { prismaBot } from "@/lib/prisma-bot";
-import { getGastroPool } from "@/lib/aliados-db";
 
 export interface EventoItem {
   id: number;
@@ -54,7 +53,7 @@ export interface AliadoItem {
   ubicacionLng: number | null;
   estrellas: number | null;
   numeroCuartos: number | null;
-  aliado_habitaciones?: HabitacionItem[];
+  canton?: string | null;
   habitaciones?: HabitacionItem[];
   distanciaKm?: number | null;
   distanciaTexto?: string;
@@ -258,104 +257,56 @@ export const eventosService = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// 2. SERVICIO DE GASTRONOMÍA (Fuente: DB Gastronomía / QueComerEnLoja)
+// 2. SERVICIO DE GASTRONOMÍA (Fuente: DB Botempresas / QueComerEnLoja)
 // ─────────────────────────────────────────────────────────────
 export const gastronomiaService = {
   /**
-   * Carga restaurantes y cafeterías activas con sus especialidades/platos directamente de GASTRONOMIA_DB_URL
+   * Carga restaurantes y cafeterías activas con sus especialidades/platos
+   * MIENTRAS TANTO: Se leen desde la base de datos central de Botempresas (CHATBOT_DB_URL).
    */
   async obtenerRestaurantesYCafes(limite = 20): Promise<AliadoItem[]> {
-    try {
-      const pool = getGastroPool();
-      const [rows] = await pool.query<any[]>(
-        `SELECT a.* FROM aliados a
-         WHERE a.activo = 1 AND a.tipo IN ('GASTRONOMIA', 'CAFETERIA')
-         ORDER BY a.destacado DESC, a.createdAt DESC
-         LIMIT ?`,
-        [limite]
-      );
-
-      // Traer habitaciones/platos si existen
-      const aliadoIds = rows.map((r) => r.id);
-      let mapHabs: Record<number, HabitacionItem[]> = {};
-      if (aliadoIds.length > 0) {
-        const [habs] = await pool.query<any[]>(
-          `SELECT aliadoId, nombre, precio, caracteristicas, orden FROM aliado_habitaciones WHERE aliadoId IN (?) ORDER BY orden ASC, id ASC`,
-          [aliadoIds]
-        ).catch(() => [[]]);
-        for (const h of habs || []) {
-          if (!mapHabs[h.aliadoId]) mapHabs[h.aliadoId] = [];
-          mapHabs[h.aliadoId].push(h);
-        }
-      }
-
-      return rows.map((item) => ({
+    return prismaBot.aliados.findMany({
+      where: {
+        activo: true,
+        tipo: { in: ["GASTRONOMIA", "CAFETERIA"] },
+      },
+      orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
+      take: limite,
+      include: {
+        aliado_habitaciones: {
+          orderBy: [{ orden: "asc" }, { id: "asc" }],
+        },
+      },
+    }).then((lista) =>
+      lista.map((item) => ({
         ...item,
-        destacado: Boolean(item.destacado),
-        activo: Boolean(item.activo),
-        habitaciones: mapHabs[item.id] || [],
-        aliado_habitaciones: mapHabs[item.id] || [],
-      })) as AliadoItem[];
-    } catch (err: any) {
-      console.warn("Fallo lectura directa GASTRONOMIA_DB_URL, usando fallback prismaBot:", err.message);
-      return prismaBot.aliados.findMany({
-        where: {
-          activo: true,
-          tipo: { in: ["GASTRONOMIA", "CAFETERIA"] },
-        },
-        orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
-        take: limite,
-        include: {
-          aliado_habitaciones: {
-            orderBy: [{ orden: "asc" }, { id: "asc" }],
-          },
-        },
-      }).then((lista) =>
-        lista.map((item) => ({
-          ...item,
-          habitaciones: item.aliado_habitaciones,
-        }))
-      ) as unknown as Promise<AliadoItem[]>;
-    }
+        habitaciones: item.aliado_habitaciones,
+      }))
+    ) as unknown as Promise<AliadoItem[]>;
   },
 
   /**
-   * Obtiene restaurantes o cafeterías por lista de IDs desde GASTRONOMIA_DB_URL
+   * Obtiene restaurantes o cafeterías por lista de IDs desde Botempresas
    */
   async obtenerPorIds(ids: number[]): Promise<AliadoItem[]> {
     if (!ids || ids.length === 0) return [];
-    try {
-      const pool = getGastroPool();
-      const [rows] = await pool.query<any[]>(
-        `SELECT * FROM aliados WHERE id IN (?) AND activo = 1 AND tipo IN ('GASTRONOMIA', 'CAFETERIA')`,
-        [ids]
-      );
-      return rows.map((item) => ({
+    return prismaBot.aliados.findMany({
+      where: {
+        id: { in: ids },
+        activo: true,
+        tipo: { in: ["GASTRONOMIA", "CAFETERIA"] },
+      },
+      include: {
+        aliado_habitaciones: {
+          orderBy: [{ orden: "asc" }, { id: "asc" }],
+        },
+      },
+    }).then((lista) =>
+      lista.map((item) => ({
         ...item,
-        destacado: Boolean(item.destacado),
-        activo: Boolean(item.activo),
-        habitaciones: [],
-      })) as AliadoItem[];
-    } catch (err: any) {
-      console.warn("Fallo lectura por IDs en GASTRONOMIA_DB_URL, fallback a prismaBot:", err.message);
-      return prismaBot.aliados.findMany({
-        where: {
-          id: { in: ids },
-          activo: true,
-          tipo: { in: ["GASTRONOMIA", "CAFETERIA"] },
-        },
-        include: {
-          aliado_habitaciones: {
-            orderBy: [{ orden: "asc" }, { id: "asc" }],
-          },
-        },
-      }).then((lista) =>
-        lista.map((item) => ({
-          ...item,
-          habitaciones: item.aliado_habitaciones,
-        }))
-      ) as unknown as Promise<AliadoItem[]>;
-    }
+        habitaciones: item.aliado_habitaciones,
+      }))
+    ) as unknown as Promise<AliadoItem[]>;
   },
 };
 
@@ -367,12 +318,22 @@ export const turismoService = {
    * Carga hoteles, hosterías y hostales con sus habitaciones y tarifas
    * MIENTRAS TANTO: Se leen desde la base de datos central de Botempresas (CHATBOT_DB_URL).
    */
-  async obtenerHoteles(limite = 20): Promise<AliadoItem[]> {
+  async obtenerHoteles(limite = 20, canton?: string): Promise<AliadoItem[]> {
+    const whereClause: any = {
+      activo: true,
+      tipo: "HOSPEDAJE",
+    };
+
+    if (canton && canton.trim()) {
+      whereClause.OR = [
+        { canton: { equals: canton.trim() } },
+        { ubicacion: { contains: canton.trim() } },
+        { descripcion: { contains: canton.trim() } },
+      ];
+    }
+
     return prismaBot.aliados.findMany({
-      where: {
-        activo: true,
-        tipo: "HOSPEDAJE",
-      },
+      where: whereClause,
       orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
       take: limite,
       include: {
