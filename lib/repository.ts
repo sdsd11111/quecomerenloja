@@ -89,7 +89,13 @@ async function query(extra = "", params: unknown[] = []): Promise<Restaurant[]> 
 }
 
 export async function listRestaurants(): Promise<Restaurant[]> {
-  return dbEnabled ? query() : DEMO;
+  if (!dbEnabled) return DEMO;
+  try {
+    return await query();
+  } catch (err) {
+    console.warn("[repository] DB error en listRestaurants, usando demo:", (err as Error).message);
+    return DEMO;
+  }
 }
 
 export async function listByCategory(category: Category): Promise<Restaurant[]> {

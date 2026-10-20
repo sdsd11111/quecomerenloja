@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listRestaurants } from "@/lib/repository";
-import { POSTS } from "@/lib/blog";
+import { getPublishedPosts, FALLBACK_POSTS } from "@/lib/blog";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { ruta: "/para-negocios", prioridad: 0.7, freq: "monthly" as const },
   ];
 
-  const restaurants = await listRestaurants();
+  // ── Restaurantes: con try/catch para que nunca reviente el sitemap ──────────
+  let restaurants: { slug: string; verifiedAt?: string | null }[] = [];
+  try {
+    restaurants = await listRestaurants();
+  } catch (err) {
+    console.warn("[sitemap] Error al cargar restaurantes, usando vacío:", (err as Error).message);
+  }
+
+  // ── Blog: lee posts reales de la BD; cae a fallback si hay error ─────────────
+  let posts: { slug: string; fecha_publicacion?: string }[] = [];
+  try {
+    posts = await getPublishedPosts();
+  } catch {
+    posts = FALLBACK_POSTS;
+  }
 
   return [
     // URLs principales de navegación y temáticas
@@ -53,15 +67,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Restaurantes dinámicos de la base de datos
     ...restaurants.map((r) => ({
       url: `${SITE.url}/restaurantes/${r.slug}`,
-      lastModified: hoy,
+      // Usa la fecha real de verificación si existe, sino hoy
+      lastModified: r.verifiedAt
+        ? new Date(r.verifiedAt).toISOString().split("T")[0]
+        : hoy,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
 
-    // Artículos de blog y guías de contenido
-    ...POSTS.map((p) => ({
+    // Artículos de blog con fecha real de publicación
+    ...posts.map((p) => ({
       url: `${SITE.url}/blog/${p.slug}`,
-      lastModified: p.date ?? hoy,
+      lastModified: p.fecha_publicacion ?? hoy,
       changeFrequency: "monthly" as const,
       priority: 0.75,
     })),

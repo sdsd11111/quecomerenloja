@@ -26,8 +26,87 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const message = `Hola, vi su menú en Qué Comer en Loja y quisiera consultar por: ${r.dish}.`;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Restaurant",
+        "@id": `https://quecomerenloja.com/restaurantes/${r.slug}#restaurant`,
+        name: r.name,
+        description: r.description || `${r.name} en Loja, Ecuador. Menú: ${r.menu}`,
+        url: `https://quecomerenloja.com/restaurantes/${r.slug}`,
+        servesCuisine: r.category === "cafe" ? "Cafetería, Desayunos" : r.category === "tradicional" ? "Comida Tradicional Lojana" : "Gastronomía Ecuatoriana",
+        priceRange: r.price ? `$${r.price.toFixed(2)}` : "$$",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Loja",
+          addressRegion: "Loja",
+          addressCountry: "EC",
+          streetAddress: r.zone || "Loja Centro",
+        },
+        ...(r.lat && r.lng
+          ? {
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: r.lat,
+                longitude: r.lng,
+              },
+            }
+          : {}),
+        ...(r.whatsapp
+          ? {
+              telephone: r.whatsapp.startsWith("+") ? r.whatsapp : `+${r.whatsapp}`,
+            }
+          : {}),
+        hasMenu: {
+          "@type": "Menu",
+          name: `Menú de ${r.name}`,
+          hasMenuItem: [
+            {
+              "@type": "MenuItem",
+              name: r.dish,
+              description: r.menu,
+              ...(r.price ? { offers: { "@type": "Offer", price: r.price, priceCurrency: "USD" } } : {}),
+            },
+            ...r.highlights.map((h) => ({
+              "@type": "MenuItem",
+              name: h,
+            })),
+          ],
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Inicio",
+            item: "https://quecomerenloja.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Restaurantes en Loja",
+            item: "https://quecomerenloja.com/restaurantes",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: r.name,
+            item: `https://quecomerenloja.com/restaurantes/${r.slug}`,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <DishArt style={r.style} label={r.dish}>
         <div className="absolute inset-x-0 bottom-0 z-10">
           <Wrap className="pb-8">

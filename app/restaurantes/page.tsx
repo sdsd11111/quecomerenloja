@@ -20,8 +20,57 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
   const { categoria } = await searchParams;
   const aliados = await getAliadosActivos();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": "https://quecomerenloja.com/restaurantes#collection",
+        url: "https://quecomerenloja.com/restaurantes",
+        name: "Directorio Oficial de Restaurantes y Cafeterías en Loja",
+        description: "Catálogo curado y verificado de restaurantes, cafeterías y huecas en Loja, Ecuador.",
+        isPartOf: {
+          "@type": "WebSite",
+          url: "https://quecomerenloja.com",
+          name: "Qué Comer en Loja",
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Inicio",
+            item: "https://quecomerenloja.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Restaurantes",
+            item: "https://quecomerenloja.com/restaurantes",
+          },
+        ],
+      },
+      {
+        "@type": "ItemList",
+        name: "Restaurantes y Cafeterías Destacados en Loja",
+        itemListElement: aliados.slice(0, 15).map((a, idx) => ({
+          "@type": "ListItem",
+          position: idx + 1,
+          name: a.nombre,
+          url: `https://quecomerenloja.com/restaurantes#aliado-${a.id}`,
+        })),
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <PageHero
         eyebrow="DIRECTORIO OFICIAL · ALIADOS GASTRONÓMICOS DE LOJA"
         title={
