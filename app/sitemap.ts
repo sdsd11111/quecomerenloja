@@ -39,6 +39,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { ruta: "/para-negocios", prioridad: 0.7, freq: "monthly" as const },
   ];
 
+  // ── Platos dinámicos desde GASTRONOMIA_DB ─────────────────────────────
+  let platosDinamicos: { slug: string }[] = [];
+  try {
+    const { getAllPlatosSlugs } = await import("@/lib/platos-db");
+    const slugs = await getAllPlatosSlugs();
+    platosDinamicos = slugs.map((slug) => ({ slug }));
+  } catch (err) {
+    console.warn("[sitemap] Error al cargar platos dinámicos:", (err as Error).message);
+  }
+
   // ── Restaurantes: con try/catch para que nunca reviente el sitemap ──────────
   let restaurants: { slug: string; verifiedAt?: string | null }[] = [];
   try {
@@ -55,14 +65,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     posts = FALLBACK_POSTS;
   }
 
+  // Mapear URLs de platos dinámicos únicos
+  const urlsPlatos = platosDinamicos.map((p) => ({
+    url: `${SITE.url}/platos/${p.slug}`,
+    lastModified: hoy,
+    changeFrequency: "weekly" as const,
+    priority: 0.88,
+  }));
+
+  // Filtrar estáticas para no duplicar si ya están en platos dinámicos
+  const estaticasFiltradas = estaticas.filter(
+    (e) => !e.ruta.startsWith("/platos/") || !platosDinamicos.some((p) => `/platos/${p.slug}` === e.ruta)
+  );
+
   return [
     // URLs principales de navegación y temáticas
-    ...estaticas.map((e) => ({
+    ...estaticasFiltradas.map((e) => ({
       url: `${SITE.url}${e.ruta}`,
       lastModified: hoy,
       changeFrequency: e.freq,
       priority: e.prioridad,
     })),
+
+    // Platos dinámicos del catálogo gastronómico
+    ...urlsPlatos,
 
     // Restaurantes dinámicos de la base de datos
     ...restaurants.map((r) => ({
