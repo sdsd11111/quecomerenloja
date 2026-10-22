@@ -12,11 +12,12 @@ export const SITE = {
 };
 
 export const NAV = [
+  { href: "/que-comer-hoy", label: "⭐ Qué comer hoy" },
   { href: "/desayunos-en-loja", label: "Desayunos" },
   { href: "/almuerzos-loja", label: "Almuerzos" },
   { href: "/comida-rapida-loja", label: "Dónde cenar" },
-  { href: "/bares-y-noche", label: "Bares y noche" },
   { href: "/eventos-gastronomicos", label: "Eventos & Ferias 🎪" },
+  { href: "/restaurantes", label: "Restaurantes" },
   { href: "/blog", label: "Blog" },
 ];
 
@@ -29,10 +30,10 @@ export const CATEGORIES: {
   href: string;
   badge?: string;
 }[] = [
-  { key: "tradicional", name: "Platos Típicos & Huecas", sub: "Repe lojano (5K b/m), cecina y tamales", icon: "🌽", bg: "bg-petroleo", href: "/restaurantes?categoria=tradicional", badge: "Más buscado" },
-  { key: "cafe", name: "Desayunos & Cafeterías", sub: "Café de altura, tamales y humitas", icon: "☕", bg: "bg-[#1A4545]", href: "/cafe-de-loja", badge: "+900% demanda" },
-  { key: "alta", name: "Mejores Restaurantes", sub: "Cenas, gastronomía de autor y tradición", icon: "🍽️", bg: "bg-[#205252]", href: "/restaurantes", badge: "5.000 b/m" },
-  { key: "noche", name: "Pizzas, Alitas & Noche", sub: "Alitas (+900%), pizzas, burgers y chifas", icon: "🍕", bg: "bg-grafito", href: "/comida-rapida-loja", badge: "Comida rápida" },
+  { key: "tradicional", name: "Platos Típicos & Huecas", sub: "Repe lojano, cecina asada y tamales", icon: "🌽", bg: "bg-petroleo", href: "/restaurantes?categoria=tradicional", badge: "Más buscado" },
+  { key: "cafe", name: "Desayunos & Cafeterías", sub: "Café de altura, tamales y humitas", icon: "☕", bg: "bg-[#1A4545]", href: "/cafe-de-loja", badge: "Favoritos" },
+  { key: "alta", name: "Mejores Restaurantes", sub: "Cenas, gastronomía de autor y tradición", icon: "🍽️", bg: "bg-[#205252]", href: "/restaurantes", badge: "Recomendados" },
+  { key: "noche", name: "Pizzas, Alitas & Noche", sub: "Alitas, pizzas artesanales, burgers y chifas", icon: "🍕", bg: "bg-grafito", href: "/comida-rapida-loja", badge: "Comida rápida" },
 ];
 
 export const PLANS = [

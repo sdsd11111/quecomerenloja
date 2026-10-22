@@ -3,9 +3,11 @@ import Image from "next/image";
 import { SITE } from "@/lib/site";
 
 const EXPLORAR_LINKS = [
+  { href: "/que-comer-hoy", label: "⭐ Qué comer hoy" },
   { href: "/desayunos-en-loja", label: "Desayunos" },
   { href: "/almuerzos-loja", label: "Almuerzos" },
   { href: "/comida-rapida-loja", label: "Dónde cenar" },
+  { href: "/platos", label: "Guía de Platos Típicos" },
   { href: "/eventos-gastronomicos", label: "Ferias & Eventos 🎪" },
   { href: "/blog", label: "Blog" },
 ];

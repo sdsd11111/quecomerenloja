@@ -11,12 +11,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Páginas estáticas y estratégicas con prioridades y frecuencias de actualización
   const estaticas = [
     { ruta: "", prioridad: 1.0, freq: "daily" as const },
+    { ruta: "/que-comer-hoy", prioridad: 0.98, freq: "daily" as const },
     { ruta: "/restaurantes", prioridad: 0.95, freq: "daily" as const },
     { ruta: "/eventos-gastronomicos", prioridad: 0.9, freq: "daily" as const },
     // Hubs de momento
     { ruta: "/desayunos-en-loja", prioridad: 0.9, freq: "weekly" as const },
     { ruta: "/almuerzos-loja", prioridad: 0.9, freq: "weekly" as const },
     { ruta: "/comida-rapida-loja", prioridad: 0.85, freq: "weekly" as const },
+    { ruta: "/platos", prioridad: 0.92, freq: "weekly" as const },
+    { ruta: "/buscar", prioridad: 0.8, freq: "weekly" as const },
     // Spokes - Platos individuales
     { ruta: "/platos/repe-lojano", prioridad: 0.9, freq: "weekly" as const },
     { ruta: "/platos/cecina-lojana", prioridad: 0.9, freq: "weekly" as const },

@@ -252,9 +252,9 @@ export default async function PlatoDinamicoPage({ params }: PageProps) {
                 </strong>
               </li>
               <li className="flex justify-between">
-                <span className="text-muted">Demanda mensual:</span>
+                <span className="text-muted">Origen & Estilo:</span>
                 <strong className="text-grafito font-semibold">
-                  ~{plato.volumen_busqueda} búsquedas en Loja
+                  Cocina Tradicional de Loja
                 </strong>
               </li>
             </ul>

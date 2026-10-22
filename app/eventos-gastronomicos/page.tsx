@@ -509,8 +509,8 @@ export default async function EventosGastronomicosPage() {
                 <p className="mt-1 text-xs text-muted">
                   La sopa insignia de guineo verde y quesillo artesanal lojano.
                 </p>
-                <span className="mt-3 inline-block text-[11px] font-bold text-petroleo">
-                  5.000 búsquedas/mes →
+                <span className="mt-3 inline-block text-[11px] font-bold text-petroleo group-hover:translate-x-1 transition-transform">
+                  Ver dónde comer →
                 </span>
               </Link>
 

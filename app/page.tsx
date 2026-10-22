@@ -254,9 +254,11 @@ export default async function Home() {
           CONECTOR FLOTANTE: BUSCADOR INTELIGENTE (-mt-12)
           Conectado directamente a las páginas de contenido y platos del sitio
           ════════════════════════════════════════════════════════════════ */}
-      <Wrap className="relative z-20 -mt-12">
-        <BuscadorHome />
-      </Wrap>
+      <div id="home-search-trigger">
+        <Wrap className="relative z-20 -mt-12">
+          <BuscadorHome />
+        </Wrap>
+      </div>
 
       {/* ════════════════════════════════════════════════════════════════
           SECCIÓN 2: LOS 4 GRANDES DE LOJA (Platos Típicos Identitarios)

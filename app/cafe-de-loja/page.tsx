@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 };
 
 const TOPICS = [
-  "☕ Cafeterías en Loja (500 b/m)",
-  "🍳 Desayunos en Loja (+900%)",
-  "🌽 Tamales y Humitas (+900%)",
-  "🌱 Café de especialidad de altura",
+  "☕ Cafeterías de Especialidad en Loja",
+  "🍳 Desayunos Tradicionales Lojanos",
+  "🌽 Tamales, Humitas y Quimbolitos",
+  "🌱 Café Arábico de Altura Premiado",
   "📍 Calle Lourdes y Centro Histórico",
-  "💻 Cafés con Wi-Fi para trabajar",
+  "💻 Cafés con Wi-Fi para Trabajar",
 ];
 
 const CAFE_FAQS = [

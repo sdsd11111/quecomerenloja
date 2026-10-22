@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Wrap } from "@/components/PageHero";
 import { getAllPlatos } from "@/lib/platos-db";
 
@@ -85,20 +86,29 @@ export default async function PlatosHubPage() {
                       className="group rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo/40 hover:shadow-md transition flex flex-col justify-between"
                     >
                       <div>
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-[10px] font-bold text-petroleo uppercase bg-porcelana px-2.5 py-0.5 rounded-full border border-niebla/60">
+                        {/* Imagen fotográfica WebP del plato */}
+                        <div className="relative h-44 w-full rounded-xl overflow-hidden mb-3.5 bg-porcelana border border-niebla/50">
+                          {plato.hero_imagen_url ? (
+                            <Image
+                              src={plato.hero_imagen_url}
+                              alt={`${plato.nombre} en Loja Ecuador`}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-3xl">🍲</div>
+                          )}
+                          <span className="absolute top-2.5 left-2.5 rounded-full bg-white/95 backdrop-blur-xs px-2.5 py-0.5 text-[9px] font-extrabold uppercase text-petroleo border border-white/60 shadow-2xs">
                             {plato.seccion}
-                          </span>
-                          <span className="text-xs font-semibold text-muted">
-                            ~{plato.volumen_busqueda} búsquedas/mes
                           </span>
                         </div>
 
-                        <h3 className="font-bold text-lg text-grafito group-hover:text-petroleo transition">
+                        <h3 className="font-bold text-lg text-grafito group-hover:text-petroleo transition mt-2">
                           {plato.nombre}
                         </h3>
 
-                        <p className="text-xs text-muted mt-2 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted mt-1.5 line-clamp-2 leading-relaxed">
                           {plato.descripcion_corta}
                         </p>
                       </div>

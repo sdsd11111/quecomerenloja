@@ -1,0 +1,410 @@
+[
+  {
+    "id": 42,
+    "slug": "repe-lojano",
+    "nombre": "Repe Lojano",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "El repe lojano es la sopa bandera de Loja, elaborada con guineo verde cocido y majado, quesillo fresco desmenuzado y culantro picado. De textura cremosa y sabor reconfortante.",
+    "ingredientes": "[\"Guineo verde (seda)\", \"Quesillo fresco lojano\", \"Culantro fresco\", \"Leche o fondo blanco\", \"Ajo y cebolla blanca\"]"
+  },
+  {
+    "id": 43,
+    "slug": "cecina-lojana",
+    "nombre": "Cecina Lojana",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Finos filetes de carne de cerdo adobados con especias tradicionales, secados y asados al carbón, acompañados de yuca suave y cebolla curtida.",
+    "ingredientes": "[\"Carne de cerdo (pierna o lomo)\", \"Achiote en pasta\", \"Ajo y comino\", \"Yuca cocida\", \"Cebolla colorada curtida\"]"
+  },
+  {
+    "id": 44,
+    "slug": "tamales-lojanos",
+    "nombre": "Tamales Lojanos",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Masa delicada de maíz envuelta en hoja de achira con relleno especiado de pollo o cerdo, cocida al vapor y perfecta para el café de la tarde.",
+    "ingredientes": "[\"Maíz blanco seco molido\", \"Pollo o cerdo desmechado\", \"Hoja de achira\", \"Manteca de cerdo\", \"Huevo duro y pimiento\"]"
+  },
+  {
+    "id": 45,
+    "slug": "humitas-loja",
+    "nombre": "Humitas en Loja",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Bocadillos suaves elaborados a base de choclo tierno recién molido con abundante quesillo y mantequilla, envueltos en sus propias hojas.",
+    "ingredientes": "[\"Choclo tierno desgranado\", \"Quesillo lojano\", \"Mantequilla de campo\", \"Huevos de campo\", \"Pancas de choclo\"]"
+  },
+  {
+    "id": 46,
+    "slug": "quimbolitos-loja",
+    "nombre": "Quimbolitos Lojanos",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Bizcocho dulce y esponjoso cocinado al vapor en hoja de achira, decorado con pasas y aromatizado con esencia natural.",
+    "ingredientes": "[\"Harina de trigo y maíz\", \"Mantequilla y azúcar\", \"Huevos batidos a punto de nieve\", \"Pasas\", \"Hoja de achira\"]"
+  },
+  {
+    "id": 47,
+    "slug": "cuy-asado-loja",
+    "nombre": "Cuy Asado en Loja",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Cuy asado entero a la brasa con carbón de leña, de piel crujiente y carne jugosa, servido con papas doradas, mote y salsa de pepa de zambo.",
+    "ingredientes": "[\"Cuy seleccionado\", \"Adobo criollo con ajo y comino\", \"Papas cocidas y doradas\", \"Ají de pepa de zambo\", \"Lechuga y tomate\"]"
+  },
+  {
+    "id": 48,
+    "slug": "gallina-cuyada-loja",
+    "nombre": "Gallina Cuyada en Loja",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Gallina criolla adobada con la receta secreta del cuy y asada pacientemente al carbón, logrando un dorado perfecto y sabor ahumado.",
+    "ingredientes": "[\"Gallina criolla de campo\", \"Aliño tradicional con achiote y manteca\", \"Papas doradas\", \"Ají de pepa\", \"Mote cocido\"]"
+  },
+  {
+    "id": 49,
+    "slug": "arveja-con-guineo-loja",
+    "nombre": "Arveja con Guineo",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Sopa espesa y nutritiva preparada con arvejas secas cocidas a fuego lento, guineo verde cortado en cubos y quesillo fresco desmenuzado.",
+    "ingredientes": "[\"Arveja verde seca\", \"Guineo verde lojano\", \"Quesillo artesanal\", \"Refrito criollo con cebolla y ajo\", \"Culantro picado\"]"
+  },
+  {
+    "id": 50,
+    "slug": "sango-loja",
+    "nombre": "Sango Lojano y de Camarón",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Guiso espeso y aromático de harina de maíz tostado con cebolla, achiote, quesillo derretido o mariscos, servido bien caliente.",
+    "ingredientes": "[\"Harina de maíz tostado\", \"Quesillo lojano\", \"Achiote y cebolla blanca\", \"Fondo de carne o mariscos\", \"Culantro\"]"
+  },
+  {
+    "id": 51,
+    "slug": "locro-loja",
+    "nombre": "Locros y Sopas Tradicionales",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Sopa espesada por la cocción de papas andinas con leche, quesillo y hierbas aromáticas, acompañada de aguacate.",
+    "ingredientes": "[\"Papa chola y chola negra\", \"Queso o quesillo tierno\", \"Leche entera\", \"Aguacate\", \"Cebolla blanca y orégano\"]"
+  },
+  {
+    "id": 52,
+    "slug": "chicharron-loja",
+    "nombre": "Chicharrones y Piqueos de Cerdo",
+    "seccion": "Tradicional Lojana",
+    "descripcion": "Trozos de cerdo fritos en paila de bronce en su propia grasa hasta alcanzar un color dorado crujiente por fuera y jugoso por dentro.",
+    "ingredientes": "[\"Carne y lonja de cerdo\", \"Sal y comino\", \"Mote pelado cocido\", \"Tostado\", \"Limón y ají\"]"
+  },
+  {
+    "id": 53,
+    "slug": "bolones-loja",
+    "nombre": "Bolones de Verde en Loja",
+    "seccion": "Desayunos y Tradicional",
+    "descripcion": "Esferas generosas de plátano verde majado y dorado con corazón de queso fundido, chicharrón de cerdo o mixtos.",
+    "ingredientes": "[\"Plátano verde dominico o barraganete\", \"Quesillo lojano\", \"Chicharrón de cerdo\", \"Manteca de cerdo o mantequilla\", \"Sal al gusto\"]"
+  },
+  {
+    "id": 54,
+    "slug": "tigrillo-loja",
+    "nombre": "Tigrillo en Loja",
+    "seccion": "Desayunos y Tradicional",
+    "descripcion": "Plátano verde majado cocinado a la sartén con refrito, huevo, leche y hebras generosas de quesillo fundido.",
+    "ingredientes": "[\"Plátano verde majado\", \"Quesillo lojano\", \"Huevos de campo\", \"Leche entera\", \"Cebolla blanca y achiote\"]"
+  },
+  {
+    "id": 55,
+    "slug": "empanadas-loja",
+    "nombre": "Empanadas de Verde y Morocho",
+    "seccion": "Desayunos y Tradicional",
+    "descripcion": "Empanadas doradas y crocantes rellenas de quesillo derretido, carne o pollo desmechado, servidas con ají de tomate de árbol.",
+    "ingredientes": "[\"Masa de plátano verde o morocho\", \"Quesillo lojano\", \"Carne de res o pollo\", \"Aceite para freír\", \"Ají casero\"]"
+  },
+  {
+    "id": 56,
+    "slug": "cafe-especialidad-loja",
+    "nombre": "Café de Especialidad y Filtrados",
+    "seccion": "Cafeterías y Bebidas",
+    "descripcion": "Cafés de altura con notas cítricas, achocolatadas y florales, tostados y servidos en métodos artesanales por baristas lojanos.",
+    "ingredientes": "[\"Grano arábigo lojano (Typica, Bourbon, Geisha)\", \"Agua a temperatura controlada\", \"Molienda fresca\", \"Métodos de extracción artesanal\"]"
+  },
+  {
+    "id": 57,
+    "slug": "parihuela-loja",
+    "nombre": "Parihuela de Mariscos",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Potente caldo marino con pescado y frutos del mar frescos traídos desde la costa ecuatoriana, condimentado con ají amarillo y limón.",
+    "ingredientes": "[\"Camarones frescos\", \"Calamar y mejillones\", \"Pescado blanco\", \"Ají amarillo\", \"Culantro y limón sutil\"]"
+  },
+  {
+    "id": 58,
+    "slug": "encebollado-loja",
+    "nombre": "Encebollados en Loja",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "El plato rey de las mañanas ecuatorianas: sopa especiada de albacora con yuca tierna, coronada con cebolla morada encurtida y chifles.",
+    "ingredientes": "[\"Lomo de albacora fresca\", \"Yuca suave\", \"Cebolla colorada encurtida\", \"Culantro y comino\", \"Chifles crocantes\"]"
+  },
+  {
+    "id": 59,
+    "slug": "ceviche-pescado-loja",
+    "nombre": "Ceviche de Pescado y Estilo Peruano",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Cubos de pescado blanco fresco marinados en limón recién exprimido con ají limo, culantro, cebolla y guarniciones crocantes.",
+    "ingredientes": "[\"Pescado blanco (corvina o dorado)\", \"Zumo de limón sutil fresco\", \"Cebolla morada en pluma\", \"Ají limo o criollo\", \"Choclo y camote\"]"
+  },
+  {
+    "id": 60,
+    "slug": "ceviche-concha-loja",
+    "nombre": "Ceviche de Concha Negra",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Ceviche de concha negra extraída de los manglares de la costa, servido con su propio líquido natural y acentuado con limón y cebolla.",
+    "ingredientes": "[\"Conchas negras frescas vivas\", \"Zumo de limón\", \"Cebolla colorada finamente picada\", \"Culantro fresco\", \"Aceite y mostaza opcional\"]"
+  },
+  {
+    "id": 61,
+    "slug": "ceviche-camaron-loja",
+    "nombre": "Ceviche de Camarón",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Camarones cocidos a punto en caldo cítrico aromatizado, combinados con tomate riñón fresco, cebolla y toque de naranja.",
+    "ingredientes": "[\"Camarones de piscina o mar\", \"Caldo concentrado de camarón\", \"Tomate riñón licuado y picado\", \"Cebolla colorada\", \"Limón y naranja\"]"
+  },
+  {
+    "id": 62,
+    "slug": "arroz-marinero-loja",
+    "nombre": "Arroz Marinero y con Mariscos",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Arroz cargado de mariscos salteados a fuego vivo con pimientos, culantro y especias marinas, coronado con maduros fritos.",
+    "ingredientes": "[\"Arroz blanco de grano largo\", \"Camarones, calamares y concha\", \"Pimiento verde y rojo\", \"Achiote criollo\", \"Plátano maduro\"]"
+  },
+  {
+    "id": 63,
+    "slug": "cazuela-mariscos-loja",
+    "nombre": "Cazuela de Mariscos",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Guiso horneado en tiesto de barro con masa de plátano verde rallado, pasta de maní puro y mariscos salteados.",
+    "ingredientes": "[\"Plátano verde rallado\", \"Pasta de maní tostado\", \"Pescado y camarón\", \"Refrito con achiote y cebolla\", \"Tiesto de barro\"]"
+  },
+  {
+    "id": 64,
+    "slug": "encocado-loja",
+    "nombre": "Encocados de Mariscos y Pescado",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Mariscos frescos cocidos a fuego lento en leche de coco recién extraída con pimientos, cebolla y hierbas de monte.",
+    "ingredientes": "[\"Leche de coco natural\", \"Camarones o filete de pescado\", \"Pimiento y cebolla\", \"Chillangua o culantro\", \"Arroz blanco y patacones\"]"
+  },
+  {
+    "id": 65,
+    "slug": "camarones-apanados-loja",
+    "nombre": "Camarones Apanados y al Ajillo",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Camarones gigantes empanizados y fritos hasta quedar sumamente crocantes, o bañados en mantequilla con ajo dorado y perejil.",
+    "ingredientes": "[\"Camarones seleccionados\", \"Panko o pan rallado\", \"Ajo picado y mantequilla\", \"Patacones de verde\", \"Salsa tártara\"]"
+  },
+  {
+    "id": 66,
+    "slug": "cangrejos-loja",
+    "nombre": "Cangrejos y Cangrejadas",
+    "seccion": "Mariscos y Costeña",
+    "descripcion": "Cangrejo rojo cocinado en olla grande con especias, hierbas y cerveza, servido entero con tabla y mazo para degustar en grupo.",
+    "ingredientes": "[\"Cangrejo rojo vivo\", \"Cerveza rubia\", \"Albahaca y culantro\", \"Maduro y verde cocido\", \"Salsa criolla\"]"
+  },
+  {
+    "id": 67,
+    "slug": "parrilladas-loja",
+    "nombre": "Parrilladas al Carbón en Loja",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "Surtido de cortes de carne de res, cerdo, pollo y embutidos asados a la brasa con carbón de leña, servidos sobre braseros de mesa.",
+    "ingredientes": "[\"Bife y lomo de res\", \"Chuleta de cerdo\", \"Chorizo parrillero\", \"Papas asadas o fritas\", \"Chimichurri de la casa\"]"
+  },
+  {
+    "id": 68,
+    "slug": "cortes-premium-loja",
+    "nombre": "Bife, Picaña y Cortes Premium",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "Cortes madurados y seleccionados preparados a la parrilla abierta con sal en grano y mantequilla aromatizada.",
+    "ingredientes": "[\"Bife de chorizo angus\", \"Picaña certificada\", \"Rib eye / Tomahawk\", \"Sal marina en grano\", \"Chimichurri artesanal\"]"
+  },
+  {
+    "id": 69,
+    "slug": "lomo-fino-loja",
+    "nombre": "Lomo Fino y Lomo Saltado",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "El corte más suave de res cocinado a la plancha con salsas gourmet o flambeado al wok con vegetales crocantes.",
+    "ingredientes": "[\"Lomo fino de res\", \"Champiñones frescos\", \"Soya y vinagre (lomo saltado)\", \"Papas fritas caseras\", \"Arroz blanco\"]"
+  },
+  {
+    "id": 70,
+    "slug": "costillas-bbq-loja",
+    "nombre": "Costillas BBQ y Ahumadas",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "Costillares tiernos que se desprenden del hueso, bañados en salsa barbacoa ahumada dulce o picante.",
+    "ingredientes": "[\"Costillar de cerdo seleccionado\", \"Salsa barbacoa casera\", \"Papas rústicas o fritas\", \"Ensalada de col (coleslaw)\", \"Especias ahumadas\"]"
+  },
+  {
+    "id": 71,
+    "slug": "pollo-asado-loja",
+    "nombre": "Pollo Asado y a la Brasa",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "Pollo tierno marinado en adobo casero y dorado al spiedo o al carbón, con piel crujiente y carne jugosa.",
+    "ingredientes": "[\"Pollo entero de granja\", \"Adobo con ajo, comino y cerveza\", \"Papas fritas crocantes\", \"Menestra de fréjol\", \"Ají pollero\"]"
+  },
+  {
+    "id": 72,
+    "slug": "pinchos-loja",
+    "nombre": "Pinchos y Brochetas al Carbón",
+    "seccion": "Parrilladas y Carnes",
+    "descripcion": "Brochetas asadas a la brasa en puestos callejeros y asaderos, un bocadillo nocturno indispensable.",
+    "ingredientes": "[\"Carne de res o pollo\", \"Chorizo parrillero\", \"Papa cocida\", \"Aliño de ajo y achiote\", \"Mayonesa y ají casero\"]"
+  },
+  {
+    "id": 73,
+    "slug": "guatita-loja",
+    "nombre": "Guatita Criolla en Loja",
+    "seccion": "Secos y Almuerzos",
+    "descripcion": "Panza de res limpiada y cocinada a la perfección en salsa espesa de pasta de maní, cebolla, ajo y papas amarillas.",
+    "ingredientes": "[\"Mondongo o panza de res\", \"Pasta de maní tostado\", \"Papas picadas en cubos\", \"Achiote y cebolla colorada\", \"Arroz amarillo y aguacate\"]"
+  },
+  {
+    "id": 74,
+    "slug": "seco-de-chivo-loja",
+    "nombre": "Seco de Chivo en Loja",
+    "seccion": "Secos y Almuerzos",
+    "descripcion": "Guiso tradicional de chivo tierno con notas agridulces de naranjilla y cerveza, de salsa espesa y aromática.",
+    "ingredientes": "[\"Carne de chivo seleccionada\", \"Chicha de jora o cerveza\", \"Jugo de naranjilla\", \"Achiote, ajo y comino\", \"Arroz amarillo y yuca\"]"
+  },
+  {
+    "id": 75,
+    "slug": "seco-de-pollo-loja",
+    "nombre": "Seco de Pollo y Gallina",
+    "seccion": "Secos y Almuerzos",
+    "descripcion": "Estofado aromático de presas de pollo cocinadas en refrito criollo con toque cítrico y abundante cilantro picado.",
+    "ingredientes": "[\"Presas de pollo de campo\", \"Tomate, pimiento y cebolla colorada\", \"Cerveza o jugo de fruta\", \"Culantro fresco\", \"Arroz y maduro frito\"]"
+  },
+  {
+    "id": 76,
+    "slug": "seco-de-carne-loja",
+    "nombre": "Seco de Chancho y Res",
+    "seccion": "Secos y Almuerzos",
+    "descripcion": "Carne de cerdo o costilla cocinada lentamente hasta que la salsa espese con los jugos naturales del refrito.",
+    "ingredientes": "[\"Costilla o carne de cerdo\", \"Refrito criollo\", \"Cerveza o chicha\", \"Arroz y ensalada rusa\", \"Culantro\"]"
+  },
+  {
+    "id": 77,
+    "slug": "menestras-loja",
+    "nombre": "Menestras con Carne al Carbón",
+    "seccion": "Secos y Almuerzos",
+    "descripcion": "Guiso espeso de granos tiernos o secos con queso y refrito de achiote, servido con arroz y proteínas a las brasas.",
+    "ingredientes": "[\"Fréjol canario, negro o lenteja\", \"Carne de res o chuleta asada\", \"Arroz blanco\", \"Patacones de plátano verde\", \"Queso rallado en la menestra\"]"
+  },
+  {
+    "id": 78,
+    "slug": "churrasco-loja",
+    "nombre": "Churrasco Ecuatoriano",
+    "seccion": "Platos Fuertes",
+    "descripcion": "Plato contundente con filete de res o pollo asado, coronado con huevos fritos de yema tierna, papas fritas y ensalada.",
+    "ingredientes": "[\"Filete de lomo de res\", \"Huevos de campo fritos\", \"Papas fritas caseras\", \"Arroz blanco\", \"Tomate, lechuga y cebolla\"]"
+  },
+  {
+    "id": 79,
+    "slug": "banderas-loja",
+    "nombre": "Banderas y Platos Combinados",
+    "seccion": "Platos Fuertes",
+    "descripcion": "Plato emblemático que reúne tres o más especialidades criollas y marinas en un mismo plato para quienes lo quieren todo.",
+    "ingredientes": "[\"Porción de guatita\", \"Porción de encebollado\", \"Ceviche de camarón o concha\", \"Arroz amarillo\", \"Aguacate y chifle\"]"
+  },
+  {
+    "id": 80,
+    "slug": "hamburguesas-artesanales-loja",
+    "nombre": "Hamburguesas Artesanales",
+    "seccion": "Comida Rápida",
+    "descripcion": "Hamburguesas gourmet preparadas con cortes de carne seleccionados, queso fundido, tocineta crocante y salsas de la casa.",
+    "ingredientes": "[\"Carne de res molida artesanal\", \"Pan brioche o de papa\", \"Queso cheddar o mozzarella\", \"Tocineta ahumada\", \"Papas fritas con sal de especias\"]"
+  },
+  {
+    "id": 81,
+    "slug": "alitas-loja",
+    "nombre": "Alitas BBQ y Picantes",
+    "seccion": "Comida Rápida",
+    "descripcion": "Alitas de pollo fritas a la perfección, bañadas en una amplia variedad de salsas dulces, ahumadas y picantes.",
+    "ingredientes": "[\"Alitas de pollo seleccionadas\", \"Salsa BBQ ahumada\", \"Salsa búfalo picante\", \"Papas fritas\", \"Aderezo ranch o queso azul\"]"
+  },
+  {
+    "id": 82,
+    "slug": "pizza-artesanal-loja",
+    "nombre": "Pizzas Artesanales en Horno",
+    "seccion": "Comida Rápida",
+    "descripcion": "Pizzas elaboradas a mano con ingredientes de primera calidad, queso mozzarella fundido y orégano seco sobre base crocante.",
+    "ingredientes": "[\"Masa artesanal fermentada\", \"Salsa de tomate casera\", \"Queso mozzarella artesanal\", \"Pepperoni, jamón o vegetales\", \"Aceite de oliva y orégano\"]"
+  },
+  {
+    "id": 83,
+    "slug": "salchipapas-loja",
+    "nombre": "Salchipapas y Papas Cargadas",
+    "seccion": "Comida Rápida",
+    "descripcion": "Porciones abundantes de papas fritas con salchichas seleccionadas, trozos de carne asada y aderezos especiales.",
+    "ingredientes": "[\"Papas fritas crocantes\", \"Salchicha especial o ahumada\", \"Carne de res mechada\", \"Queso derretido\", \"Salsas tártara, golf y ají\"]"
+  },
+  {
+    "id": 84,
+    "slug": "hot-dogs-loja",
+    "nombre": "Hot Dogs y Choripán",
+    "seccion": "Comida Rápida",
+    "descripcion": "Perros calientes clásicos y gourmet con salchichas asadas o al vapor, salsas especiales y acompañamientos crocantes.",
+    "ingredientes": "[\"Salchicha de calidad o chorizo\", \"Pan para hot dog suave\", \"Papas al hilo crocantes\", \"Cebolla picada\", \"Salsas caseras\"]"
+  },
+  {
+    "id": 85,
+    "slug": "sandwiches-loja",
+    "nombre": "Sándwiches y Sanduches Artesanales",
+    "seccion": "Comida Rápida",
+    "descripcion": "Sándwiches gourmet con panes horneados diariamente y carnes jugosas a la plancha con vegetales frescos.",
+    "ingredientes": "[\"Pan artesanal ciabatta o baguette\", \"Lomo de res, pollo o pernil\", \"Queso mozzarella o gouda\", \"Lechuga y tomate fresco\", \"Salsas gourmet\"]"
+  },
+  {
+    "id": 86,
+    "slug": "tacos-mexicanos-loja",
+    "nombre": "Tacos, Burritos y Quesadillas",
+    "seccion": "Comida Rápida",
+    "descripcion": "Platos de sabor mexicano con tortillas calientes, carnes sazonadas con especias, queso fundido y salsas picantes.",
+    "ingredientes": "[\"Tortillas de maíz y trigo\", \"Carne al pastor, asada o birria\", \"Queso mozzarella fundido\", \"Guacamole fresco\", \"Pico de gallo y jalapeños\"]"
+  },
+  {
+    "id": 87,
+    "slug": "chifa-chaulafan-loja",
+    "nombre": "Chifa y Chaulafán en Loja",
+    "seccion": "Cocina Internacional",
+    "descripcion": "Arroz frito al wok a fuego intenso con carnes mixtas, cebollín y salsa de soya, con porciones sumamente rendidoras.",
+    "ingredientes": "[\"Arroz blanco frío de grano largo\", \"Pollo, cerdo asado y camarón\", \"Salsa de soya y sillao\", \"Cebollín y huevo revuelto\", \"Wantán crocante\"]"
+  },
+  {
+    "id": 88,
+    "slug": "sushi-rolls-loja",
+    "nombre": "Sushi, Rolls y Makis",
+    "seccion": "Cocina Internacional",
+    "descripcion": "Rolls elaborados con arroz avinagrado, pescados frescos, mariscos y toques de frutas tropicales como mango y maracuyá.",
+    "ingredientes": "[\"Arroz para sushi (shari)\", \"Salmón o atún fresco\", \"Queso crema y aguacate\", \"Alga nori\", \"Salsa de soya y teriyaki\"]"
+  },
+  {
+    "id": 89,
+    "slug": "pastas-italianas-loja",
+    "nombre": "Pastas Italianas, Lasaña y Ravioles",
+    "seccion": "Cocina Internacional",
+    "descripcion": "Pastas artesanales preparadas con sémola de trigo duro y salsas clásicas italianas de cocción lenta.",
+    "ingredientes": "[\"Pasta fresca de trigo\", \"Salsa pomodoro y carne de res\", \"Queso parmesano y mozzarella\", \"Pesto de albahaca con nueces\", \"Crema y panceta\"]"
+  },
+  {
+    "id": 90,
+    "slug": "tablas-charcuteria-loja",
+    "nombre": "Tablas de Jamones y Quesos",
+    "seccion": "Cocina Internacional",
+    "descripcion": "Presentaciones elegantes de fiambres curados y quesos selectos para compartir acompañados de una copa de vino.",
+    "ingredientes": "[\"Jamón serrano y prosciutto\", \"Quesos maduros y gouda\", \"Frutos secos y uvas\", \"Mermeladas artesanales\", \"Panes tostados\"]"
+  },
+  {
+    "id": 91,
+    "slug": "waffles-crepes-loja",
+    "nombre": "Waffles, Crepes y Pancakes",
+    "seccion": "Cafeterías y Bebidas",
+    "descripcion": "Dulces preparados al momento con masas suaves y doradas acompañadas de toppings y frutas frescas.",
+    "ingredientes": "[\"Masa de waffle o crepe\", \"Nutella o chocolate derretido\", \"Fresas y plátano fresco\", \"Helado artesanal\", \"Crema chantilly\"]"
+  },
+  {
+    "id": 92,
+    "slug": "postres-tortas-loja",
+    "nombre": "Tortas, Cheesecakes y Pastelería",
+    "seccion": "Cafeterías y Bebidas",
+    "descripcion": "Repostería fina tradicional y moderna elaborada por maestros pasteleros de la ciudad de Loja.",
+    "ingredientes": "[\"Queso crema para cheesecake\", \"Bizcocho tres leches\", \"Cacao ecuatoriano fino de aroma\", \"Frutos rojos y maracuyá\", \"Crema de leche fresca\"]"
+  }
+]

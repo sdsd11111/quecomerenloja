@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { ChatbotWidget } from "@/components/ChatbotWidget";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { Footer } from "@/components/Footer";
+import { FloatingSearchWidget } from "@/components/FloatingSearchWidget";
 import { SITE } from "@/lib/site";
 
 const leagueSpartan = League_Spartan({
@@ -82,8 +83,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="contenido">{children}</main>
         <Footer />
+        <FloatingSearchWidget />
         <ChatbotWidget origen="quecomerenloja" />
-            </LanguageProvider>
+      </LanguageProvider>
       </body>
     </html>
   );
