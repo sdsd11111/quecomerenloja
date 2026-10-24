@@ -39,7 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { ruta: "/cafe-de-loja", prioridad: 0.85, freq: "weekly" as const },
     { ruta: "/bares-y-noche", prioridad: 0.8, freq: "weekly" as const },
     { ruta: "/blog", prioridad: 0.8, freq: "weekly" as const },
-    { ruta: "/para-negocios", prioridad: 0.7, freq: "monthly" as const },
   ];
 
   // ── Platos dinámicos desde GASTRONOMIA_DB ─────────────────────────────

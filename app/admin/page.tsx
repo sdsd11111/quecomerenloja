@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { renderContent, getVideoEmbedHtml } from '@/lib/markdown';
 import { AdminAliadosSection } from '@/components/admin/AdminAliadosSection';
+import { AdminPromosSection } from '@/components/admin/AdminPromosSection';
 
 // ─────────────────────────────────────────────────────────
 // ⚙️  PERSONALIZA: nombre de tu sitio y categorías del blog
@@ -23,8 +24,8 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Pestaña principal activa: 'aliados' (por defecto) o 'posts' (blog)
-  const [activeTab, setActiveTab] = useState<'aliados' | 'posts'>('aliados');
+  // Pestaña principal activa: 'aliados', 'promos' o 'posts' (blog)
+  const [activeTab, setActiveTab] = useState<'aliados' | 'promos' | 'posts'>('aliados');
 
   // Estados del CRUD de Blog
   const [posts, setPosts] = useState<any[]>([]);
@@ -403,6 +404,19 @@ export default function AdminPage() {
 
           <button
             type="button"
+            onClick={() => setActiveTab('promos')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition ${
+              activeTab === 'promos'
+                ? 'bg-amber-600 text-white shadow-md'
+                : 'bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200'
+            }`}
+          >
+            <span>🔥</span>
+            <span>Promociones & Eventos Aliados</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('posts')}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition ${
               activeTab === 'posts'
@@ -429,6 +443,11 @@ export default function AdminPage() {
 
             <AdminAliadosSection />
           </div>
+        )}
+
+        {/* CONTENIDO DE LA PESTAÑA: PROMOCIONES & EVENTOS */}
+        {activeTab === 'promos' && (
+          <AdminPromosSection />
         )}
 
         {/* CONTENIDO DE LA PESTAÑA 2: ARTÍCULOS DEL BLOG */}

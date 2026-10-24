@@ -5,6 +5,9 @@ import { Wrap } from "@/components/PageHero";
 import { getPlatosByMomento } from "@/lib/platos-data";
 import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
 import { getAliadosByMomento } from "@/lib/aliados-db";
+import { getPlatosByMomentoDB } from "@/lib/platos-db";
+import { SplitMomentoMapa } from "@/components/SplitMomentoMapa";
+import { AliadosSlideInfinito } from "@/components/AliadosSlideInfinito";
 
 export const metadata: Metadata = {
   title: "Dónde Almorzar en Loja | Menú del Día y Almuerzos Ejecutivos",
@@ -20,36 +23,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const ALMUERZOS_STRUCTURE = [
-  {
-    step: "1. Entrada / Sopa",
-    title: "Sopa Tradicional Caliente",
-    desc: "Casi todo almuerzo lojano abre con una sopa de cuchara: Repe lojano cremoso, arveja con guineo, sopa de quinua, caldo de gallina criolla o locro de papa.",
-    badge: "100% Cuchara Lojana",
-    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/sopa-entrada.webp",
-  },
-  {
-    step: "2. Plato Fuerte / Segundo",
-    title: "Segundo Balanceado con Proteína",
-    desc: "Opciones diarias que rotan: Cecina asada a la brasa, seco de pollo, chuleta a la plancha, bistec de carne, trucha frita o chivo al hueco con arroz y menestra.",
-    badge: "Sabor de Casa",
-    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/segundo-fuerte.webp",
-  },
-  {
-    step: "3. Guarnición y Acompañamiento",
-    title: "Yuca, Mote o Menestra",
-    desc: "La yuca sancochada fresca de valles cercanos, el mote recién cocido y las menestras de lenteja o fréjol acompañan el plato con ensalada fresca.",
-    badge: "Frescura Diaria",
-    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/guarniciones-yuca.webp",
-  },
-  {
-    step: "4. Bebida Tradicional",
-    title: "Jugo Natural de Fruta Local",
-    desc: "Incluido en el menú: Jugo de mora, maracuyá, naranjilla, horchata lojana fresca con hierbas aromáticas o limonada con panela.",
-    badge: "Horchata o Fruta",
-    image: "https://mvps.b-cdn.net/quecomerenloja/almuerzos/horchata-lojana.webp",
-  },
-];
+const WA_AFILIACION_ALMUERZOS = "https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20restaurante%20o%20comedor%20de%20almuerzos%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja";
 
 const ALMUERZO_SLOTS = [
   {
@@ -81,20 +55,32 @@ const ALMUERZO_SLOTS = [
 const FAQS_ALMUERZOS = [
   {
     q: "¿Cuánto cuesta un almuerzo ejecutivo o menú del día en Loja?",
-    a: "El precio promedio oscila entre $3.00 y $4.50 USD en la gran mayoría de comedores y restaurantes céntricos. Incluye sopa, segundo, jugo y a veces un postre pequeño.",
+    a: "El precio promedio oscila entre $3.00 y $4.50 USD en la gran mayoría de comedores y restaurantes céntricos. Incluye sopa casera (repe, arveja o caldo), plato fuerte con arroz y ensalada, jugo natural y en muchos locales un postre pequeño.",
   },
   {
     q: "¿A qué hora se sirve el almuerzo en Loja?",
-    a: "El horario típico de almuerzo en Loja es de 12:00 a 14:30. Los locales más concurridos suelen agotar sus mejores platos del día alrededor de las 13:30.",
+    a: "El horario típico de almuerzo en Loja es de 12:00 a 14:30. Los locales más concurridos del centro y San Sebastián suelen agotar sus mejores platos y opciones de sopa alrededor de las 13:30.",
   },
   {
     q: "¿Qué opciones de sopa suelen tener los almuerzos lojanos?",
-    a: "El repe lojano (sopa verde con quesillo) es muy habitual los lunes o viernes. También es muy común encontrar arveja con guineo, sopa de avena, caldo de patas o locro de quesillo.",
+    a: "El repe lojano (sopa cremosa de guineo verde y quesillo) es tradicional los lunes y viernes. También es muy habitual encontrar sopa de arveja con guineo, locro de papa con queso, caldo de patas o caldo de gallina criolla.",
+  },
+  {
+    q: "¿Dónde almorzar comida típica y cecina en Loja?",
+    a: "El sector de El Valle y las inmediaciones de la Plaza San Sebastián concentran las huecas más emblemáticas para comer cecina lojana a la brasa, repe blanco y cuy asado al mediodía.",
+  },
+  {
+    q: "¿Cómo pedir almuerzo a domicilio en Loja sin apps con sobreprecio?",
+    a: "A través de Qué Comer en Loja contactas directamente al WhatsApp verificado del restaurante para ordenar tu almuerzo al precio real de carta, sin las comisiones del 20-30% de las apps tradicionales.",
   },
 ];
 
 export default async function AlmuerzosPage() {
-  const aliadosAlmuerzo = await getAliadosByMomento("almuerzo");
+  const [aliadosAlmuerzo, platosTopDB] = await Promise.all([
+    getAliadosByMomento("almuerzo"),
+    getPlatosByMomentoDB("almuerzo", 4),
+  ]);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -157,72 +143,30 @@ export default async function AlmuerzosPage() {
               >
                 Ver restaurantes para almorzar →
               </Link>
-              <Link
-                href="/para-negocios"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition"
+              <a
+                href={WA_AFILIACION_ALMUERZOS}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
               >
-                Publica tu menú diario por audio WhatsApp →
-              </Link>
+                ¿Tienes un restaurante? Afiliarlo aquí ↗
+              </a>
             </div>
           </div>
         </Wrap>
       </section>
 
-      {/* ── SECCIÓN 2: QUÉ TRAE UN ALMUERZO EN LOJA ── */}
-      <section className="py-20 bg-porcelana">
-        <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo block mb-1">
-                LA COSTUMBRE LOJANA
-              </span>
-              <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
-                ¿Cómo es el Almuerzo Típico en Loja?
-              </h2>
-              <p className="text-xs md:text-sm text-muted mt-2 max-w-[600px]">
-                A diferencia de otras ciudades, en Loja el almuerzo diario mantiene la calidad de la cocina de olla y el sabor del campo.
-              </p>
-            </div>
-            <Link href="/restaurantes" className="text-xs font-bold text-petroleo hover:underline">
-              Explorar restaurantes →
-            </Link>
-          </div>
+      {/* ── SECCIÓN 2: SPLIT 50/50 (PLATOS DE ALMUERZO & MAPA CON GEOLOCALIZACIÓN) ── */}
+      <SplitMomentoMapa
+        momento="almuerzo"
+        subtitulo="MEDIODÍA EN LOJA"
+        titulo="Especialidades que Definen el Almuerzo en Loja"
+        descripcion="Elige tu plato fuerte preferido o activa tu GPS para encontrar el restaurante con almuerzo ejecutivo o comida típica más cercano a ti."
+        platos={platosTopDB}
+        aliados={aliadosAlmuerzo}
+      />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {ALMUERZOS_STRUCTURE.map((item) => (
-              <div
-                key={item.step}
-                className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-petroleo hover:shadow-xl"
-              >
-                <div>
-                  <div className="relative mb-5 h-44 w-full overflow-hidden rounded-xl">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                      className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <span className="absolute bottom-2.5 left-2.5 rounded-full bg-petroleo px-2.5 py-0.5 text-[9px] font-bold text-white shadow">
-                      {item.badge}
-                    </span>
-                  </div>
-
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted block mb-1">
-                    {item.step}
-                  </span>
-                  <h3 className="font-serif text-xl font-bold text-grafito group-hover:text-petroleo transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-muted mt-2.5 leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Wrap>
-      </section>
-
-      {/* ── SECCIÓN 2.5: PLATOS DE ALMUERZO (HUB & SPOKE INTERLINKING) ── */}
+      {/* ── SECCIÓN 3: GUÍAS COMPLETAS POR PLATO (HUB & SPOKE CAROUSEL) ── */}
       <section className="py-16 bg-porcelana/60 border-t border-niebla">
         <Wrap>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
@@ -247,7 +191,7 @@ export default async function AlmuerzosPage() {
         </Wrap>
       </section>
 
-      {/* ── SECCIÓN 3: VITRINA DE CUPOS B2B DE ALMUERZOS ── */}
+      {/* ── SECCIÓN 4: VITRINA DE SOCIOS Y RESTAURANTES VERIFICADOS (SLIDE INFINITO) ── */}
       <section className="py-20 border-t border-niebla bg-white overflow-hidden">
         <Wrap>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
@@ -259,135 +203,30 @@ export default async function AlmuerzosPage() {
                 Restaurantes con Almuerzo Verificado
               </h2>
               <p className="text-xs md:text-sm text-muted mt-2">
-                Los socios GuIAloja actualizan su menú diario con una simple nota de voz por WhatsApp y se recomiendan automáticamente ante miles de turistas.
+                Nuestros aliados actualizan sus platos del día directamente por WhatsApp y se recomiendan automáticamente ante miles de turistas y lojanos.
               </p>
             </div>
-            <Link
-              href="/para-negocios"
-              className="rounded-xl bg-petroleo px-5 py-3 text-xs font-bold text-white hover:bg-[#0E2E2E] transition"
+            <a
+              href={WA_AFILIACION_ALMUERZOS}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-petroleo px-5 py-3 text-xs font-bold text-white hover:bg-[#0E2E2E] transition inline-flex items-center gap-1.5"
             >
-              Publicar mi restaurante →
-            </Link>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {aliadosAlmuerzo.map((aliado) => {
-              const telLimpio = (aliado.telefono || "").replace(/\D/g, "");
-              const waUrl = telLimpio
-                ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(
-                    `Hola ${aliado.nombre}, vi su restaurante en la sección de Almuerzos de Qué Comer en Loja. Deseo información sobre el menú del día y reservas.`
-                  )}`
-                : null;
-
-              return (
-                <div
-                  key={`almuerzo-aliado-${aliado.id}`}
-                  className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-7 shadow-sm transition hover:border-petroleo hover:shadow-xl hover:-translate-y-1"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                        🍽️ Socio Verificado
-                      </span>
-                      {aliado.destacado && (
-                        <span className="rounded-full bg-citrico/30 px-2.5 py-0.5 text-[9px] font-extrabold text-petroleo">
-                          ★ Destacado
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="my-4 flex items-center gap-3">
-                      {aliado.imagenUrl ? (
-                        <img
-                          src={aliado.imagenUrl}
-                          alt={aliado.nombre}
-                          className="size-14 rounded-2xl object-cover border border-niebla shadow-xs"
-                        />
-                      ) : (
-                        <div className="size-14 rounded-2xl bg-porcelana border border-niebla flex items-center justify-center text-2xl shadow-xs">
-                          🍽️
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-serif text-lg font-bold text-grafito leading-tight">
-                          {aliado.nombre}
-                        </h3>
-                        <span className="text-xs text-muted block mt-0.5">
-                          📍 {aliado.ubicacion}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-muted leading-relaxed line-clamp-3">
-                      {aliado.descripcion}
-                    </p>
-
-                    {aliado.rangoPrecio && (
-                      <div className="mt-3 text-[11px] font-semibold text-petroleo">
-                        💰 {aliado.rangoPrecio}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 border-t border-niebla pt-4 flex flex-col gap-2">
-                    {waUrl ? (
-                      <a
-                        href={waUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-lg bg-emerald-700 px-3.5 py-2 text-[11px] font-bold text-white text-center transition hover:bg-emerald-800 shadow-xs"
-                      >
-                        💬 Contactar por WhatsApp
-                      </a>
-                    ) : (
-                      <Link
-                        href="/restaurantes"
-                        className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo text-center transition hover:brightness-105"
-                      >
-                        Ver Restaurante →
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Plazas disponibles de postulación para completar el grid */}
-            {ALMUERZO_SLOTS.slice(0, Math.max(1, 3 - aliadosAlmuerzo.length)).map((slot) => (
-              <div
-                key={slot.id}
-                className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-7 transition hover:border-petroleo hover:shadow-lg"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted">{slot.zone}</span>
-                    <span className="rounded-full bg-niebla/70 px-2.5 py-0.5 text-[9px] font-bold text-petroleo">
-                      {slot.status}
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-lg font-bold text-grafito mt-4">
-                    {slot.title}
-                  </h3>
-                  <small className="block font-semibold text-[11px] text-petroleo mt-1">✓ {slot.highlight}</small>
-                  <p className="text-xs text-muted mt-3 leading-relaxed">{slot.desc}</p>
-                </div>
-
-                <div className="mt-6 border-t border-niebla pt-4 flex items-center justify-between">
-                  <span className="text-[11px] text-muted">¿Tu local aquí?</span>
-                  <Link
-                    href="/para-negocios"
-                    className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo transition hover:brightness-105"
-                  >
-                    Reservar cupo →
-                  </Link>
-                </div>
-              </div>
-            ))}
+              Publicar mi restaurante aquí ↗
+            </a>
           </div>
         </Wrap>
+
+        {/* Marquee de ancho completo */}
+        <AliadosSlideInfinito
+          aliados={aliadosAlmuerzo}
+          slots={ALMUERZO_SLOTS}
+          waAfiliacionUrl={WA_AFILIACION_ALMUERZOS}
+          badgeTexto="🍽️ Socio Verificado"
+        />
       </section>
 
-      {/* ── FAQ ALMUERZOS ── */}
+      {/* ── SECCIÓN 5: FAQ ALMUERZOS ── */}
       <section className="py-16 border-t border-niebla bg-porcelana/50">
         <Wrap>
           <div className="mx-auto max-w-[760px]">

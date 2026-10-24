@@ -584,18 +584,58 @@ export function AdminAliadosSection() {
                     </td>
 
                     <td className="py-4 px-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        {/* BOTÓN ENLACE DE PUBLICAR PROMO */}
+                        {(() => {
+                          const aliadoSlug = a.nombre
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/^-+|-+$/g, '');
+                          const promoPath = `/publicar-promo?aliado=${aliadoSlug}`;
+                          const isCopied = copiadoSlug === aliadoSlug;
+
+                          return (
+                            <div className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 rounded-lg p-0.5">
+                              <Link
+                                href={promoPath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={`Abrir formulario de publicación para ${a.nombre}`}
+                                className="text-[11px] font-bold text-amber-900 hover:text-amber-700 px-2 py-1 rounded transition flex items-center gap-1"
+                              >
+                                <span>📢</span>
+                                <span>Publicar</span>
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const fullUrl = `${window.location.origin}${promoPath}`;
+                                  navigator.clipboard.writeText(fullUrl);
+                                  setCopiadoSlug(aliadoSlug);
+                                  setTimeout(() => setCopiadoSlug(null), 2500);
+                                }}
+                                title="Copiar enlace directo para enviar al aliado"
+                                className="text-[10px] font-extrabold bg-white text-gray-700 border border-amber-300 hover:bg-amber-100 px-2 py-1 rounded transition"
+                              >
+                                {isCopied ? '✓ Copiado' : '🔗 Copiar Link'}
+                              </button>
+                            </div>
+                          );
+                        })()}
+
                         <button
                           type="button"
                           onClick={() => openEditModal(a)}
-                          className="text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg transition"
+                          className="text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 px-2.5 py-1.5 rounded-lg transition"
                         >
                           ✏️ Editar
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(a.id)}
-                          className="text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition"
+                          className="text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-600 px-2.5 py-1.5 rounded-lg transition"
                         >
                           🗑️
                         </button>

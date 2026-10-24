@@ -77,14 +77,8 @@ export function Header() {
             </div>
           </Link>
 
-          {/* ── ACCIONES A LA DERECHA: CTA RÁPIDO + BOTÓN MENÚ DESPLEGABLE ── */}
+          {/* ── ACCIONES A LA DERECHA: BOTÓN MENÚ DESPLEGABLE ── */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/para-negocios"
-              className="hidden sm:inline-flex items-center justify-center rounded-xl bg-petroleo px-4 py-2.5 text-[12px] font-bold tracking-wide text-white shadow-sm transition hover:bg-[#0E2E2E] hover:shadow-md hover:-translate-y-0.5"
-            >
-              Soy un negocio ↗
-            </Link>
 
             {/* BOTÓN ÚNICO QUE ACTIVA EL DRAWER LATERAL */}
             <button
@@ -122,8 +116,13 @@ export function Header() {
       >
         {/* Header del Drawer */}
         <div className="flex items-center justify-between border-b border-niebla/60 p-6">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-petroleo p-1.5 flex items-center justify-center shadow-sm">
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 group"
+            aria-label="Ir al inicio"
+          >
+            <div className="h-10 w-10 rounded-xl bg-petroleo p-1.5 flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
               <Image
                 src="/favicon.svg"
                 alt="Logo"
@@ -133,14 +132,14 @@ export function Header() {
               />
             </div>
             <div>
-              <span className="font-serif font-bold text-base text-grafito block leading-none">
+              <span className="font-serif font-bold text-base text-grafito block leading-none group-hover:text-petroleo transition-colors">
                 Qué comer en Loja
               </span>
               <span className="text-[10px] text-muted font-semibold uppercase tracking-wider">
                 Menú de Navegación
               </span>
             </div>
-          </div>
+          </Link>
 
           <button
             onClick={() => setOpen(false)}
@@ -158,6 +157,18 @@ export function Header() {
               Explorar la Guía
             </span>
             <ul className="space-y-1.5">
+              <li>
+                <Link
+                  href="/"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-bold text-petroleo bg-citrico/20 transition hover:bg-citrico/40"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>🏠</span> Inicio
+                  </span>
+                  <span className="text-petroleo text-xs">→</span>
+                </Link>
+              </li>
               {NAV.map((l) => (
                 <li key={l.href}>
                   <Link
@@ -174,15 +185,17 @@ export function Header() {
           </div>
         </div>
 
-        {/* Footer del Drawer: CTA para restaurantes */}
+        {/* Footer del Drawer */}
         <div className="border-t border-niebla/60 bg-porcelana/40 p-6 space-y-3">
-          <Link
-            href="/para-negocios"
+          <a
+            href="https://wa.me/593988888888?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20Qu%C3%A9%20Comer%20en%20Loja"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setOpen(false)}
             className="flex w-full items-center justify-center rounded-xl bg-petroleo px-4 py-3.5 text-xs font-bold text-white shadow-md hover:bg-[#0E2E2E] transition"
           >
-            ¿Tienes un restaurante? Súmate aquí ↗
-          </Link>
+            Contacto directo por WhatsApp ↗
+          </a>
           <p className="text-center text-[10px] text-muted">
             Directorio y asesoría gastronómica 100% Loja.
           </p>

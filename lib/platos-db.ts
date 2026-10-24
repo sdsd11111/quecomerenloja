@@ -164,3 +164,77 @@ export async function getRestaurantesByPlato(platoId: number): Promise<PlatoRest
     return [];
   }
 }
+
+/**
+ * Obtener múltiples platos por lista de slugs preservando el orden
+ */
+export async function getPlatosBySlugs(slugs: string[]): Promise<PlatoCatalogo[]> {
+  try {
+    if (!slugs || slugs.length === 0) return [];
+    const pool = getGastroPool();
+    const placeholders = slugs.map(() => '?').join(',');
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT * FROM platos_catalogo 
+       WHERE slug IN (${placeholders}) AND activo = 1 
+       ORDER BY FIELD(slug, ${placeholders})`,
+      [...slugs, ...slugs]
+    );
+    return rows.map(parsePlatoRow);
+  } catch (error) {
+    console.error('Error al obtener platos por slugs:', error);
+    return [];
+  }
+}
+
+const MOMENTO_SLUGS: Record<string, string[]> = {
+  desayuno: [
+    'tamales-lojanos',
+    'humitas-loja',
+    'bolones-en-loja',
+    'quimbolitos-loja',
+    'cafe-loja',
+    'tigrillo-lojano',
+  ],
+  almuerzo: [
+    'repe-lojano',
+    'cecina-lojana',
+    'arveja-con-guineo-loja',
+    'seco-de-pollo-loja',
+    'cuy-asado-loja',
+    'gallina-cuyada-loja',
+  ],
+  cena: [
+    'alitas-loja',
+    'pizza-loja',
+    'hamburguesas-loja',
+    'chifa-loja',
+    'salchipapas-loja',
+    'parrilladas-loja',
+  ],
+};
+
+/**
+ * Obtener los platos más destacados de un momento del día desde MySQL
+ */
+export async function getPlatosByMomentoDB(momento: 'desayuno' | 'almuerzo' | 'cena', limit = 6): Promise<PlatoCatalogo[]> {
+  try {
+    const slugs = MOMENTO_SLUGS[momento] || [];
+    if (slugs.length > 0) {
+      const platos = await getPlatosBySlugs(slugs);
+      if (platos.length >= 4) return platos.slice(0, limit);
+    }
+
+    // Fallback: traer todos y filtrar por palabras clave
+    const all = await getAllPlatos();
+    if (momento === 'desayuno') {
+      return all.filter(p => /desayuno|tamal|humita|bolon|quimbolito|cafe/i.test(p.nombre + ' ' + p.seccion)).slice(0, limit);
+    } else if (momento === 'almuerzo') {
+      return all.filter(p => /repe|cecina|arveja|seco|almuerzo|sopa|caldo|cuy/i.test(p.nombre + ' ' + p.seccion)).slice(0, limit);
+    } else {
+      return all.filter(p => /alita|pizza|burger|hamburguesa|chifa|rapida|noche|taco|salchipapa/i.test(p.nombre + ' ' + p.seccion)).slice(0, limit);
+    }
+  } catch (error) {
+    console.error(`Error al obtener platos para momento ${momento}:`, error);
+    return [];
+  }
+}

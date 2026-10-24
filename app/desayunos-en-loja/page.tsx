@@ -5,6 +5,9 @@ import { Wrap } from "@/components/PageHero";
 import { getPlatosByMomento } from "@/lib/platos-data";
 import { PlatoCarouselRow } from "@/components/PlatoCarouselRow";
 import { getAliadosByMomento } from "@/lib/aliados-db";
+import { getPlatosByMomentoDB } from "@/lib/platos-db";
+import { SplitMomentoMapa } from "@/components/SplitMomentoMapa";
+import { AliadosSlideInfinito } from "@/components/AliadosSlideInfinito";
 
 export const metadata: Metadata = {
   title: "Dónde Desayunar en Loja | Cafeterías, Tamales y Café de Especialidad",
@@ -20,44 +23,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const DESAYUNOS_ITEMS = [
-  {
-    name: "Desayuno Completo Lojano",
-    tagline: "Huevos, cecina, aguacate y café",
-    desc: "El clásico desayuno de mesa: huevos fritos de campo, cecina de cerdo lojana dorada, rodajas de aguacate, pan artesanal y café de altura recién pasado.",
-    price: "$3.50 – $5.00",
-    icon: "🍳",
-    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/desayuno-completo.webp",
-    href: "/restaurantes?categoria=desayunos",
-  },
-  {
-    name: "Tigrillo & Desayuno Campesino",
-    tagline: "Energía andina de la mañana",
-    desc: "Plátano verde majado al sartén con huevo criollo y abundante quesillo artesanal, servido con bistec o cecina frita.",
-    price: "$3.00 – $4.50",
-    icon: "🥘",
-    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/tigrillo-lojano.webp",
-    href: "/buscar?q=tigrillo",
-  },
-  {
-    name: "Café de Especialidad Filtrado",
-    tagline: "Taza de Excelencia internacional",
-    desc: "Extracciones en V60, Chemex, prensa francesa o gota a gota tradicional con granos arábicos de valles como Puyango, Vilcabamba y Malacatos.",
-    price: "$1.50 – $3.00",
-    icon: "☕",
-    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/cafe-filtrado.webp",
-    href: "/cafe-de-loja",
-  },
-  {
-    name: "Bolón con Quesillo & Chicharrón",
-    tagline: "Verde crocante y relleno abundante",
-    desc: "Esfera de plátano verde recién majada y frita con relleno de quesillo derretido y chicharrón crocante, acompañado de ají y café caliente.",
-    price: "$1.75 – $3.50",
-    icon: "🍌",
-    image: "https://mvps.b-cdn.net/quecomerenloja/desayunos/bolon-quesillo.webp",
-    href: "/platos/bolones-en-loja",
-  },
-];
+const WA_AFILIACION_CAFES = "https://wa.me/593988888888?text=Hola%2C%20tengo%20una%20cafeter%C3%ADa%20o%20local%20de%20desayunos%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja";
 
 const DESAYUNO_SLOTS = [
   {
@@ -89,20 +55,32 @@ const DESAYUNO_SLOTS = [
 const FAQS_DESAYUNOS = [
   {
     q: "¿A qué hora abren las cafeterías para desayunar en Loja?",
-    a: "La mayoría de cafeterías tradicionales y puestos del centro abren desde las 07:00 AM para ofrecer tamales y café recién pasados. Las cafeterías de especialidad y brunch suelen iniciar atención entre 07:30 y 08:30 AM.",
+    a: "La mayoría de puestos tradicionales del centro y el mercado abren desde las 06:30 o 07:00 AM para ofrecer tamales y café recién pasados. Las cafeterías de especialidad y locales de brunch suelen iniciar atención entre 07:30 y 08:30 AM.",
   },
   {
-    q: "¿Dónde se concentran las mejores cafeterías de Loja?",
-    a: "El sector más tradicional es la peatonal Calle Lourdes con sus fachadas coloniales y ambiente bohemio. También los alrededores de la Plaza San Sebastián y la calle Bolívar concentran barras de café premiado.",
+    q: "¿Dónde se concentran las mejores cafeterías y tamales de Loja?",
+    a: "El sector más tradicional es la peatonal Calle Lourdes con sus fachadas coloniales y ambiente bohemio. También los alrededores de la Plaza San Sebastián, la calle Bolívar y la calle Sucre concentran barras de café de altura premiado y tamalerías tradicionales.",
   },
   {
     q: "¿Cuánto cuesta desayunar en Loja?",
-    a: "Un desayuno tradicional de tamal o humita con taza de café cuesta entre $2.25 y $3.50 USD. Desayunos completos con tigrillo, huevos y jugo promedian entre $3.50 y $5.00 USD.",
+    a: "Un desayuno tradicional de tamal o humita con taza de café de filtro cuesta entre $2.25 y $3.50 USD. Desayunos completos con tigrillo o bolón mixto, huevos, carne cecina y jugo natural oscilan entre $3.50 y $5.50 USD.",
+  },
+  {
+    q: "¿Qué diferencia al café lojano que se sirve en el desayuno?",
+    a: "Loja produce cafés arábicos de altura (de 1.400 a 2.100 msnm) reconocidos internacionalmente con galardones como Taza Dorada. En los desayunos se disfruta tanto la tradicional 'pasada' concentrada en chuspa como extracciones de especialidad en V60 y Chemex.",
+  },
+  {
+    q: "¿Hay opciones de desayuno a domicilio o para llevar en Loja?",
+    a: "Sí. Gran parte de las cafeterías aliadas en Qué Comer en Loja despachan pedidos matutinos directos vía WhatsApp sin recargos abusivos de aplicaciones intermediarias.",
   },
 ];
 
 export default async function DesayunosPage() {
-  const aliadosDesayuno = await getAliadosByMomento("desayuno");
+  const [aliadosDesayuno, platosTopDB] = await Promise.all([
+    getAliadosByMomento("desayuno"),
+    getPlatosByMomentoDB("desayuno", 4),
+  ]);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -165,78 +143,30 @@ export default async function DesayunosPage() {
               >
                 Ver cafeterías destacadas →
               </Link>
-              <Link
-                href="/para-negocios"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition"
+              <a
+                href={WA_AFILIACION_CAFES}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
               >
-                ¿Tienes una cafetería? Postula aquí →
-              </Link>
+                ¿Tienes una cafetería? Afiliarla aquí ↗
+              </a>
             </div>
           </div>
         </Wrap>
       </section>
 
-      {/* ── SECCIÓN 2: QUÉ DESAYUNAR EN LOJA (PLATOS MATUTINOS) ── */}
-      <section className="py-20 bg-porcelana">
-        <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo block mb-1">
-                TRADICIÓN MATUTINA
-              </span>
-              <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
-                Los Desayunos que Marcan la Mañana Lojana
-              </h2>
-              <p className="text-xs md:text-sm text-muted mt-2 max-w-[600px]">
-                En Loja el desayuno es un ritual. Cada mañana se cocinan a fuego lento las recetas más icónicas de la Sierra Sur.
-              </p>
-            </div>
-            <Link href="/platos/tamales-lojanos" className="text-xs font-bold text-petroleo hover:underline">
-              Historia del tamal lojano →
-            </Link>
-          </div>
+      {/* ── SECCIÓN 2: SPLIT 50/50 (PLATOS DE DESAYUNO & MAPA CON GEOLOCALIZACIÓN) ── */}
+      <SplitMomentoMapa
+        momento="desayuno"
+        subtitulo="MAÑANAS EN LOJA"
+        titulo="Los Desayunos que Marcan la Mañana Lojana"
+        descripcion="Explora los platos insignia matutinos o activa tu ubicación para descubrir la cafetería o local de tamales más cercano a ti."
+        platos={platosTopDB}
+        aliados={aliadosDesayuno}
+      />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {DESAYUNOS_ITEMS.map((item) => (
-              <div
-                key={item.name}
-                className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-petroleo hover:shadow-xl"
-              >
-                <div>
-                  <div className="relative mb-5 h-44 w-full overflow-hidden rounded-xl">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                      className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <span className="absolute bottom-2.5 right-2.5 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-petroleo shadow">
-                      {item.price}
-                    </span>
-                  </div>
-
-                  <span className="text-2xl block mb-2">{item.icon}</span>
-                  <h3 className="font-serif text-xl font-bold text-grafito group-hover:text-petroleo transition-colors">
-                    {item.name}
-                  </h3>
-                  <small className="block text-[11px] font-semibold text-petroleo mt-0.5">{item.tagline}</small>
-                  <p className="text-xs text-muted mt-2.5 leading-relaxed">{item.desc}</p>
-                </div>
-
-                <Link
-                  href={item.href}
-                  className="mt-6 inline-flex items-center text-xs font-bold text-petroleo group-hover:underline"
-                >
-                  Ver dónde probarlo →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </Wrap>
-      </section>
-
-      {/* ── SECCIÓN 2.5: PLATOS DE DESAYUNO (HUB & SPOKE INTERLINKING) ── */}
+      {/* ── SECCIÓN 3: GUÍAS COMPLETAS POR PLATO (HUB & SPOKE CAROUSEL) ── */}
       <section className="py-16 bg-porcelana/60 border-t border-niebla">
         <Wrap>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
@@ -261,7 +191,7 @@ export default async function DesayunosPage() {
         </Wrap>
       </section>
 
-      {/* ── SECCIÓN 3: VITRINA DE CUPOS DE CAFETERÍAS (MONETIZACIÓN B2B) ── */}
+      {/* ── SECCIÓN 4: VITRINA DE SOCIOS Y CAFETERÍAS VERIFICADAS (SLIDE INFINITO) ── */}
       <section className="py-20 border-t border-niebla bg-white overflow-hidden">
         <Wrap>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end mb-10">
@@ -276,132 +206,27 @@ export default async function DesayunosPage() {
                 Espacios exclusivos para cafeterías de Loja que buscan captar al turista matutino y al residente sin intermediarios ni comisiones.
               </p>
             </div>
-            <Link
-              href="/para-negocios"
-              className="rounded-xl bg-petroleo px-5 py-3 text-xs font-bold text-white hover:bg-[#0E2E2E] transition"
+            <a
+              href={WA_AFILIACION_CAFES}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-petroleo px-5 py-3 text-xs font-bold text-white hover:bg-[#0E2E2E] transition inline-flex items-center gap-1.5"
             >
-              Postular mi cafetería aquí →
-            </Link>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {aliadosDesayuno.map((aliado) => {
-              const telLimpio = (aliado.telefono || "").replace(/\D/g, "");
-              const waUrl = telLimpio
-                ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(
-                    `Hola ${aliado.nombre}, vi su cafetería en la sección de Desayunos de Qué Comer en Loja. Deseo información de sus tamales, café y horarios.`
-                  )}`
-                : null;
-
-              return (
-                <div
-                  key={`desayuno-aliado-${aliado.id}`}
-                  className="group flex flex-col justify-between rounded-2xl border border-niebla bg-white p-7 shadow-sm transition hover:border-petroleo hover:shadow-xl hover:-translate-y-1"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                        ☕ Socio Verificado
-                      </span>
-                      {aliado.destacado && (
-                        <span className="rounded-full bg-citrico/30 px-2.5 py-0.5 text-[9px] font-extrabold text-petroleo">
-                          ★ Destacado
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="my-4 flex items-center gap-3">
-                      {aliado.imagenUrl ? (
-                        <img
-                          src={aliado.imagenUrl}
-                          alt={aliado.nombre}
-                          className="size-14 rounded-2xl object-cover border border-niebla shadow-xs"
-                        />
-                      ) : (
-                        <div className="size-14 rounded-2xl bg-porcelana border border-niebla flex items-center justify-center text-2xl shadow-xs">
-                          ☕
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-serif text-lg font-bold text-grafito leading-tight">
-                          {aliado.nombre}
-                        </h3>
-                        <span className="text-xs text-muted block mt-0.5">
-                          📍 {aliado.ubicacion}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-muted leading-relaxed line-clamp-3">
-                      {aliado.descripcion}
-                    </p>
-
-                    {aliado.rangoPrecio && (
-                      <div className="mt-3 text-[11px] font-semibold text-petroleo">
-                        💰 {aliado.rangoPrecio}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 border-t border-niebla pt-4 flex flex-col gap-2">
-                    {waUrl ? (
-                      <a
-                        href={waUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-lg bg-emerald-700 px-3.5 py-2 text-[11px] font-bold text-white text-center transition hover:bg-emerald-800 shadow-xs"
-                      >
-                        💬 Contactar por WhatsApp
-                      </a>
-                    ) : (
-                      <Link
-                        href="/cafe-de-loja"
-                        className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo text-center transition hover:brightness-105"
-                      >
-                        Ver Cafetería →
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Plazas disponibles de postulación para completar el grid */}
-            {DESAYUNO_SLOTS.slice(0, Math.max(1, 3 - aliadosDesayuno.length)).map((slot) => (
-              <div
-                key={slot.id}
-                className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-7 transition hover:border-petroleo hover:shadow-lg"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted">{slot.zone}</span>
-                    <span className="rounded-full bg-niebla/70 px-2.5 py-0.5 text-[9px] font-bold text-petroleo">
-                      {slot.status}
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-lg font-bold text-grafito mt-4">
-                    {slot.title}
-                  </h3>
-                  <small className="block text-[11px] font-semibold text-petroleo mt-1">✓ {slot.highlight}</small>
-                  <p className="text-xs text-muted mt-3 leading-relaxed">{slot.desc}</p>
-                </div>
-
-                <div className="mt-6 border-t border-niebla pt-4 flex items-center justify-between">
-                  <span className="text-[11px] text-muted">¿Eres dueño?</span>
-                  <Link
-                    href="/para-negocios"
-                    className="rounded-lg bg-citrico px-3.5 py-2 text-[11px] font-bold text-petroleo transition hover:brightness-105"
-                  >
-                    Reservar cupo →
-                  </Link>
-                </div>
-              </div>
-            ))}
+              Postular mi cafetería aquí ↗
+            </a>
           </div>
         </Wrap>
+
+        {/* Marquee de ancho completo, fuera del Wrap para romper la limitación de max-width */}
+        <AliadosSlideInfinito
+          aliados={aliadosDesayuno}
+          slots={DESAYUNO_SLOTS}
+          waAfiliacionUrl={WA_AFILIACION_CAFES}
+          badgeTexto="☕ Socio Verificado"
+        />
       </section>
 
-      {/* ── FAQ MATUTINO ── */}
+      {/* ── SECCIÓN 5: FAQ MATUTINO ── */}
       <section className="py-16 border-t border-niebla bg-porcelana/50">
         <Wrap>
           <div className="mx-auto max-w-[760px]">

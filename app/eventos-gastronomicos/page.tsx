@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Wrap } from "@/components/PageHero";
 import { getEventosGastronomicos } from "@/lib/services/eventosGastronomicos";
+import { EventosSlide } from "@/components/EventosSlide";
 
 export const revalidate = 60;
 
@@ -296,7 +297,7 @@ export default async function EventosGastronomicosPage() {
             </div>
 
             {eventos.length > 0 ? (
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <EventosSlide itemWidthClass="w-[84vw] max-w-[340px]" pistaTexto="👈 Desliza para explorar más eventos 👉">
                 {eventos.map((ev) => {
                   const badge = getTipoBadge(ev.tipoEvento);
                   const fecha = formatearRangoFechas(ev.fechaInicio, ev.fechaFin);
@@ -304,7 +305,7 @@ export default async function EventosGastronomicosPage() {
                   return (
                     <article
                       key={ev.id}
-                      className="group flex flex-col overflow-hidden rounded-3xl border border-niebla/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-petroleo/70 hover:shadow-xl"
+                      className="group flex flex-col h-full overflow-hidden rounded-3xl border border-niebla/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-petroleo/70 hover:shadow-xl"
                     >
                       {/* Media */}
                       <div className="relative h-56 w-full bg-porcelana overflow-hidden">
@@ -373,7 +374,7 @@ export default async function EventosGastronomicosPage() {
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2 rounded-xl bg-petroleo px-4 py-3 text-xs font-bold text-white shadow-xs transition hover:bg-[#0E2E2E]"
                           >
-                            <span>Ver programación e itinerario oficial</span>
+                            <span>Ver itinerario oficial</span>
                             <span>→</span>
                           </a>
 
@@ -393,7 +394,7 @@ export default async function EventosGastronomicosPage() {
                     </article>
                   );
                 })}
-              </div>
+              </EventosSlide>
             ) : (
               <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-niebla bg-white p-10 md:p-14 text-center shadow-xs">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 text-3xl">
@@ -441,11 +442,11 @@ export default async function EventosGastronomicosPage() {
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <EventosSlide itemWidthClass="w-[82vw] max-w-[300px]" pistaTexto="👈 Desliza para ver más festivales 👉">
               {CALENDARIO_ESTACIONAL.map((fest) => (
                 <div
                   key={fest.nombre}
-                  className="flex flex-col justify-between rounded-2xl border border-niebla bg-porcelana/40 p-6 shadow-xs hover:border-petroleo/50 hover:bg-white transition-all"
+                  className="flex flex-col justify-between h-full rounded-2xl border border-niebla bg-porcelana/40 p-6 shadow-xs hover:border-petroleo/50 hover:bg-white transition-all"
                 >
                   <div>
                     <div className="flex items-center justify-between">
@@ -473,7 +474,7 @@ export default async function EventosGastronomicosPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </EventosSlide>
           </Wrap>
         </section>
 
@@ -497,18 +498,20 @@ export default async function EventosGastronomicosPage() {
               </Link>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <EventosSlide itemWidthClass="w-[78vw] max-w-[280px]" pistaTexto="👈 Desliza para ver más rutas 👉">
               <Link
                 href="/platos/repe-lojano"
-                className="rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
+                className="flex flex-col justify-between h-full rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
               >
-                <div className="text-2xl mb-2">🥣</div>
-                <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
-                  Repe Lojano
-                </h3>
-                <p className="mt-1 text-xs text-muted">
-                  La sopa insignia de guineo verde y quesillo artesanal lojano.
-                </p>
+                <div>
+                  <div className="text-2xl mb-2">🥣</div>
+                  <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
+                    Repe Lojano
+                  </h3>
+                  <p className="mt-1 text-xs text-muted">
+                    La sopa insignia de guineo verde y quesillo artesanal lojano.
+                  </p>
+                </div>
                 <span className="mt-3 inline-block text-[11px] font-bold text-petroleo group-hover:translate-x-1 transition-transform">
                   Ver dónde comer →
                 </span>
@@ -516,15 +519,17 @@ export default async function EventosGastronomicosPage() {
 
               <Link
                 href="/cafe-de-loja"
-                className="rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
+                className="flex flex-col justify-between h-full rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
               >
-                <div className="text-2xl mb-2">☕</div>
-                <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
-                  Cafeterías de Especialidad
-                </h3>
-                <p className="mt-1 text-xs text-muted">
-                  Café de altura de Vilcabamba con tamales y humitas mañaneras.
-                </p>
+                <div>
+                  <div className="text-2xl mb-2">☕</div>
+                  <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
+                    Cafeterías de Especialidad
+                  </h3>
+                  <p className="mt-1 text-xs text-muted">
+                    Café de altura de Vilcabamba con tamales y humitas mañaneras.
+                  </p>
+                </div>
                 <span className="mt-3 inline-block text-[11px] font-bold text-petroleo">
                   +900% demanda →
                 </span>
@@ -532,15 +537,17 @@ export default async function EventosGastronomicosPage() {
 
               <Link
                 href="/platos/cecina-lojana"
-                className="rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
+                className="flex flex-col justify-between h-full rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
               >
-                <div className="text-2xl mb-2">🥩</div>
-                <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
-                  Cecina Lojana
-                </h3>
-                <p className="mt-1 text-xs text-muted">
-                  Carne asada a la brasa con yuca caliente, cebolla curtida y mote.
-                </p>
+                <div>
+                  <div className="text-2xl mb-2">🥩</div>
+                  <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
+                    Cecina Lojana
+                  </h3>
+                  <p className="mt-1 text-xs text-muted">
+                    Carne asada a la brasa con yuca caliente, cebolla curtida y mote.
+                  </p>
+                </div>
                 <span className="mt-3 inline-block text-[11px] font-bold text-petroleo">
                   Plato tradicional →
                 </span>
@@ -548,20 +555,22 @@ export default async function EventosGastronomicosPage() {
 
               <Link
                 href="/comida-rapida-loja"
-                className="rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
+                className="flex flex-col justify-between h-full rounded-2xl border border-niebla bg-white p-5 shadow-2xs hover:border-petroleo hover:shadow-md transition group"
               >
-                <div className="text-2xl mb-2">🍕</div>
-                <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
-                  Pizzas, Alitas & Cenas
-                </h3>
-                <p className="mt-1 text-xs text-muted">
-                  Los mejores lugares para comer de noche con amigos en Loja.
-                </p>
+                <div>
+                  <div className="text-2xl mb-2">🍕</div>
+                  <h3 className="font-serif text-sm font-bold text-grafito group-hover:text-petroleo transition-colors">
+                    Pizzas, Alitas & Cenas
+                  </h3>
+                  <p className="mt-1 text-xs text-muted">
+                    Los mejores lugares para comer de noche con amigos en Loja.
+                  </p>
+                </div>
                 <span className="mt-3 inline-block text-[11px] font-bold text-petroleo">
                   Alta demanda nocturna →
                 </span>
               </Link>
-            </div>
+            </EventosSlide>
           </Wrap>
         </section>
 

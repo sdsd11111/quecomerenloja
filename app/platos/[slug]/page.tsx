@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Wrap } from "@/components/PageHero";
 import { PlazasDisponiblesPlato } from "@/components/PlatoTemplateSections";
 import { MapaLeafletLoja } from "@/components/MapaLeafletLoja";
-import { getAllPlatosSlugs, getPlatoBySlug, getRestaurantesByPlato } from "@/lib/platos-db";
+import { getAllPlatosSlugs, getPlatoBySlug } from "@/lib/platos-db";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -73,9 +73,7 @@ export default async function PlatoDinamicoPage({ params }: PageProps) {
     notFound();
   }
 
-  const restaurantes = await getRestaurantesByPlato(plato.id);
-
-  // JSON-LD para Recipe + FAQPage + ItemList de restaurantes
+  // JSON-LD para Recipe + FAQPage
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -95,17 +93,6 @@ export default async function PlatoDinamicoPage({ params }: PageProps) {
           "@type": "Question",
           name: f.q,
           acceptedAnswer: { "@type": "Answer", text: f.a },
-        })),
-      },
-      {
-        "@type": "ItemList",
-        name: `Restaurantes que sirven ${plato.nombre} en Loja`,
-        numberOfItems: restaurantes.length,
-        itemListElement: restaurantes.slice(0, 10).map((r, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: r.nombre_restaurante,
-          description: `${r.item_carta} - ${r.precio_textual || (r.precio_numerico ? `$${r.precio_numerico} USD` : "Consultar")}`,
         })),
       },
     ],
@@ -246,9 +233,9 @@ export default async function PlatoDinamicoPage({ params }: PageProps) {
                 </strong>
               </li>
               <li className="flex justify-between border-b border-niebla/60 pb-2.5">
-                <span className="text-muted">Locales registrados:</span>
+                <span className="text-muted">Garantía gastronómica:</span>
                 <strong className="text-grafito font-semibold">
-                  {restaurantes.length} opciones en la ciudad
+                  Aliados Oficiales Verificados
                 </strong>
               </li>
               <li className="flex justify-between">
@@ -262,80 +249,7 @@ export default async function PlatoDinamicoPage({ params }: PageProps) {
         </Wrap>
       </section>
 
-      {/* ── 3. LISTADO REAL DE RESTAURANTES Y CARTAS SCRAPEADAS ── */}
-      {restaurantes.length > 0 && (
-        <section className="bg-white py-16 border-b border-niebla">
-          <Wrap>
-            <div className="max-w-2xl mb-10">
-              <span className="text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">
-                CARTA & PRECIOS REALES EN LOJA
-              </span>
-              <h2 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight text-grafito">
-                Restaurantes que preparan {plato.nombre} en la ciudad
-              </h2>
-              <p className="mt-2 text-xs md:text-sm text-muted">
-                Precios e ítems de cartas recopilados y verificados en establecimientos de Loja.
-              </p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {restaurantes.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-niebla bg-porcelana/40 p-5 shadow-2xs hover:border-petroleo/30 transition flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className="text-[10px] font-bold text-petroleo uppercase bg-white border border-niebla px-2.5 py-0.5 rounded-full">
-                        {item.parroquia || "Loja Urbano"}
-                      </span>
-                      {item.precio_numerico && (
-                        <span className="text-sm font-extrabold text-petroleo">
-                          ${item.precio_numerico.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="font-bold text-base text-grafito leading-snug">
-                      {item.item_carta}
-                    </h4>
-
-                    <p className="text-xs font-semibold text-petroleo mt-1">
-                      📍 {item.nombre_restaurante}
-                    </p>
-
-                    {item.direccion && (
-                      <p className="text-[11px] text-muted mt-1 line-clamp-2">
-                        {item.direccion}
-                      </p>
-                    )}
-
-                    {item.descripcion_item && (
-                      <p className="text-[11px] text-muted italic mt-2 line-clamp-3">
-                        &ldquo;{item.descripcion_item}&rdquo;
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-niebla/60 flex items-center justify-between text-xs">
-                    <span className="text-muted text-[10px]">
-                      {item.categoria_excel || "Plato a la carta"}
-                    </span>
-                    <Link
-                      href={`/restaurantes`}
-                      className="font-bold text-petroleo hover:underline text-[11px]"
-                    >
-                      Ver local →
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Wrap>
-        </section>
-      )}
-
-      {/* ── 4. PLAZAS PARA ALIADOS GASTRONÓMICOS (MONETIZACIÓN) ── */}
+      {/* ── 3. PLAZAS PARA ALIADOS GASTRONÓMICOS (MONETIZACIÓN Y NEGOCIOS ALIADOS) ── */}
       <PlazasDisponiblesPlato
         nombrePlato={plato.nombre}
         horarioRecomendado="Horario de atención habitual en Loja"

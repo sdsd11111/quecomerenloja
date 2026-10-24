@@ -17,11 +17,11 @@ export function Footer() {
 
   return (
     <footer className="border-t border-niebla bg-[#F5F6F1] text-grafito transition-colors">
-      <div className="mx-auto w-[min(1180px,calc(100%-40px))] pb-8 pt-12">
-        <div className="grid gap-8 md:grid-cols-12 md:gap-8 items-start">
+      <div className="mx-auto w-[min(1180px,calc(100%-32px))] pb-8 pt-10">
+        <div className="grid gap-8 md:grid-cols-12 md:gap-8 items-start text-center md:text-left">
 
           {/* COLUMNA 1: LOGO DE MARCA + DESCRIPTOR COMPACTO */}
-          <div className="md:col-span-5">
+          <div className="md:col-span-5 flex flex-col items-center md:items-start">
             <Link href="/" className="group inline-flex items-center gap-3" aria-label="Qué comer en Loja, inicio">
               {/* Badge del símbolo oficial Q plato */}
               <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-petroleo p-2 shadow-sm transition-transform duration-300 group-hover:scale-105">
@@ -34,7 +34,7 @@ export function Footer() {
                 />
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col text-left">
                 <span className="font-serif text-lg font-bold tracking-tight text-grafito leading-none group-hover:text-petroleo transition-colors">
                   Qué comer <span className="text-petroleo">en Loja</span>
                 </span>
@@ -44,22 +44,22 @@ export function Footer() {
               </div>
             </Link>
 
-            <p className="mt-3 max-w-[320px] text-xs leading-relaxed text-muted">
-              Plataforma de descubrimiento gastronómico de Loja, Ecuador. Descubre dónde desayunar, almorzar y cenar sin intermediarios.
+            <p className="mt-3 max-w-[320px] text-xs leading-relaxed text-muted mx-auto md:mx-0">
+              Plataforma gastronómica de Loja, Ecuador. Descubre dónde desayunar, almorzar y cenar sin comisiones ni intermediarios.
             </p>
 
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-niebla bg-white px-3 py-1 text-[11px] font-semibold text-petroleo shadow-2xs">
+            <div className="mt-3.5 inline-flex items-center gap-2 rounded-full border border-niebla bg-white px-3 py-1 text-[11px] font-semibold text-petroleo shadow-2xs">
               <span className="h-1.5 w-1.5 rounded-full bg-petroleo" />
               100% Sabor lojano · Sin comisiones
             </div>
           </div>
 
-          {/* COLUMNA 2: EXPLORAR COMPACTO (Desayuno, Almuerzo, Dónde cenar, Blog) */}
+          {/* COLUMNA 2: EXPLORAR COMPACTO (Desayuno, Almuerzo, Dónde cenar, etc.) */}
           <nav className="md:col-span-3 md:col-start-7" aria-label="Navegación del pie de página">
-            <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-petroleo">
+            <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-widest text-petroleo">
               Explorar
             </p>
-            <ul className="space-y-2">
+            <ul className="flex flex-wrap justify-center md:flex-col gap-x-4 gap-y-2 md:gap-y-2">
               {EXPLORAR_LINKS.map((l) => (
                 <li key={l.href}>
                   <Link
@@ -73,12 +73,12 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* COLUMNA 3: ECOSISTEMA (SIN guialoja.com) */}
+          {/* COLUMNA 3: ECOSISTEMA */}
           <div className="md:col-span-3">
-            <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-petroleo">
+            <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-widest text-petroleo">
               Ecosistema
             </p>
-            <ul className="space-y-2">
+            <ul className="flex flex-wrap justify-center md:flex-col gap-x-4 gap-y-2 md:gap-y-2">
               {SITE.sisters.map((s) => (
                 <li key={s.href}>
                   <a
@@ -96,7 +96,7 @@ export function Footer() {
         </div>
 
         {/* BARRA INFERIOR DE DERECHOS COMPACTA */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-niebla pt-5 text-[11px] text-muted md:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-between gap-2.5 border-t border-niebla pt-4 text-[11px] text-muted text-center md:flex-row md:text-left">
           <div>
             Diseñado por{" "}
             <a
@@ -111,8 +111,8 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/para-negocios" className="font-semibold text-petroleo hover:underline">
-              Anunciar mi restaurante
+            <Link href="/restaurantes" className="font-semibold text-petroleo hover:underline">
+              Restaurantes de Loja
             </Link>
           </div>
         </div>

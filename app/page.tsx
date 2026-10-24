@@ -4,7 +4,12 @@ import { Wrap } from "@/components/PageHero";
 import { BuscadorHome } from "@/components/BuscadorHome";
 import { AliadosMarquee } from "@/components/AliadosMarquee";
 import { EventosGastronomicosSection } from "@/components/EventosGastronomicosSection";
+import { PromosCalendarSection } from "@/components/PromosCalendarSection";
+import { ExploradorGastronomicoHome } from "@/components/ExploradorGastronomicoHome";
+import { MomentosSlide } from "@/components/MomentosSlide";
 import { getAliadosActivos } from "@/lib/aliados-db";
+import { getPromosActivas } from "@/lib/promos-db";
+import { getAllPlatos } from "@/lib/platos-db";
 
 export const dynamic = "force-dynamic";
 
@@ -148,7 +153,11 @@ const FAQS = [
 ];
 
 export default async function Home() {
-  const aliadosReales = await getAliadosActivos();
+  const [aliadosReales, promosActivas, todosLosPlatos] = await Promise.all([
+    getAliadosActivos(),
+    getPromosActivas(20),
+    getAllPlatos(),
+  ]);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -187,10 +196,11 @@ export default async function Home() {
       />
 
       {/* ════════════════════════════════════════════════════════════════
-          SECCIÓN 1: HERO FULLSCREEN 100% (Móvil y Ordenador)
+          SECCIÓN 1: HERO
           Con imagen cinematográfica de restaurante lojano y overlay oscuro
+          Ajustado para que el buscador principal sea visible de inmediato al entrar
           ════════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] w-full flex flex-col justify-center overflow-hidden py-20 text-cream">
+      <section className="relative min-h-[calc(100svh-90px)] lg:min-h-[calc(100svh-110px)] w-full flex flex-col justify-center overflow-hidden pt-12 pb-16 md:pt-16 md:pb-20 text-cream">
         {/* Imagen de fondo real en alta resolución */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -203,36 +213,38 @@ export default async function Home() {
           />
         </div>
 
-        <Wrap className="relative z-10 my-auto py-12">
+        <Wrap className="relative z-10 my-auto py-6 sm:py-8">
           <div className="max-w-[820px]">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-citrico/30 bg-black/30 backdrop-blur-md px-4 py-1.5 text-[11px] font-semibold tracking-wider text-citrico">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-citrico/30 bg-black/30 backdrop-blur-md px-4 py-1.5 text-[11px] font-semibold tracking-wider text-citrico">
               <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> LOJA, ECUADOR · GUÍA GASTRONÓMICA OFICIAL
             </div>
 
-            <h1 className="text-[clamp(42px,5.5vw,76px)] font-bold tracking-[-2.5px] leading-[1.05] text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+            <h1 className="text-[clamp(38px,5vw,72px)] font-bold tracking-[-2.5px] leading-[1.05] text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
               Dónde comer en Loja: <em className="font-serif font-normal italic text-citrico drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">Platos Típicos, Cafeterías y Restaurantes.</em>
             </h1>
 
-            <p className="mt-6 max-w-[620px] text-base md:text-lg leading-[1.8] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] font-medium">
+            <p className="mt-5 max-w-[620px] text-base md:text-lg leading-[1.7] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] font-medium">
               La plataforma de descubrimiento gastronómico de Loja. Encuentra el auténtico <strong>repe lojano</strong>, la cecina a la brasa, los mejores cafés de altura y negocios gastronómicos verificados sin intermediarios.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
                 href="/restaurantes"
-                className="rounded-xl bg-citrico px-7 py-4 text-sm font-extrabold text-petroleo transition hover:brightness-110 hover:-translate-y-0.5 shadow-xl shadow-citrico/10"
+                className="rounded-xl bg-citrico px-7 py-3.5 text-sm font-extrabold text-petroleo transition hover:brightness-110 hover:-translate-y-0.5 shadow-xl shadow-citrico/10"
               >
                 Explorar gastronomía local →
               </Link>
-              <Link
-                href="/para-negocios"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-7 py-4 text-sm font-bold text-white hover:bg-white/20 transition hover:-translate-y-0.5"
+              <a
+                href="https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-7 py-3.5 text-sm font-bold text-white hover:bg-white/20 transition hover:-translate-y-0.5"
               >
-                ¿Tienes un restaurante? Súmate aquí →
-              </Link>
+                ¿Tienes un restaurante? Escríbenos →
+              </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6 text-xs text-niebla/80 border-t border-white/15 pt-6">
+            <div className="mt-7 flex flex-wrap items-center gap-6 text-xs text-niebla/80 border-t border-white/15 pt-5">
               <div className="flex items-center gap-2">
                 <span className="text-citrico font-bold text-sm">✓ 100%</span>
                 <span>sabores auténticos</span>
@@ -251,72 +263,26 @@ export default async function Home() {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-          CONECTOR FLOTANTE: BUSCADOR INTELIGENTE (-mt-12)
-          Conectado directamente a las páginas de contenido y platos del sitio
+          CONECTOR FLOTANTE: BUSCADOR INTELIGENTE (-mt-10)
+          Visible inmediatamente al cargar la Home
           ════════════════════════════════════════════════════════════════ */}
       <div id="home-search-trigger">
-        <Wrap className="relative z-20 -mt-12">
+        <Wrap className="relative z-20 -mt-10 sm:-mt-12">
           <BuscadorHome />
         </Wrap>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════
-          SECCIÓN 2: LOS 4 GRANDES DE LOJA (Platos Típicos Identitarios)
-          Con imágenes culinarias reales de fondo en cada card
+          SECCIÓN PROMOS & EVENTOS DE ALIADOS (CALENDARIO + SLIDE INFINITO)
+          Ubicada estratégicamente justo después del Hero
           ════════════════════════════════════════════════════════════════ */}
-      <section className="py-24">
-        <Wrap>
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[2.8px] text-petroleo">IDENTIDAD CULINARIA</span>
-              <h2 className="text-[clamp(28px,3.5vw,44px)] font-bold tracking-tight text-grafito">
-                Los 4 Platos Típicos que Definen a Loja
-              </h2>
-              <p className="mt-3 max-w-[620px] text-sm text-muted">
-                La gastronomía de Loja destaca por su autenticidad. Explora los cuatro platos identitarios con mayor demanda turística.
-              </p>
-            </div>
-            <Link href="/buscar?q=tradicional" className="text-sm font-bold text-petroleo hover:underline">
-              Explorar recetas y tradición →
-            </Link>
-          </div>
+      <PromosCalendarSection initialPromos={promosActivas} />
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {TRADITIONAL_DISHES.map((dish) => (
-              <Link
-                key={dish.name}
-                href={dish.href}
-                className="group relative min-h-[380px] flex flex-col justify-end overflow-hidden rounded-2xl p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
-              >
-                {/* Imagen de fondo real */}
-                <Image
-                  src={dish.image}
-                  alt={`Plato típico lojano: ${dish.name}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 25vw"
-                  className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                />
-                {/* Gradiente oscuro profundo para legibilidad perfecta */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/10 transition-opacity group-hover:via-black/60" />
-
-                <div className="relative z-10">
-                  <div className="inline-flex rounded-full bg-citrico px-3 py-1 text-[10px] font-black uppercase tracking-wider text-petroleo mb-3">
-                    {dish.badge}
-                  </div>
-                  <h3 className="font-serif text-2xl font-bold text-white transition group-hover:text-citrico">
-                    {dish.name}
-                  </h3>
-                  <small className="block font-semibold text-[11px] text-citrico/90 mt-1">{dish.highlight}</small>
-                  <p className="mt-2.5 text-xs text-niebla/90 leading-relaxed line-clamp-3">{dish.desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-extrabold text-white group-hover:underline">
-                    Ver dónde probarlo en Loja →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </Wrap>
-      </section>
+      {/* ════════════════════════════════════════════════════════════════
+          SECCIÓN 2: CARTA & PLATOS EMBLEMÁTICOS DE LOJA POR CATEGORÍAS
+          (Píldoras interactivas + 62 Platos reales con carga progresiva de a 8)
+          ════════════════════════════════════════════════════════════════ */}
+      <ExploradorGastronomicoHome platos={todosLosPlatos} />
 
       {/* ════════════════════════════════════════════════════════════════
           SECCIÓN 3: MOMENTOS DE CONSUMO (Rutas de Demanda Real)
@@ -338,46 +304,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {CONSUMPTION_MOMENTS.map((moment) => (
-              <div
-                key={moment.title}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/20 bg-black/40 p-7 backdrop-blur-md shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-citrico hover:bg-black/60"
-              >
-                <div>
-                  {/* Foto miniatura o preview dentro de la card */}
-                  <div className="relative mb-6 h-48 w-full overflow-hidden rounded-xl border border-white/10 shadow-inner">
-                    <Image
-                      src={moment.image}
-                      alt={moment.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <span className="absolute bottom-3 left-3 rounded-full bg-citrico px-2.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-petroleo">
-                      {moment.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl font-bold text-white group-hover:text-citrico transition">
-                    {moment.title}
-                  </h3>
-                  <small className="block font-semibold text-[11px] text-citrico/90 mt-1">{moment.tagline}</small>
-                  <p className="mt-3 text-xs leading-relaxed text-niebla/80">{moment.desc}</p>
-                </div>
-
-                <div className="mt-7 border-t border-white/10 pt-4">
-                  <Link
-                    href={moment.href}
-                    className="inline-flex items-center text-xs font-bold text-white group-hover:text-citrico transition gap-1 underline underline-offset-4"
-                  >
-                    {moment.cta}
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+          <MomentosSlide moments={CONSUMPTION_MOMENTS} />
         </Wrap>
       </section>
 
@@ -405,12 +332,14 @@ export default async function Home() {
                 Espacios exclusivos para restaurantes y cafeterías recomendadas. Conexión directa al WhatsApp del local, sin intermediarios ni comisiones.
               </p>
             </div>
-            <Link
-              href="/para-negocios"
+            <a
+              href="https://wa.me/593988888888?text=Hola%2C%20quisiera%20postular%20mi%20restaurante%20en%20Qu%C3%A9%20Comer%20en%20Loja"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl bg-petroleo px-6 py-3.5 text-xs font-bold text-white transition hover:bg-[#0E2E2E] shadow-md"
             >
               Postular mi restaurante aquí →
-            </Link>
+            </a>
           </div>
         </Wrap>
 
@@ -434,12 +363,14 @@ export default async function Home() {
               </p>
             </div>
             <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">
-              <Link
-                href="/para-negocios"
+              <a
+                href="https://wa.me/593988888888?text=Hola%2C%20deseo%20conocer%20planes%20y%20beneficios%20para%20mi%20restaurante"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-md"
               >
-                Ver planes y beneficios →
-              </Link>
+                Consultar por WhatsApp →
+              </a>
             </div>
           </div>
         </Wrap>
