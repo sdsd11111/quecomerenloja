@@ -4,14 +4,15 @@ import Image from "next/image";
 import { PageHero, Wrap } from "@/components/PageHero";
 import { getAliadosActivos } from "@/lib/aliados-db";
 import { getAllPlatos } from "@/lib/platos-db";
+import { getPromosActivas, type PromoAliado } from "@/lib/promos-db";
 
 export const metadata: Metadata = {
   title: "¿Qué Comer Hoy en Loja? | Menú del Día, Almuerzos y Ofertas de Hoy",
-  description: "Descubre qué comer hoy en Loja: menús ejecutivos, platos típicos del día, desayunos con café de altura y cenas con aliados oficiales. Contacta directo por WhatsApp.",
+  description: "Descubre qué comer hoy en Loja: menús ejecutivos, platos típicos del día, promociones en vivo y aliados oficiales. Contacta directo por WhatsApp.",
   alternates: { canonical: "/que-comer-hoy" },
   openGraph: {
     title: "¿Qué Comer Hoy en Loja? | Menús y Platos del Día",
-    description: "Platos tradicionales, almuerzos ejecutivos y opciones gastronómicas disponibles hoy en Loja.",
+    description: "Platos tradicionales, menús del día, ofertas en vivo y aliados oficiales en Loja.",
     url: "https://quecomerenloja.com/que-comer-hoy",
   },
 };
@@ -25,9 +26,10 @@ interface PageProps {
 export default async function QueComerHoyPage({ searchParams }: PageProps) {
   const { momento = "todos" } = await searchParams;
 
-  const [aliados, platos] = await Promise.all([
+  const [aliados, platos, promosActivas] = await Promise.all([
     getAliadosActivos(),
     getAllPlatos(),
+    getPromosActivas(50),
   ]);
 
   // Determinar momento del día según hora de Ecuador (UTC-5)
@@ -91,6 +93,20 @@ export default async function QueComerHoyPage({ searchParams }: PageProps) {
     );
   }).slice(0, 6);
 
+  // Badge para cada tipo de promo/menú
+  const renderBadgeTipo = (tipo: PromoAliado['tipo']) => {
+    switch (tipo) {
+      case 'PROMO':
+        return <span className="bg-amber-500 text-white font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">🔥 Promo</span>;
+      case 'OFERTA':
+        return <span className="bg-emerald-600 text-white font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">🏷️ Oferta</span>;
+      case 'EVENTO':
+        return <span className="bg-purple-600 text-white font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">🎉 Evento</span>;
+      default:
+        return <span className="bg-petroleo text-white font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">🍽️ Menú del Día</span>;
+    }
+  };
+
   // Schema JSON-LD
   const jsonLd = {
     "@context": "https://schema.org",
@@ -147,11 +163,11 @@ export default async function QueComerHoyPage({ searchParams }: PageProps) {
         eyebrow="RECOMENDACIONES EN VIVO · LOJA, ECUADOR"
         title={
           <>
-            ¿Qué comer hoy en Loja? <em className="text-[#e1b45f] font-serif italic font-normal">Platos del día y aliados activos</em>
+            ¿Qué comer hoy en Loja? <em className="text-[#e1b45f] font-serif italic font-normal">Menús del día, promociones y platos</em>
           </>
         }
       >
-        No des más vueltas pensando qué almorzar o cenar. Aquí tienes los platos recomendados para hoy y los restaurantes aliados listos para atenderte por WhatsApp.
+        No des más vueltas pensando qué almorzar o cenar. Aquí tienes las promociones y menús del día publicados en tiempo real, platos recomendados y restaurantes aliados listos para atenderte por WhatsApp.
       </PageHero>
 
       <Wrap className="py-10">
@@ -210,6 +226,116 @@ export default async function QueComerHoyPage({ searchParams }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* ── SECCIÓN 0: MENÚS Y PROMOCIONES ACTIVAS PUBLICADAS HOY (BOT WHATSAPP / ALIADOS) ── */}
+        {promosActivas.length > 0 && (
+          <div className="mb-16">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[2.8px] text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  EN VIVO · PUBLICADO HOY
+                </span>
+                <h3 className="text-2xl md:text-3xl font-bold text-grafito mt-2 font-serif">
+                  Menús del Día y Promociones Activas ({promosActivas.length})
+                </h3>
+                <p className="text-xs text-muted mt-1">
+                  Publicados directamente por los restaurantes y aliados gastronómicos de Loja.
+                </p>
+              </div>
+
+              <Link
+                href="/restaurantes"
+                className="text-xs font-bold text-petroleo hover:underline shrink-0"
+              >
+                Ver todos los restaurantes →
+              </Link>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {promosActivas.map((promo) => {
+                const placeholderImg = "https://mvps.b-cdn.net/quecomerenloja/home/hero-home.webp";
+                const displayImg = promo.imagen_url || placeholderImg;
+
+                return (
+                  <article
+                    key={promo.id}
+                    className="group flex flex-col justify-between overflow-hidden rounded-3xl border border-niebla bg-white shadow-sm hover:border-petroleo hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div>
+                      {/* Imagen / Banner de la promo */}
+                      <div className="relative h-48 w-full bg-porcelana overflow-hidden">
+                        <Image
+                          src={displayImg}
+                          alt={promo.titulo}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+
+                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                          {renderBadgeTipo(promo.tipo)}
+                          {promo.precio_promo && (
+                            <span className="bg-citrico text-petroleo font-extrabold text-xs px-3 py-1 rounded-full shadow-md">
+                              {promo.precio_promo}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="absolute bottom-3 left-4 right-4">
+                          <span className="text-[11px] font-extrabold text-citrico tracking-wide uppercase drop-shadow-md flex items-center gap-1">
+                            <span>📍</span> {promo.aliado_nombre}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Contenido de la promo */}
+                      <div className="p-5">
+                        <h4 className="font-serif text-lg font-bold text-grafito leading-snug group-hover:text-petroleo transition-colors">
+                          {promo.titulo}
+                        </h4>
+                        <p className="mt-2 text-xs text-muted line-clamp-3 leading-relaxed whitespace-pre-line">
+                          {promo.descripcion}
+                        </p>
+
+                        {promo.precio_original && (
+                          <div className="mt-3 flex items-center gap-2 text-xs">
+                            <span className="text-muted line-through">{promo.precio_original}</span>
+                            <span className="font-bold text-emerald-800">{promo.precio_promo}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="p-5 pt-0 border-t border-niebla/50 mt-2">
+                      <div className="flex items-center gap-2 pt-3">
+                        {promo.whatsapp_url ? (
+                          <a
+                            href={promo.whatsapp_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-3 px-3 shadow-xs transition"
+                          >
+                            <span>💬</span>
+                            <span>Pedir por WhatsApp</span>
+                          </a>
+                        ) : null}
+                        <Link
+                          href={`/promos/${promo.slug}`}
+                          className="rounded-xl border border-niebla bg-porcelana hover:bg-niebla/50 text-grafito font-bold text-xs py-3 px-4 transition text-center"
+                        >
+                          Ver detalle
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ── SECCIÓN 1: RESTAURANTES ALIADOS QUE OFRECEN COMIDA HOY ── */}
         <div className="mb-16">

@@ -50,14 +50,14 @@ export function sonMismoTelefono(telA: string, telB: string): boolean {
 export async function sendEvolutionWhatsApp({ number, text }: SendMessageOptions): Promise<{ success: boolean; error?: string }> {
   const baseUrl = process.env.EVOLUTION_API_URL || 'http://178.238.238.158:8080';
   const apiKey = process.env.EVOLUTION_API_KEY || '42a447c1-3d74-4b52-9571-042c174f7621';
-  const instance = process.env.EVOLUTION_INSTANCE || 'agenda-cultural';
+  const instance = process.env.EVOLUTION_INSTANCE || 'que comer loja';
 
   const cleanNumber = normalizarTelefono(number);
   if (!cleanNumber) {
     return { success: false, error: 'Número de WhatsApp inválido' };
   }
 
-  const endpoint = `${baseUrl.replace(/\/+$/, '')}/message/sendText/${instance}`;
+  const endpoint = `${baseUrl.replace(/\/+$/, '')}/message/sendText/${encodeURIComponent(instance)}`;
 
   try {
     const res = await fetch(endpoint, {
