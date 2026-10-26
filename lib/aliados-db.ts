@@ -157,6 +157,34 @@ export async function getAliadoById(id: number): Promise<AliadoDb | null> {
 }
 
 /**
+ * Buscar un aliado activo por su número de teléfono o WhatsApp
+ */
+export async function getAliadoByTelefono(rawPhone: string): Promise<AliadoDb | null> {
+  const limpio = (rawPhone || '').replace(/\D/g, '');
+  if (!limpio || limpio.length < 7) return null;
+
+  const ultimos8 = limpio.slice(-8);
+
+  const pool = getGastroPool();
+  // Traer aliados activos que tengan teléfono
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT * FROM aliados WHERE activo = 1 AND telefono IS NOT NULL AND TRIM(telefono) != ""'
+  );
+
+  for (const row of rows) {
+    const telDb = (row.telefono || '').replace(/\D/g, '');
+    if (!telDb) continue;
+
+    // Coincidencia exacta o por los últimos 8-9 dígitos
+    if (telDb === limpio || telDb.endsWith(ultimos8) || limpio.endsWith(telDb.slice(-8))) {
+      return formatAliado(row);
+    }
+  }
+
+  return null;
+}
+
+/**
  * Crear un nuevo aliado en GASTRONOMIA_DB_URL y sincronizar con CHATBOT_DB_URL
  */
 export async function createAliado(data: Partial<AliadoDb>): Promise<number> {

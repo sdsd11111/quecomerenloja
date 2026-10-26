@@ -25,7 +25,63 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
 
   // Pestaña principal activa: 'aliados', 'promos' o 'posts' (blog)
-  const [activeTab, setActiveTab] = useState<'aliados' | 'promos' | 'posts'>('aliados');
+  const [activeTab, setActiveTab] = useState<'aliados' | 'promos' | 'posts' | 'bot'>('aliados');
+
+  // ─── Estado del panel Bot WhatsApp ───────────────────────────────────────
+  const [botLogs, setBotLogs] = useState<any[]>([]);
+  const [botLogsLoading, setBotLogsLoading] = useState(false);
+  const [webhookStatus, setWebhookStatus] = useState<any>(null);
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookRegistering, setWebhookRegistering] = useState(false);
+  const [botMsg, setBotMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const cargarBotLogs = async () => {
+    setBotLogsLoading(true);
+    try {
+      const res = await fetch('/api/admin/bot-logs?limit=100');
+      if (res.ok) {
+        const data = await res.json();
+        setBotLogs(data.logs || []);
+      }
+    } catch (e) {
+      console.error('Error cargando logs del bot', e);
+    } finally {
+      setBotLogsLoading(false);
+    }
+  };
+
+  const checkWebhookStatus = async () => {
+    try {
+      const res = await fetch('/api/admin/register-webhook');
+      if (res.ok) {
+        const data = await res.json();
+        setWebhookStatus(data);
+      }
+    } catch {}
+  };
+
+  const registrarWebhook = async () => {
+    setWebhookRegistering(true);
+    setBotMsg(null);
+    try {
+      const res = await fetch('/api/admin/register-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ webhookUrl: webhookUrl || undefined }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setBotMsg({ type: 'success', text: `✅ Webhook registrado correctamente → ${data.webhookUrl}` });
+        checkWebhookStatus();
+      } else {
+        setBotMsg({ type: 'error', text: `❌ Error: ${data.error || 'Respuesta inesperada'}` });
+      }
+    } catch (e: any) {
+      setBotMsg({ type: 'error', text: `❌ Error de red: ${e.message}` });
+    } finally {
+      setWebhookRegistering(false);
+    }
+  };
 
   // Estados del CRUD de Blog
   const [posts, setPosts] = useState<any[]>([]);
@@ -427,6 +483,19 @@ export default function AdminPage() {
             <span>✍️</span>
             <span>Artículos del Blog ({posts.length})</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => { setActiveTab('bot'); cargarBotLogs(); checkWebhookStatus(); }}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition ${
+              activeTab === 'bot'
+                ? 'bg-green-700 text-white shadow-md'
+                : 'bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200'
+            }`}
+          >
+            <span>🤖</span>
+            <span>Bot WhatsApp</span>
+          </button>
         </div>
 
         {/* CONTENIDO DE LA PESTAÑA 1: ALIADOS GASTRONÓMICOS */}
@@ -448,6 +517,147 @@ export default function AdminPage() {
         {/* CONTENIDO DE LA PESTAÑA: PROMOCIONES & EVENTOS */}
         {activeTab === 'promos' && (
           <AdminPromosSection />
+        )}
+
+        {/* CONTENIDO DE LA PESTAÑA: BOT WHATSAPP */}
+        {activeTab === 'bot' && (
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">🤖 Bot WhatsApp de Menús Diarios</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Sistema automático donde los aliados envían su menú diario por WhatsApp y se publica al instante en la web.
+              </p>
+            </div>
+
+            {/* Configuración del Webhook */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm space-y-4">
+              <h2 className="text-lg font-extrabold text-gray-900">⚙️ Configurar Webhook en Evolution API</h2>
+              <p className="text-xs text-gray-500">
+                El webhook conecta tu instancia de WhatsApp (<strong>agenda-cultural</strong>) con este sistema. Regístralo una vez y el bot funcionará automáticamente.
+              </p>
+              {botMsg && (
+                <div className={`p-3 rounded-xl text-sm font-medium ${
+                  botMsg.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>{botMsg.text}</div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="url"
+                  placeholder="URL del webhook (ej: https://quecomerenloja.com/api/webhooks/whatsapp-promos)"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <button
+                  onClick={registrarWebhook}
+                  disabled={webhookRegistering}
+                  className="bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition disabled:opacity-50"
+                >
+                  {webhookRegistering ? 'Registrando...' : '🔗 Registrar Webhook'}
+                </button>
+              </div>
+              {webhookStatus?.data && (
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-700 font-mono whitespace-pre-wrap">
+                  <strong>Estado actual:</strong>{' '}
+                  {JSON.stringify(webhookStatus.data, null, 2)}
+                </div>
+              )}
+            </div>
+
+            {/* Cómo funciona */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 space-y-3">
+              <h2 className="text-lg font-extrabold text-emerald-900">📋 Cómo funciona el bot</h2>
+              <div className="grid sm:grid-cols-2 gap-4 text-sm text-emerald-800">
+                <div className="space-y-2">
+                  <p className="font-bold">Comandos aceptados:</p>
+                  <ul className="space-y-1 text-xs font-mono bg-white rounded-xl p-3 border border-emerald-200">
+                    <li>📌 <strong>MENU:</strong> Sopa + Segundo + Jugo - $4.00</li>
+                    <li>🔥 <strong>PROMO:</strong> 2x1 en almuerzos hoy</li>
+                    <li>💰 <strong>OFERTA:</strong> Cuy asado - $8 (antes $10)</li>
+                    <li>🎉 <strong>EVENTO:</strong> Degustación este sábado</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-bold">Reglas del sistema:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>✅ Solo responde a aliados registrados en la BD</li>
+                    <li>✅ Bienvenida automática al primer contacto</li>
+                    <li>✅ Anti-duplicados: máximo 1 publicación por día</li>
+                    <li>✅ Parseo con IA (Groq) y fallback automático</li>
+                    <li>✅ Confirmación con enlace a la publicación</li>
+                    <li>✅ Logs de auditoría completos</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Logs del bot */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-extrabold text-gray-900">📊 Logs de Actividad del Bot</h2>
+                <button
+                  onClick={cargarBotLogs}
+                  disabled={botLogsLoading}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs transition"
+                >
+                  {botLogsLoading ? '⟳ Cargando...' : '🔄 Actualizar'}
+                </button>
+              </div>
+              {botLogsLoading && <p className="text-sm text-gray-500 text-center py-8">Cargando logs...</p>}
+              {!botLogsLoading && botLogs.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-8">No hay logs registrados aún. Los logs aparecerán aquí cuando los aliados empiecen a usar el bot.</p>
+              )}
+              {!botLogsLoading && botLogs.length > 0 && (
+                <div className="overflow-x-auto rounded-2xl border border-gray-200">
+                  <table className="min-w-full text-xs">
+                    <thead className="bg-gray-50 text-gray-500 uppercase tracking-wide">
+                      <tr>
+                        <th className="py-3 px-4 text-left font-semibold">Fecha</th>
+                        <th className="py-3 px-4 text-left font-semibold">Aliado</th>
+                        <th className="py-3 px-4 text-left font-semibold">Tipo</th>
+                        <th className="py-3 px-4 text-left font-semibold">Mensaje enviado</th>
+                        <th className="py-3 px-4 text-center font-semibold">Promo</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {botLogs.map((log) => (
+                        <tr key={log.id} className="hover:bg-gray-50 transition">
+                          <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
+                            {new Date(log.createdAt).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' })}
+                          </td>
+                          <td className="py-3 px-4 font-semibold text-gray-900">
+                            {log.aliado_nombre || <span className="text-gray-400">—</span>}
+                            <div className="text-gray-400 font-normal">{log.numero}</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                              log.tipo === 'PUBLICADO' ? 'bg-green-100 text-green-700' :
+                              log.tipo === 'DUPLICADO' ? 'bg-amber-100 text-amber-700' :
+                              log.tipo === 'BIENVENIDA' ? 'bg-blue-100 text-blue-700' :
+                              log.tipo === 'NO_AUTORIZADO' ? 'bg-red-100 text-red-700' :
+                              log.tipo === 'ERROR' ? 'bg-red-200 text-red-800' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {log.tipo === 'PUBLICADO' ? '✅' : log.tipo === 'DUPLICADO' ? '⚠️' : log.tipo === 'BIENVENIDA' ? '👋' : log.tipo === 'NO_AUTORIZADO' ? '🚫' : log.tipo === 'ERROR' ? '❌' : '💬'}
+                              {log.tipo}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-gray-700 max-w-xs">
+                            <div className="truncate" title={log.mensaje_in}>{log.mensaje_in}</div>
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {log.promo_id ? (
+                              <span className="font-mono text-emerald-700 font-bold">#{log.promo_id}</span>
+                            ) : <span className="text-gray-300">—</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* CONTENIDO DE LA PESTAÑA 2: ARTÍCULOS DEL BLOG */}
