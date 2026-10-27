@@ -1,20 +1,18 @@
-# MySQL local para desarrollo. Carga el esquema y los datos de ejemplo en el primer arranque.
 services:
-  db:
-    image: mysql:8.4
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: quecomerenloja
-      MYSQL_USER: quecomer
-      MYSQL_PASSWORD: quecomer
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quecomerenloja-app
+    restart: always
     ports:
-      - "3306:3306"
-    volumes:
-      - dbdata:/var/lib/mysql
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
-
-volumes:
-  dbdata:
+      - "3006:3006"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - HOSTNAME=0.0.0.0
