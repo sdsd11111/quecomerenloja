@@ -128,18 +128,23 @@ export default async function AlmuerzosPage() {
               <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> MEDIODÍA EN LOJA · MENÚS DE $3 A $5
             </div>
 
-            <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tight text-white leading-[1.08] drop-shadow-md">
+            <h1 className="text-[clamp(30px,5vw,64px)] font-bold tracking-tight text-white leading-[1.1] drop-shadow-md">
               Dónde Almorzar en Loja: <em className="font-serif font-normal italic text-citrico">Menú del Día y Almuerzos Ejecutivos.</em>
             </h1>
 
-            <p className="mt-5 max-w-[620px] text-base md:text-lg text-white font-medium leading-relaxed drop-shadow">
-              Comer rico, casero y al instante. Descubre las huecas y restaurantes que sirven el menú del día completo: sopa lojana tradicional, plato fuerte, ensalada y jugo natural fresco.
+            <p className="mt-3.5 sm:mt-5 max-w-[620px] text-sm sm:text-base md:text-lg text-white font-medium leading-[1.5] sm:leading-relaxed drop-shadow">
+              <span className="sm:hidden">
+                Menús ejecutivos y tradicionales con sopa de repe o arveja, plato fuerte y jugo natural desde $3.00.
+              </span>
+              <span className="hidden sm:inline">
+                Comer rico, casero y al instante. Descubre las huecas y restaurantes que sirven el menú del día completo: sopa lojana tradicional, plato fuerte, ensalada y jugo natural fresco.
+              </span>
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-5 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
               <Link
                 href="/restaurantes"
-                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
+                className="rounded-xl bg-citrico px-5 py-3 sm:px-6 sm:py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
               >
                 Ver restaurantes para almorzar →
               </Link>
@@ -147,7 +152,7 @@ export default async function AlmuerzosPage() {
                 href={WA_AFILIACION_ALMUERZOS}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-5 py-3 sm:px-6 sm:py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
               >
                 ¿Tienes un restaurante? Afiliarlo aquí ↗
               </a>
@@ -177,8 +182,9 @@ export default async function AlmuerzosPage() {
               <h2 className="text-[clamp(26px,3vw,36px)] font-bold tracking-tight text-grafito">
                 Platos Típicos para el Almuerzo Lojano
               </h2>
-              <p className="text-xs md:text-sm text-muted mt-1.5 max-w-2xl">
-                Conoce a detalle la historia, ingredientes y mejores lugares para comer cada plato insignia del mediodía en Loja.
+              <p className="text-xs sm:text-sm text-muted mt-1.5 max-w-2xl">
+                <span className="sm:hidden">Repe blanco, cecina lojana y platos tradicionales del mediodía.</span>
+                <span className="hidden sm:inline">Conoce a detalle la historia, ingredientes y mejores lugares para comer cada plato insignia del mediodía en Loja.</span>
               </p>
             </div>
           </div>
@@ -202,8 +208,9 @@ export default async function AlmuerzosPage() {
               <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
                 Restaurantes con Almuerzo Verificado
               </h2>
-              <p className="text-xs md:text-sm text-muted mt-2">
-                Nuestros aliados actualizan sus platos del día directamente por WhatsApp y se recomiendan automáticamente ante miles de turistas y lojanos.
+              <p className="text-xs sm:text-sm text-muted mt-2">
+                <span className="sm:hidden">Menús del día actualizados por WhatsApp listos para pedir.</span>
+                <span className="hidden sm:inline">Nuestros aliados actualizan sus platos del día directamente por WhatsApp y se recomiendan automáticamente ante miles de turistas y lojanos.</span>
               </p>
             </div>
             <a

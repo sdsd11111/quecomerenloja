@@ -41,22 +41,22 @@ export function Header() {
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-300 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-niebla/60 py-3"
-            : "bg-white/90 backdrop-blur-sm border-b border-niebla/40 py-4"
+            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-niebla/60 py-2.5 sm:py-3"
+            : "bg-white/90 backdrop-blur-sm border-b border-niebla/40 py-3 sm:py-4"
         }`}
       >
         <nav
-          className="mx-auto flex w-[min(1180px,calc(100%-40px))] items-center justify-between"
+          className="mx-auto flex w-[min(1180px,calc(100%-24px))] sm:w-[min(1180px,calc(100%-40px))] items-center justify-between gap-2"
           aria-label="Navegación principal"
         >
           {/* ── LOGO ELEGANTE (FAVICON BADGE + TIPOGRAFÍA) ── */}
           <Link
             href="/"
-            className="group flex items-center gap-3 shrink-0"
+            className="group flex items-center gap-2 sm:gap-3 shrink-0 min-w-0"
             aria-label="Qué comer en Loja, inicio"
             onClick={() => setOpen(false)}
           >
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-petroleo p-2 shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:shadow-petroleo/30">
+            <div className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-petroleo p-2 shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:shadow-petroleo/30 shrink-0">
               <Image
                 src="/favicon.svg"
                 alt="Símbolo Qué Comer en Loja"
@@ -67,30 +67,56 @@ export function Header() {
               />
             </div>
 
-            <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold tracking-tight text-grafito leading-none group-hover:text-petroleo transition-colors">
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif text-base sm:text-xl font-bold tracking-tight text-grafito leading-none group-hover:text-petroleo transition-colors truncate">
                 Qué comer <span className="text-petroleo">en Loja</span>
               </span>
-              <span className="text-[10px] font-semibold tracking-wider uppercase text-muted mt-0.5">
+              <span className="text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase text-muted mt-0.5 hidden xs:block">
                 Guía Gastronómica Local
               </span>
             </div>
           </Link>
 
-          {/* ── ACCIONES A LA DERECHA: BOTÓN MENÚ DESPLEGABLE ── */}
-          <div className="flex items-center gap-3">
+          {/* ── ACCIONES A LA DERECHA: BUSCADOR MÓVIL + MENÚ DESPLEGABLE ── */}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* BOTÓN BUSCADOR CLARO Y EVIDENTE PARA MÓVIL */}
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("open-search-modal"));
+                }
+              }}
+              aria-label="Buscar platos, menús y restaurantes"
+              className="sm:hidden flex items-center gap-1.5 h-10 rounded-xl border border-niebla bg-porcelana/90 hover:bg-white text-grafito px-2.5 py-1.5 shadow-xs transition hover:border-petroleo active:scale-95"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 text-petroleo shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                />
+              </svg>
+              <span className="text-xs font-bold text-grafito tracking-tight">Buscar</span>
+            </button>
 
             {/* BOTÓN ÚNICO QUE ACTIVA EL DRAWER LATERAL */}
             <button
               onClick={() => setOpen(true)}
               aria-label="Abrir menú de navegación"
-              className="flex items-center gap-2.5 rounded-xl border border-niebla bg-porcelana/80 px-4 py-2.5 text-petroleo shadow-sm transition hover:border-petroleo hover:bg-white active:scale-95"
+              className="flex items-center gap-2 sm:gap-2.5 rounded-xl border border-niebla bg-porcelana/80 px-3 sm:px-4 py-2 sm:py-2.5 text-petroleo shadow-sm transition hover:border-petroleo hover:bg-white active:scale-95"
             >
               <span className="text-xs font-extrabold uppercase tracking-wider">Menú</span>
-              <div className="flex flex-col gap-1 w-5 justify-center items-center">
-                <span className="h-0.5 w-5 rounded-full bg-petroleo" />
-                <span className="h-0.5 w-3.5 rounded-full bg-petroleo self-end" />
-                <span className="h-0.5 w-5 rounded-full bg-petroleo" />
+              <div className="flex flex-col gap-1 w-4 sm:w-5 justify-center items-center">
+                <span className="h-0.5 w-4 sm:w-5 rounded-full bg-petroleo" />
+                <span className="h-0.5 w-3 sm:w-3.5 rounded-full bg-petroleo self-end" />
+                <span className="h-0.5 w-4 sm:w-5 rounded-full bg-petroleo" />
               </div>
             </button>
           </div>

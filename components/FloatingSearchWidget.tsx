@@ -72,12 +72,19 @@ export function FloatingSearchWidget() {
     setIsOpen(false);
   }, [pathname]);
 
+  // Escuchar evento personalizado para abrir desde el header móvil
+  useEffect(() => {
+    const handleOpenSearch = () => setIsOpen(true);
+    window.addEventListener("open-search-modal", handleOpenSearch);
+    return () => window.removeEventListener("open-search-modal", handleOpenSearch);
+  }, []);
+
   if (!visible && !isOpen) return null;
 
   return (
     <>
-      {/* ── BOTÓN FLOTANTE EN ESQUINA INFERIOR IZQUIERDA ── */}
-      <div className="fixed bottom-5 left-4 sm:left-6 z-40 flex items-center gap-2">
+      {/* ── BOTÓN FLOTANTE EN ESQUINA INFERIOR IZQUIERDA (SOLO DESKTOP / TABLET) ── */}
+      <div className="hidden sm:flex fixed bottom-5 left-4 sm:left-6 z-40 items-center gap-2">
         <button
           type="button"
           onClick={() => setIsOpen(true)}

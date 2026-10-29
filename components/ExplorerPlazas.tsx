@@ -94,26 +94,26 @@ export function ExplorerPlazas({ initialCategory = '', aliadosReales = [] }: Pro
   return (
     <div>
       {/* ── BARRA DE BÚSQUEDA Y FILTROS ── */}
-      <div className="rounded-2xl border border-niebla bg-white p-6 shadow-sm">
-        <form role="search" onSubmit={(e) => e.preventDefault()} className="flex items-center gap-3">
-          <span aria-hidden className="text-xl text-petroleo">⌕</span>
+      <div className="rounded-2xl border border-niebla bg-white p-4 sm:p-6 shadow-sm">
+        <form role="search" onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2.5 sm:gap-3">
+          <span aria-hidden className="text-lg sm:text-xl text-petroleo">⌕</span>
           <input
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar aliados por nombre, plato o sector… (ej: tamales, cecina, Lourdes)"
+            placeholder="Buscar por nombre, plato o sector (ej: repe, cecina, San Sebastián)..."
             autoComplete="off"
-            className="min-w-0 flex-1 bg-transparent py-2.5 text-xs md:text-sm outline-none placeholder:text-muted"
+            className="min-w-0 flex-1 bg-transparent py-1.5 sm:py-2.5 text-xs sm:text-sm outline-none placeholder:text-muted"
           />
           {q && (
-            <button type="button" onClick={() => setQ('')} className="text-xs text-muted hover:text-grafito">
-              Limpiar
+            <button type="button" onClick={() => setQ('')} className="text-xs text-muted hover:text-grafito px-2 py-1">
+              ✕
             </button>
           )}
         </form>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-niebla/60 pt-4">
-          <span className="mr-1 text-[10px] font-extrabold uppercase tracking-wider text-muted">
+        <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 border-t border-niebla/60 pt-3 sm:pt-4">
+          <span className="mr-1 text-[10px] font-extrabold uppercase tracking-wider text-muted hidden sm:inline">
             TIPO:
           </span>
           <button
@@ -147,15 +147,9 @@ export function ExplorerPlazas({ initialCategory = '', aliadosReales = [] }: Pro
               }}
               className="text-[11px] font-semibold text-petroleo hover:underline ml-auto"
             >
-              Restablecer filtros ↻
+              Restablecer ↻
             </button>
           )}
-        </div>
-
-        <div className="mt-3 flex items-center justify-between text-xs text-muted pt-1">
-          <span>
-            Mostrando <strong>{filteredAliados.length}</strong> aliados gastronómicos verificados en Loja.
-          </span>
         </div>
       </div>
 

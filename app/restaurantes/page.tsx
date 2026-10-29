@@ -71,18 +71,32 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PageHero
-        eyebrow="DIRECTORIO OFICIAL · ALIADOS GASTRONÓMICOS DE LOJA"
-        title={
-          <>
-            Restaurantes en Loja: <em className="font-serif italic font-normal text-[#e1b45f]">Sabores auténticos y aliados verificados.</em>
-          </>
-        }
-      >
-        Descubre los mejores restaurantes, huecas tradicionales y cafeterías de Loja. Contacto directo con cada negocio por WhatsApp sin intermediarios ni comisiones.
-      </PageHero>
+      {/* ── HERO ELEGANTE Y DIRECTO AL GRANO ── */}
+      <section className="bg-porcelana/70 border-b border-niebla py-8 sm:py-10">
+        <Wrap>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[2.8px] text-emerald-900 bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                DIRECTORIO OFICIAL · LOJA, ECUADOR
+              </span>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-grafito mt-2.5 font-serif">
+                Restaurantes en Loja: <em className="font-serif italic font-normal text-petroleo">Nuestros Aliados Oficiales ({aliados.length})</em>
+              </h1>
+              <p className="text-xs sm:text-sm text-muted mt-1.5">
+                <span className="sm:hidden">
+                  Restaurantes y cafeterías verificados con contacto directo a WhatsApp sin intermediarios.
+                </span>
+                <span className="hidden sm:inline">
+                  Descubre los mejores restaurantes, huecas tradicionales y cafeterías de Loja con atención y reservas directas a su WhatsApp sin comisiones.
+                </span>
+              </p>
+            </div>
+          </div>
+        </Wrap>
+      </section>
 
-      <Wrap className="py-12">
+      <Wrap className="py-8 sm:py-10">
         <ExplorerPlazas initialCategory={categoria} aliadosReales={aliados} />
       </Wrap>
     </>

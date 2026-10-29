@@ -90,6 +90,29 @@ export async function getPromosActivas(limit = 50): Promise<PromoAliado[]> {
   }
 }
 
+/** Promos ACTIVAS vigentes específicamente HOY (para /que-comer-hoy) */
+export async function getPromosDelDia(limit = 50): Promise<PromoAliado[]> {
+  try {
+    const pool = getGastroPool();
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT * FROM promociones_aliados
+       WHERE estado = 'ACTIVO'
+         AND (
+           (fecha_fin IS NOT NULL AND CURDATE() BETWEEN DATE(fecha_inicio) AND DATE(fecha_fin))
+           OR
+           (fecha_fin IS NULL AND DATE(fecha_inicio) = CURDATE())
+         )
+       ORDER BY destacado DESC, fecha_inicio ASC
+       LIMIT ?`,
+      [limit]
+    );
+    return rows.map(formatPromo);
+  } catch (e) {
+    console.error('[getPromosDelDia]', e);
+    return [];
+  }
+}
+
 /** Todas las promos para admin */
 export async function getAllPromosAdmin(): Promise<PromoAliado[]> {
   try {

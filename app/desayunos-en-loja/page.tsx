@@ -128,18 +128,23 @@ export default async function DesayunosPage() {
               <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> MAÑANAS EN LOJA · CAFETERÍAS Y TRADICIÓN
             </div>
 
-            <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tight text-white leading-[1.08] drop-shadow-md">
+            <h1 className="text-[clamp(30px,5vw,64px)] font-bold tracking-tight text-white leading-[1.1] drop-shadow-md">
               Dónde Desayunar en Loja: <em className="font-serif font-normal italic text-citrico">Cafeterías, Tamales y Café de Altura.</em>
             </h1>
 
-            <p className="mt-5 max-w-[620px] text-base md:text-lg text-white font-medium leading-relaxed drop-shadow">
-              Despertar en Loja huele a café arábico recién pasado, tamales calientes en hoja de achira y humitas con quesillo. Conoce la ruta matutina del centro histórico y la Calle Lourdes.
+            <p className="mt-3.5 sm:mt-5 max-w-[620px] text-sm sm:text-base md:text-lg text-white font-medium leading-[1.5] sm:leading-relaxed drop-shadow">
+              <span className="sm:hidden">
+                Café lojano pasado, tamales calientes en achira, humitas y bolones en el centro y la Calle Lourdes.
+              </span>
+              <span className="hidden sm:inline">
+                Despertar en Loja huele a café arábico recién pasado, tamales calientes en hoja de achira y humitas con quesillo. Conoce la ruta matutina del centro histórico y la Calle Lourdes.
+              </span>
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-5 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
               <Link
                 href="/cafe-de-loja"
-                className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
+                className="rounded-xl bg-citrico px-5 py-3 sm:px-6 sm:py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-lg"
               >
                 Ver cafeterías destacadas →
               </Link>
@@ -147,7 +152,7 @@ export default async function DesayunosPage() {
                 href={WA_AFILIACION_CAFES}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-5 py-3 sm:px-6 sm:py-3.5 text-xs font-bold text-white hover:bg-white/20 transition inline-flex items-center gap-1.5"
               >
                 ¿Tienes una cafetería? Afiliarla aquí ↗
               </a>
@@ -177,8 +182,9 @@ export default async function DesayunosPage() {
               <h2 className="text-[clamp(26px,3vw,36px)] font-bold tracking-tight text-grafito">
                 Especialidades Matutinas de Loja
               </h2>
-              <p className="text-xs md:text-sm text-muted mt-1.5 max-w-2xl">
-                Guías completas sobre los clásicos del desayuno lojano: dónde se cocinan al vapor y los mejores acompañamientos con café de altura.
+              <p className="text-xs sm:text-sm text-muted mt-1.5 max-w-2xl">
+                <span className="sm:hidden">Dónde comer los mejores tamales y humitas con café lojano.</span>
+                <span className="hidden sm:inline">Guías completas sobre los clásicos del desayuno lojano: dónde se cocinan al vapor y los mejores acompañamientos con café de altura.</span>
               </p>
             </div>
           </div>
@@ -202,8 +208,9 @@ export default async function DesayunosPage() {
               <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
                 Cafeterías y Locales Recomendados
               </h2>
-              <p className="text-xs md:text-sm text-muted mt-2">
-                Espacios exclusivos para cafeterías de Loja que buscan captar al turista matutino y al residente sin intermediarios ni comisiones.
+              <p className="text-xs sm:text-sm text-muted mt-2">
+                <span className="sm:hidden">Cafeterías recomendadas con contacto directo a WhatsApp sin intermediarios.</span>
+                <span className="hidden sm:inline">Espacios exclusivos para cafeterías de Loja que buscan captar al turista matutino y al residente sin intermediarios ni comisiones.</span>
               </p>
             </div>
             <a

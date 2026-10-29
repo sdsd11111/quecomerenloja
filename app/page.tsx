@@ -219,32 +219,38 @@ export default async function Home() {
               <span className="h-2 w-2 rounded-full bg-citrico animate-pulse" /> LOJA, ECUADOR · GUÍA GASTRONÓMICA OFICIAL
             </div>
 
-            <h1 className="text-[clamp(38px,5vw,72px)] font-bold tracking-[-2.5px] leading-[1.05] text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+            <h1 className="text-[clamp(32px,5vw,72px)] font-bold tracking-tight md:tracking-[-2.5px] leading-[1.08] text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
               Dónde comer en Loja: <em className="font-serif font-normal italic text-citrico drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">Platos Típicos, Cafeterías y Restaurantes.</em>
             </h1>
 
-            <p className="mt-5 max-w-[620px] text-base md:text-lg leading-[1.7] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] font-medium">
-              La plataforma de descubrimiento gastronómico de Loja. Encuentra el auténtico <strong>repe lojano</strong>, la cecina a la brasa, los mejores cafés de altura y negocios gastronómicos verificados sin intermediarios.
+            {/* Texto corto en celular, completo en desktop */}
+            <p className="mt-4 sm:mt-5 max-w-[620px] text-sm sm:text-base md:text-lg leading-[1.5] sm:leading-[1.7] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] font-medium">
+              <span className="sm:hidden">
+                Encuentra repe lojano, cecina a la brasa, café de especialidad y restaurantes verificados sin comisiones.
+              </span>
+              <span className="hidden sm:inline">
+                La plataforma de descubrimiento gastronómico de Loja. Encuentra el auténtico <strong>repe lojano</strong>, la cecina a la brasa, los mejores cafés de altura y negocios gastronómicos verificados sin intermediarios.
+              </span>
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-4">
+            <div className="mt-5 sm:mt-7 flex flex-wrap items-center gap-3 sm:gap-4">
               <Link
                 href="/restaurantes"
-                className="rounded-xl bg-citrico px-7 py-3.5 text-sm font-extrabold text-petroleo transition hover:brightness-110 hover:-translate-y-0.5 shadow-xl shadow-citrico/10"
+                className="rounded-xl bg-citrico px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-extrabold text-petroleo transition hover:brightness-110 hover:-translate-y-0.5 shadow-xl shadow-citrico/10"
               >
-                Explorar gastronomía local →
+                Explorar restaurantes →
               </Link>
               <a
                 href="https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-7 py-3.5 text-sm font-bold text-white hover:bg-white/20 transition hover:-translate-y-0.5"
+                className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-white hover:bg-white/20 transition hover:-translate-y-0.5"
               >
-                ¿Tienes un restaurante? Escríbenos →
+                ¿Tienes un local? Escríbenos →
               </a>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center gap-6 text-xs text-niebla/80 border-t border-white/15 pt-5">
+            <div className="hidden sm:flex mt-7 flex-wrap items-center gap-6 text-xs text-niebla/80 border-t border-white/15 pt-5">
               <div className="flex items-center gap-2">
                 <span className="text-citrico font-bold text-sm">✓ 100%</span>
                 <span>sabores auténticos</span>
@@ -297,9 +303,10 @@ export default async function Home() {
             <h2 className="text-[clamp(30px,4vw,48px)] font-bold tracking-tight text-white drop-shadow">
               ¿En Qué Momento del Día Estás?
             </h2>
-            <div className="mt-4 inline-block rounded-2xl border border-white/20 bg-black/50 px-6 py-3.5 backdrop-blur-md shadow-xl">
-              <p className="text-sm md:text-base text-white font-medium leading-relaxed drop-shadow-sm">
-                Desde el primer café de altura de la mañana hasta el almuerzo ejecutivo y las cenas nocturnas. Conoce el ritmo gastronómico de Loja.
+            <div className="mt-4 inline-block rounded-2xl border border-white/20 bg-black/50 px-4 py-2.5 sm:px-6 sm:py-3.5 backdrop-blur-md shadow-xl">
+              <p className="text-xs sm:text-base text-white font-medium leading-relaxed drop-shadow-sm">
+                <span className="sm:hidden">Desayunos, almuerzos ejecutivos y cenas para hoy en Loja.</span>
+                <span className="hidden sm:inline">Desde el primer café de altura de la mañana hasta el almuerzo ejecutivo y las cenas nocturnas. Conoce el ritmo gastronómico de Loja.</span>
               </p>
             </div>
           </div>
@@ -328,8 +335,9 @@ export default async function Home() {
               <h2 className="text-[clamp(28px,3.5vw,42px)] font-bold tracking-tight text-grafito">
                 Socios Gastronómicos Verificados
               </h2>
-              <p className="mt-3 text-sm text-muted">
-                Espacios exclusivos para restaurantes y cafeterías recomendadas. Conexión directa al WhatsApp del local, sin intermediarios ni comisiones.
+              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-muted">
+                <span className="sm:hidden">Restaurantes y cafeterías verificados con contacto directo por WhatsApp.</span>
+                <span className="hidden sm:inline">Espacios exclusivos para restaurantes y cafeterías recomendadas. Conexión directa al WhatsApp del local, sin intermediarios ni comisiones.</span>
               </p>
             </div>
             <a

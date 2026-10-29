@@ -61,7 +61,7 @@ export function AliadosSlideInfinito({
       return (
         <div
           key={`${keyPrefix}-aliado-${aliado.id}-${idx}`}
-          className="w-[320px] sm:w-[350px] shrink-0 flex flex-col justify-between rounded-2xl border border-niebla bg-white p-6 shadow-sm transition hover:border-petroleo hover:shadow-xl hover:-translate-y-1 select-none"
+          className="w-[82vw] max-w-[340px] sm:w-[350px] shrink-0 flex flex-col justify-between rounded-2xl border border-niebla bg-white p-5 sm:p-6 shadow-sm transition hover:border-petroleo hover:shadow-xl hover:-translate-y-1 select-none"
         >
           <div>
             <div className="flex items-center justify-between">
@@ -136,7 +136,7 @@ export function AliadosSlideInfinito({
     return (
       <div
         key={`${keyPrefix}-slot-${slot.id}-${idx}`}
-        className="w-[320px] sm:w-[350px] shrink-0 flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-6 transition hover:border-petroleo hover:shadow-lg select-none"
+        className="w-[82vw] max-w-[340px] sm:w-[350px] shrink-0 flex flex-col justify-between rounded-2xl border-2 border-dashed border-niebla bg-porcelana/40 p-5 sm:p-6 transition hover:border-petroleo hover:shadow-lg select-none"
       >
         <div>
           <div className="flex items-center justify-between">
