@@ -160,57 +160,72 @@ export default async function QueComerHoyPage({ searchParams }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* HERO MINIMALISTA / DIRECTO AL GRANO */}
-      <section className="bg-porcelana/60 border-b border-niebla py-8 sm:py-10">
-        <Wrap>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[2.8px] text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200">
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                EN VIVO · LOJA, ECUADOR
-              </span>
-              <h1 className="text-2xl md:text-4xl font-bold text-grafito mt-2.5 font-serif">
-                Menús del Día y Promociones Activas ({promosActivas.length})
-              </h1>
-              <p className="text-xs sm:text-sm text-muted mt-1.5">
-                Platos del día y ofertas vigentes hoy de restaurantes y cafeterías de Loja.
-              </p>
-            </div>
+      {/* HERO CON IMAGEN */}
+      <section className="relative overflow-hidden min-h-[420px] sm:min-h-[520px] flex items-end">
+        {/* Imagen de fondo */}
+        <Image
+          src="/platos/cecina-lojana.webp"
+          alt="Cecina lojana: plato típico de Loja, Ecuador"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Overlay degradado oscuro */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/10" />
 
-            <div className="flex items-center gap-2 flex-wrap shrink-0">
-              <Link
-                href="/que-comer-hoy?momento=desayuno"
-                className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
-                  momento === "desayuno" || (momento === "todos" && momentoActual === "desayuno")
-                    ? "bg-petroleo text-white"
-                    : "bg-white text-grafito hover:bg-niebla/50 border border-niebla"
-                }`}
-              >
-                🌅 Desayunos
-              </Link>
-              <Link
-                href="/que-comer-hoy?momento=almuerzo"
-                className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
-                  momento === "almuerzo" || (momento === "todos" && momentoActual === "almuerzo")
-                    ? "bg-petroleo text-white"
-                    : "bg-white text-grafito hover:bg-niebla/50 border border-niebla"
-                }`}
-              >
-                🍽️ Almuerzos
-              </Link>
-              <Link
-                href="/que-comer-hoy?momento=cena"
-                className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
-                  momento === "cena" || (momento === "todos" && momentoActual === "cena")
-                    ? "bg-petroleo text-white"
-                    : "bg-white text-grafito hover:bg-niebla/50 border border-niebla"
-                }`}
-              >
-                🌙 Cenas
-              </Link>
+        {/* Contenido encima de la imagen */}
+        <div className="relative z-10 w-full pb-6 pt-20 sm:pb-10 sm:pt-28">
+          <Wrap>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[2.8px] text-white bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  EN VIVO · LOJA, ECUADOR
+                </span>
+                <h1 className="text-2xl md:text-4xl font-bold text-white mt-2.5 font-serif drop-shadow-lg">
+                  Menús del Día y Promociones Activas ({promosActivas.length})
+                </h1>
+                <p className="text-xs sm:text-sm text-white/80 mt-1.5 drop-shadow">
+                  Platos del día y ofertas vigentes hoy de restaurantes y cafeterías de Loja.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap shrink-0">
+                <Link
+                  href="/que-comer-hoy?momento=desayuno"
+                  className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
+                    momento === "desayuno" || (momento === "todos" && momentoActual === "desayuno")
+                      ? "bg-white text-grafito"
+                      : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30"
+                  }`}
+                >
+                  🌅 Desayunos
+                </Link>
+                <Link
+                  href="/que-comer-hoy?momento=almuerzo"
+                  className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
+                    momento === "almuerzo" || (momento === "todos" && momentoActual === "almuerzo")
+                      ? "bg-white text-grafito"
+                      : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30"
+                  }`}
+                >
+                  🍽️ Almuerzos
+                </Link>
+                <Link
+                  href="/que-comer-hoy?momento=cena"
+                  className={`rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-xs ${
+                    momento === "cena" || (momento === "todos" && momentoActual === "cena")
+                      ? "bg-white text-grafito"
+                      : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30"
+                  }`}
+                >
+                  🌙 Cenas
+                </Link>
+              </div>
             </div>
-          </div>
-        </Wrap>
+          </Wrap>
+        </div>
       </section>
 
       <Wrap className="py-8 sm:py-10">
