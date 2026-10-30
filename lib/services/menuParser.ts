@@ -50,6 +50,23 @@ export function extraerPrefijoMenu(texto: string): { tienePrefijo: boolean; text
     return { tienePrefijo: true, textoLimpio, tipoDetectado: 'EVENTO' };
   }
 
+  // Detección contextual: si menciona palabras gastronómicas típicas de un menú
+  const esContextual =
+    lower.includes('almuerzo') ||
+    lower.includes('sopa') ||
+    lower.includes('segundo') ||
+    lower.includes('repe') ||
+    lower.includes('cecina') ||
+    lower.includes('arveja') ||
+    lower.includes('sazón') ||
+    lower.includes('plato') ||
+    lower.includes('menú') ||
+    lower.includes('menu');
+
+  if (esContextual) {
+    return { tienePrefijo: true, textoLimpio: textoTrim, tipoDetectado: 'PROMO' };
+  }
+
   return { tienePrefijo: false, textoLimpio: textoTrim, tipoDetectado: 'PROMO' };
 }
 

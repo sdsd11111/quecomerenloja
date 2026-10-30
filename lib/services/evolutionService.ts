@@ -89,3 +89,43 @@ export async function sendEvolutionWhatsApp({ number, text }: SendMessageOptions
     return { success: false, error: error.message || 'Error de conexión con Evolution API' };
   }
 }
+
+/**
+ * Descarga una imagen o medio recibido en WhatsApp mediante Evolution API en formato Base64
+ */
+export async function getEvolutionMediaBase64(messageKeyId: string): Promise<string | null> {
+  const baseUrl = process.env.EVOLUTION_API_URL || 'http://178.238.238.158:8080';
+  const apiKey = process.env.EVOLUTION_API_KEY || '42a447c1-3d74-4b52-9571-042c174f7621';
+  const instance = process.env.EVOLUTION_INSTANCE || 'que comer loja';
+
+  try {
+    const endpoint = `${baseUrl.replace(/\/+$/, '')}/chat/getBase64FromMediaMessage/${encodeURIComponent(instance)}`;
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: apiKey,
+      },
+      body: JSON.stringify({
+        message: {
+          key: {
+            id: messageKeyId,
+          },
+        },
+        convertToMp4: false,
+      }),
+    });
+
+    if (!res.ok) {
+      console.warn(`[Evolution Media] Error obteniendo base64 (${res.status})`);
+      return null;
+    }
+
+    const data = await res.json();
+    return data.base64 || null;
+  } catch (err) {
+    console.warn('[Evolution Media] Excepción descargando media:', err);
+    return null;
+  }
+}
+

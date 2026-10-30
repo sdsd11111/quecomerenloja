@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAliadoByTelefono } from '@/lib/aliados-db';
 import { createPromo } from '@/lib/promos-db';
 import { extraerPrefijoMenu, parsearMenuConIA } from '@/lib/services/menuParser';
-import { sendEvolutionWhatsApp, normalizarTelefono } from '@/lib/services/evolutionService';
+import { sendEvolutionWhatsApp, normalizarTelefono, getEvolutionMediaBase64 } from '@/lib/services/evolutionService';
+import { extraerTextoDeImagen } from '@/lib/services/ocrService';
 import {
   yaPublicoHoyEnMemoria,
   yaPublicoHoyEnBD,
@@ -113,8 +114,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: 'ignored', reason: 'not_private_message' });
     }
 
-    // ── 2. Extraer texto del mensaje ─────────────────────────────────────
+    // ── 2. Extraer texto e imagen del mensaje ───────────────────────────
     const msg = messageData.message || {};
+    const messageId = key.id || '';
+    const hasImage = Boolean(msg.imageMessage || msg.documentMessage?.mimetype?.includes('image'));
+
     rawText =
       msg.conversation ||
       msg.extendedTextMessage?.text ||
@@ -122,19 +126,31 @@ export async function POST(req: NextRequest) {
       msg.videoMessage?.caption ||
       '';
 
-    if (!rawText?.trim()) {
-      return NextResponse.json({ status: 'ignored', reason: 'empty_text' });
-    }
-
     numeroRemitente = normalizarTelefono(remoteJid);
 
-    // ── 3. Detectar prefijo ──────────────────────────────────────────────
-    const { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(rawText);
-
-    if (!tienePrefijo) {
-      // Silencio absoluto si no es un aliado escribiendo un menú
-      return NextResponse.json({ status: 'ignored', reason: 'no_prefix' });
+    // Si viene una imagen o afiche, extraer texto mediante OCR
+    let textoOcr = '';
+    if (hasImage && messageId) {
+      try {
+        console.log(`[WA Bot] Mensaje con imagen detectado (id: ${messageId}), descargando para OCR...`);
+        const base64Img = await getEvolutionMediaBase64(messageId);
+        if (base64Img) {
+          textoOcr = await extraerTextoDeImagen(base64Img);
+        }
+      } catch (errOcr) {
+        console.warn('[WA Bot] No se pudo procesar la imagen con OCR:', errOcr);
+      }
     }
+
+    // Combinar texto del pie de foto con el texto extraído del afiche
+    const textoCombinado = [rawText, textoOcr].filter(Boolean).join('\n\n');
+
+    if (!textoCombinado.trim()) {
+      return NextResponse.json({ status: 'ignored', reason: 'empty_text_and_no_ocr' });
+    }
+
+    // ── 3. Detectar prefijo o contexto gastronómico ──────────────────────
+    const { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
 
     // ── 4. Verificar aliado autorizado ───────────────────────────────────
     const aliado = await getAliadoByTelefono(numeroRemitente);
@@ -144,10 +160,16 @@ export async function POST(req: NextRequest) {
       await registrarLog({
         numero: numeroRemitente,
         tipo: 'NO_AUTORIZADO',
-        mensaje_in: rawText.slice(0, 500),
+        mensaje_in: textoCombinado.slice(0, 500),
       });
       // Sin respuesta: silencio absoluto para no-aliados
       return NextResponse.json({ status: 'ignored', reason: 'unauthorized_sender' });
+    }
+
+    // Si es un aliado registrado y mandó imagen o texto largo, lo consideramos menú válido
+    const esMensajeValido = tienePrefijo || hasImage || textoCombinado.length > 25;
+    if (!esMensajeValido) {
+      return NextResponse.json({ status: 'ignored', reason: 'no_prefix_nor_content' });
     }
 
     // ── 5. Bienvenida en el primer contacto ─────────────────────────────
