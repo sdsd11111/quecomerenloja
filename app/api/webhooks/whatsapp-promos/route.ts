@@ -4,12 +4,17 @@ import { createPromo } from '@/lib/promos-db';
 import { extraerPrefijoMenu, parsearMenuConIA } from '@/lib/services/menuParser';
 import { sendEvolutionWhatsApp, normalizarTelefono, getEvolutionMediaBase64 } from '@/lib/services/evolutionService';
 import { extraerTextoDeImagen } from '@/lib/services/ocrService';
+import { uploadBase64ToBunny } from '@/lib/services/imageUploadService';
 import {
   yaPublicoHoyEnMemoria,
   yaPublicoHoyEnBD,
   marcarPublicacionHoy,
   esPrimerContacto,
   registrarLog,
+  guardarBorrador,
+  obtenerBorrador,
+  eliminarBorrador,
+  type BorradorMenu,
 } from '@/lib/services/botState';
 
 export const dynamic = 'force-dynamic';
@@ -18,36 +23,12 @@ export const dynamic = 'force-dynamic';
 const MSG_BIENVENIDA = (nombre: string) =>
   `¡Hola *${nombre}*! 👋🍽️
 
-¡Bienvenido al sistema automático de menús de *Qué Comer en Loja*!
+¡Bienvenido al sistema de menús diarios de *Qué Comer en Loja*!
 
-Con este número podrás publicar tu menú o promoción diaria de forma rápida y directa en nuestra plataforma.
+Con este número puedes enviar tu menú o afiche diario para publicarlo en la web.
 
 📌 *¿Cómo funciona?*
-Solo escribe tu menú empezando con la palabra clave:
-
-*MENU:* Sopa de Repe Lojano + Cecina con Yuca + Jugo - $4.00
-
-*PROMO:* 2x1 en almuerzos los martes hasta las 2pm
-
-*OFERTA:* Cuy asado con papas y ensalada - $8.00 (antes $10)
-
-*EVENTO:* Degustación de tamales lojanos este sábado 12h00
-
-📲 Tu publicación aparecerá de inmediato en *quecomerenloja.com* para que miles de personas en Loja te encuentren.
-
-¡Empieza ya enviando tu menú del día! 🚀`;
-
-const MSG_AYUDA_FORMATO = (nombre: string) =>
-  `Hola ${nombre} 👋
-
-Para publicar tu menú, necesito que escribas un poco más de detalle.
-
-*Ejemplo válido:*
-MENU: Sopa de Repe Lojano, Segundo de Cecina con Yuca y Ají, Jugo de Naranja - $4.50
-
-También puedes usar: *PROMO:*, *OFERTA:* o *EVENTO:*
-
-¿Necesitas ayuda? Escribe *AYUDA* y te explico.`;
+Envía una foto de tu menú o afiche con tu mensaje. Te mostraremos un borrador y podrás confirmar o pedir correcciones antes de publicarlo. 🚀`;
 
 const MSG_DUPLICADO = (nombre: string, titulo: string, enlace: string) =>
   `Hola *${nombre}* 👋
@@ -55,25 +36,34 @@ const MSG_DUPLICADO = (nombre: string, titulo: string, enlace: string) =>
 Tu menú de hoy ya fue publicado anteriormente:
 🍽️ *${titulo}*
 
-📲 Sigue visible en:
+📲 Puedes verlo en tu enlace directo:
 ${enlace}
 
-Si quieres *actualizar* el menú de hoy, responde:
-_ACTUALIZAR: [tu nuevo menú]_
+Si deseas cambiarlo o actualizarlo, envíame tu nuevo menú o afiche. 🙌`;
 
-¡Muchos éxitos en las ventas! 🙌`;
-
-const MSG_CONFIRMACION = (nombre: string, titulo: string, precio: string | null, enlace: string) =>
-  `✅ ¡Listo, *${nombre}*!
-
-Tu menú ha sido publicado con éxito en *Qué Comer en Loja*:
+const MSG_CONFIRMACION_PUBLICADO = (nombre: string, titulo: string, precio: string | null, enlace: string) =>
+  `🎉 *¡Tu menú ya está en vivo, ${nombre}!*
 
 🍽️ *${titulo}*${precio ? `\n💰 *Precio:* ${precio}` : ''}
 
-📲 Ya está visible para miles de personas en Loja:
+🔗 *Tu enlace oficial:*
 ${enlace}
 
-¡Muchos éxitos en las ventas de hoy! 🙌🍴`;
+📲 Ya lo pueden ver todas las personas que buscan qué comer hoy en Loja. ¡Muchos éxitos en las ventas! 🙌🍴`;
+
+const MSG_PROPUESTA_BORRADOR = (nombre: string, titulo: string, precio: string | null, platosDesc: string) =>
+  `🍽️ *Menú detectado para ${nombre}:*
+
+📌 *Título:* ${titulo}
+${precio ? `💰 *Precio:* ${precio}` : '💰 *Precio:* No detectado'}
+
+📋 *Detalle:*
+${platosDesc.slice(0, 350)}
+
+─────────────────────
+👉 ¿Está todo correcto? Responde *SI* para publicarlo.
+👉 Si deseas corregir algo (ej: el precio o un plato), solo escríbelo (ej: _precio $3.00_).`;
+
 
 // ─── Endpoint principal ────────────────────────────────────────────────────
 
@@ -128,31 +118,7 @@ export async function POST(req: NextRequest) {
 
     numeroRemitente = normalizarTelefono(remoteJid);
 
-    // Si viene una imagen o afiche, extraer texto mediante OCR
-    let textoOcr = '';
-    if (hasImage && messageId) {
-      try {
-        console.log(`[WA Bot] Mensaje con imagen detectado (id: ${messageId}), descargando para OCR...`);
-        const base64Img = await getEvolutionMediaBase64(messageId);
-        if (base64Img) {
-          textoOcr = await extraerTextoDeImagen(base64Img);
-        }
-      } catch (errOcr) {
-        console.warn('[WA Bot] No se pudo procesar la imagen con OCR:', errOcr);
-      }
-    }
-
-    // Combinar texto del pie de foto con el texto extraído del afiche
-    const textoCombinado = [rawText, textoOcr].filter(Boolean).join('\n\n');
-
-    if (!textoCombinado.trim()) {
-      return NextResponse.json({ status: 'ignored', reason: 'empty_text_and_no_ocr' });
-    }
-
-    // ── 3. Detectar prefijo o contexto gastronómico ──────────────────────
-    const { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
-
-    // ── 4. Verificar aliado autorizado ───────────────────────────────────
+    // ── 3. Verificar aliado autorizado ───────────────────────────────────
     const aliado = await getAliadoByTelefono(numeroRemitente);
 
     if (!aliado) {
@@ -160,52 +126,11 @@ export async function POST(req: NextRequest) {
       await registrarLog({
         numero: numeroRemitente,
         tipo: 'NO_AUTORIZADO',
-        mensaje_in: textoCombinado.slice(0, 500),
+        mensaje_in: rawText.slice(0, 500),
       });
-      // Sin respuesta: silencio absoluto para no-aliados
       return NextResponse.json({ status: 'ignored', reason: 'unauthorized_sender' });
     }
 
-    // Si es un aliado registrado y mandó imagen o texto largo, lo consideramos menú válido
-    const esMensajeValido = tienePrefijo || hasImage || textoCombinado.length > 25;
-    if (!esMensajeValido) {
-      return NextResponse.json({ status: 'ignored', reason: 'no_prefix_nor_content' });
-    }
-
-    // ── 5. Bienvenida en el primer contacto ─────────────────────────────
-    const primerContacto = await esPrimerContacto(numeroRemitente);
-    if (primerContacto) {
-      const msgBienvenida = MSG_BIENVENIDA(aliado.nombre);
-      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgBienvenida });
-      await registrarLog({
-        aliado_nombre: aliado.nombre,
-        numero: numeroRemitente,
-        tipo: 'BIENVENIDA',
-        mensaje_in: rawText.slice(0, 500),
-        respuesta_out: msgBienvenida,
-      });
-      // Después de la bienvenida, seguimos procesando el menú si tiene contenido
-      if (textoLimpio.length < 5) {
-        return NextResponse.json({ status: 'handled', reason: 'welcome_sent' });
-      }
-    }
-
-    // ── 6. Solicitar más detalle si el texto es muy corto ────────────────
-    if (textoLimpio.length < 5) {
-      const msgAyuda = MSG_AYUDA_FORMATO(aliado.nombre);
-      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgAyuda });
-      await registrarLog({
-        aliado_nombre: aliado.nombre,
-        numero: numeroRemitente,
-        tipo: 'AYUDA',
-        mensaje_in: rawText.slice(0, 500),
-        respuesta_out: msgAyuda,
-      });
-      return NextResponse.json({ status: 'handled', reason: 'prompted_for_details' });
-    }
-
-    // ── 7. Anti-duplicados ───────────────────────────────────────────────
-    // Primero capa rápida en memoria
     const aliadoSlug = aliado.nombre
       .toLowerCase()
       .normalize('NFD')
@@ -213,47 +138,110 @@ export async function POST(req: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
-    const { yaPublico: yaEnMem, promoId: promoIdMem } = yaPublicoHoyEnMemoria(aliado.id);
+    const textoUsuario = rawText.trim();
+    const textoLower = textoUsuario.toLowerCase();
 
-    if (yaEnMem && promoIdMem) {
-      // Obtener título para el mensaje de duplicado
-      const enlaceWeb = `https://www.quecomerenloja.com#promos`;
-      const msgDup = MSG_DUPLICADO(aliado.nombre, 'tu menú del día', enlaceWeb);
-      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgDup });
+    // ── 4. Comprobar si hay un borrador pendiente de confirmación ──────────
+    const borradorActual = obtenerBorrador(numeroRemitente);
+
+    const esConfirmacion =
+      /^(si|sí|ok|dale|publicar|confirmo|listo|de una|afirmativo|adelante)$/i.test(textoLower);
+
+    if (borradorActual && esConfirmacion) {
+      // El usuario CONFIRMÓ publicar el borrador
+      const { id: promoId, slug: promoSlug } = await createPromo({
+        aliado_slug: borradorActual.aliadoSlug,
+        aliado_nombre: borradorActual.aliadoNombre,
+        titulo: borradorActual.titulo,
+        tipo: borradorActual.tipo,
+        descripcion: borradorActual.descripcion,
+        imagen_url: borradorActual.imagenUrl,
+        precio_original: borradorActual.precioOriginal,
+        precio_promo: borradorActual.precioPromo,
+        fecha_inicio: borradorActual.fechaInicioStr,
+        fecha_fin: borradorActual.fechaFinStr,
+        lugar: borradorActual.lugar,
+        whatsapp_url: borradorActual.whatsappUrl,
+        color_marca: borradorActual.colorMarca,
+      });
+
+      eliminarBorrador(numeroRemitente);
+      marcarPublicacionHoy(aliado.id, promoId);
+
+      // Enlace directo a la publicación generada
+      const enlaceDirecto = `https://www.quecomerenloja.com/promos/${promoSlug}`;
+      const msgConfirm = MSG_CONFIRMACION_PUBLICADO(aliado.nombre, borradorActual.titulo, borradorActual.precioPromo, enlaceDirecto);
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgConfirm });
+
       await registrarLog({
         aliado_nombre: aliado.nombre,
         numero: numeroRemitente,
-        tipo: 'DUPLICADO',
+        tipo: 'PUBLICADO',
         mensaje_in: rawText.slice(0, 500),
-        respuesta_out: msgDup,
-        promo_id: promoIdMem,
+        respuesta_out: msgConfirm,
+        promo_id: promoId,
       });
-      return NextResponse.json({ status: 'handled', reason: 'duplicate_in_memory', promoId: promoIdMem });
+
+      console.log(`[WA Bot] ✅ Promo confirmada y publicada: ${enlaceDirecto}`);
+      return NextResponse.json({ success: true, status: 'published', promoSlug, enlaceDirecto });
     }
 
-    // Capa persistente en BD (necesaria tras reinicios)
-    const { yaPublico: yaEnBD, promoId: promoIdBD, titulo: tituloExistente } = await yaPublicoHoyEnBD(aliadoSlug);
+    // Si hay un borrador y el usuario envía una corrección de precio directa (ej: "precio $3.00" o "$3.25")
+    const matchPrecioCorreccion = textoUsuario.match(/\$?\s*(\d{1,2}(?:[.,]\d{2})?)/);
+    if (borradorActual && matchPrecioCorreccion && textoUsuario.length < 25 && !hasImage) {
+      const nuevoPrecio = `$${parseFloat(matchPrecioCorreccion[1].replace(',', '.')).toFixed(2)}`;
+      borradorActual.precioPromo = nuevoPrecio;
+      guardarBorrador(numeroRemitente, borradorActual);
 
-    if (yaEnBD && promoIdBD) {
-      marcarPublicacionHoy(aliado.id, promoIdBD); // Repoblar caché en memoria
-      const enlaceWeb = `https://www.quecomerenloja.com#promos`;
-      const msgDup = MSG_DUPLICADO(aliado.nombre, tituloExistente || 'tu menú del día', enlaceWeb);
-      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgDup });
-      await registrarLog({
-        aliado_nombre: aliado.nombre,
-        numero: numeroRemitente,
-        tipo: 'DUPLICADO',
-        mensaje_in: rawText.slice(0, 500),
-        respuesta_out: msgDup,
-        promo_id: promoIdBD,
-      });
-      return NextResponse.json({ status: 'handled', reason: 'duplicate_in_db', promoId: promoIdBD });
+      const msgUpdate = `✏️ *Precio actualizado a ${nuevoPrecio}*\n\n¿Deseas publicarlo ahora? Responde *SI* para confirmar.`;
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgUpdate });
+      return NextResponse.json({ status: 'draft_updated', precio: nuevoPrecio });
     }
 
-    // ── 8. Parsear menú con IA ───────────────────────────────────────────
+    // ── 5. Procesar Imagen (OCR + Subida a BunnyCDN) ──────────────────────
+    let textoOcr = '';
+    let imagenPublicadaUrl: string | null = null;
+
+    if (hasImage && messageId) {
+      try {
+        console.log(`[WA Bot] Descargando imagen para OCR y CDN (id: ${messageId})...`);
+        const base64Img = await getEvolutionMediaBase64(messageId);
+        if (base64Img) {
+          // Extraer texto mediante OCR
+          textoOcr = await extraerTextoDeImagen(base64Img);
+
+          // Subir a BunnyCDN para que sea la imagen de la card en la web
+          imagenPublicadaUrl = await uploadBase64ToBunny(base64Img, aliadoSlug);
+        }
+      } catch (errMedia) {
+        console.warn('[WA Bot] Error procesando imagen recibida:', errMedia);
+      }
+    }
+
+    // Si no mandó imagen o falló la subida, se usa la imagen/logo del aliado registrado
+    if (!imagenPublicadaUrl) {
+      imagenPublicadaUrl = aliado.imagenUrl || null;
+    }
+
+    // Combinar texto del pie de foto con texto extraído de la imagen
+    const textoCombinado = [rawText, textoOcr].filter(Boolean).join('\n\n');
+
+    if (!textoCombinado.trim()) {
+      return NextResponse.json({ status: 'ignored', reason: 'empty_content' });
+    }
+
+    // ── 6. Extraer detalles y parsear menú ───────────────────────────────
+    const { textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
+
+    if (textoLimpio.length < 5 && !hasImage) {
+      const msgAyuda = `Hola ${aliado.nombre} 👋\n\nPor favor envía el detalle de los platos del día o una foto del afiche de tu menú para poder publicarlo.`;
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgAyuda });
+      return NextResponse.json({ status: 'handled', reason: 'prompted_for_details' });
+    }
+
+    // ── 7. Parsear menú con IA o fallback ────────────────────────────────
     const parsed = await parsearMenuConIA(textoLimpio, aliado.nombre, tipoDetectado);
 
-    // Fechas Ecuador (UTC-5), vigentes hoy
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -261,49 +249,52 @@ export async function POST(req: NextRequest) {
     const fechaInicioStr = `${yyyy}-${mm}-${dd} 00:00:00`;
     const fechaFinStr = `${yyyy}-${mm}-${dd} 23:59:59`;
 
-    // ── 9. Guardar en BD ─────────────────────────────────────────────────
-    const promoId = await createPromo({
-      aliado_slug: aliadoSlug,
-      aliado_nombre: aliado.nombre,
+    // ── 8. Guardar como BORRADOR pendiente de confirmación ───────────────
+    const nuevoBorrador: BorradorMenu = {
+      aliadoId: aliado.id,
+      aliadoNombre: aliado.nombre,
+      aliadoSlug,
       titulo: parsed.titulo,
-      tipo: parsed.tipo,
       descripcion: parsed.descripcion,
-      imagen_url: aliado.imagenUrl || null,
-      precio_original: parsed.precioOriginal || null,
-      precio_promo: parsed.precioPromo || null,
-      fecha_inicio: fechaInicioStr,
-      fecha_fin: fechaFinStr,
+      tipo: parsed.tipo,
+      precioPromo: parsed.precioPromo,
+      precioOriginal: parsed.precioOriginal,
+      imagenUrl: imagenPublicadaUrl,
+      whatsappUrl: aliado.telefono ? `https://wa.me/${normalizarTelefono(aliado.telefono)}` : null,
       lugar: aliado.ubicacion || 'Loja, Ecuador',
-      whatsapp_url: aliado.telefono
-        ? `https://wa.me/${normalizarTelefono(aliado.telefono)}`
-        : null,
-      color_marca: '#153E3E',
-    });
+      colorMarca: '#153E3E',
+      fechaInicioStr,
+      fechaFinStr,
+      createdAt: Date.now(),
+    };
 
-    // Marcar anti-duplicados en memoria
-    marcarPublicacionHoy(aliado.id, promoId);
+    guardarBorrador(numeroRemitente, nuevoBorrador);
 
-    // ── 10. Confirmar al aliado ──────────────────────────────────────────
-    const enlaceWeb = `https://www.quecomerenloja.com#promos`;
-    const msgConfirm = MSG_CONFIRMACION(aliado.nombre, parsed.titulo, parsed.precioPromo, enlaceWeb);
-    await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgConfirm });
+    // Enviar mensaje de confirmación al aliado
+    const msgPropuesta = MSG_PROPUESTA_BORRADOR(
+      aliado.nombre,
+      parsed.titulo,
+      parsed.precioPromo,
+      parsed.descripcion
+    );
+
+    await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgPropuesta });
 
     await registrarLog({
       aliado_nombre: aliado.nombre,
       numero: numeroRemitente,
-      tipo: 'PUBLICADO',
+      tipo: 'AYUDA',
       mensaje_in: rawText.slice(0, 500),
-      respuesta_out: msgConfirm,
-      promo_id: promoId,
+      respuesta_out: msgPropuesta,
     });
 
-    console.log(`[WA Bot] ✅ Menú publicado: ${aliado.nombre} → promoId=${promoId}`);
+    console.log(`[WA Bot] Borrador propuesto a ${aliado.nombre}, esperando 'SI' para publicar.`);
 
     return NextResponse.json({
       success: true,
-      promoId,
+      status: 'draft_pending_confirmation',
       aliado: aliado.nombre,
-      titulo: parsed.titulo,
+      borrador: nuevoBorrador,
     });
   } catch (error: any) {
     console.error('[WA Bot Error]', error);

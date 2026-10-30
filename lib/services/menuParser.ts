@@ -140,16 +140,37 @@ IMPORTANTE: Responde ÚNICAMENTE con el objeto JSON válido, sin texto adicional
 export function parsearMenuFallback(texto: string, tipoDetectado: PromoTipo = 'PROMO'): MenuParsed {
   const lineas = texto.split('\n').map((l) => l.trim()).filter(Boolean);
 
-  // Intentar detectar precio con Regex (ej: $3.50, $3, 3.50 USD, $ 4.00)
-  const precioRegex = /\$?\s*(\d{1,2}(?:[.,]\d{2})?)\s*(?:usd|\$)?/i;
+  // Intentar detectar precio con Regex evitando capturar números de direcciones como '24 de Mayo'
+  // Busca patrones explícitos de dinero: $3, $3.00, $3.25, 3.50$, o números precedidos de 'precio:' o 'valor:'
+  const precioExpRegex = /(?:\$|usd)\s*(\d{1,2}(?:[.,]\d{2})?)|(?:precio|valor|costo)[:\s]*\$?\s*(\d{1,2}(?:[.,]\d{2})?)/i;
   let precioEncontrado: string | null = null;
 
   for (const linea of lineas) {
-    const match = linea.match(precioRegex);
-    if (match && match[1]) {
-      const num = parseFloat(match[1].replace(',', '.'));
-      if (num >= 1 && num <= 100) {
-        precioEncontrado = `$${num.toFixed(2)}`;
+    // Si la línea parece ser una dirección (ej: "24 de Mayo"), saltarla para no confundir con $24
+    if (/24\s*de\s*mayo|calle|av\.|avenida|entre/i.test(linea)) {
+      continue;
+    }
+    const match = linea.match(precioExpRegex);
+    if (match) {
+      const val = match[1] || match[2];
+      if (val) {
+        const num = parseFloat(val.replace(',', '.'));
+        if (num >= 1 && num <= 30) {
+          precioEncontrado = `$${num.toFixed(2)}`;
+          break;
+        }
+      }
+    }
+  }
+
+  // Si aún no encontró precio, buscar cualquier $X.XX aislado que no sea 24
+  if (!precioEncontrado) {
+    const backupRegex = /\$\s*(\d{1,2}(?:[.,]\d{2})?)/g;
+    let m;
+    while ((m = backupRegex.exec(texto)) !== null) {
+      const n = parseFloat(m[1].replace(',', '.'));
+      if (n >= 1 && n <= 30 && n !== 24) {
+        precioEncontrado = `$${n.toFixed(2)}`;
         break;
       }
     }
@@ -158,15 +179,19 @@ export function parsearMenuFallback(texto: string, tipoDetectado: PromoTipo = 'P
   let titulo = 'Menú del Día';
   let descripcion = texto;
 
-  if (lineas.length > 0) {
-    const primera = lineas[0];
-    if (primera.length <= 80) {
-      titulo = primera;
-      descripcion = lineas.slice(1).join('\n') || primera;
-    } else {
-      titulo = primera.slice(0, 70) + '...';
-      descripcion = texto;
-    }
+  // Extraer platos clave para un buen título
+  const repeMatch = texto.match(/repe(?:\s+blanco)?/i);
+  const secoMatch = texto.match(/seco\s+de\s+\w+/i);
+  const pechugaMatch = texto.match(/pechuga\s+en\s+salsa\s+\w+/i);
+
+  if (repeMatch && (secoMatch || pechugaMatch)) {
+    const segundo = secoMatch ? secoMatch[0] : pechugaMatch![0];
+    titulo = `Menú del Día: ${repeMatch[0]} y ${segundo}`;
+  } else if (repeMatch) {
+    titulo = `Menú del Día: ${repeMatch[0]}`;
+  } else if (lineas.length > 0) {
+    const primera = lineas.find((l) => !/^(menu|menú|¡?llegó)/i.test(l)) || lineas[0];
+    titulo = primera.length <= 70 ? primera : primera.slice(0, 67) + '...';
   }
 
   return {

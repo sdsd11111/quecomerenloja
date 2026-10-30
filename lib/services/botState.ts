@@ -13,6 +13,49 @@ import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+// ─── Borradores pendientes de confirmación ──────────────────────────────
+export interface BorradorMenu {
+  aliadoId: number;
+  aliadoNombre: string;
+  aliadoSlug: string;
+  titulo: string;
+  descripcion: string;
+  tipo: any;
+  precioPromo: string | null;
+  precioOriginal: string | null;
+  imagenUrl: string | null;
+  whatsappUrl: string | null;
+  lugar: string;
+  colorMarca: string;
+  fechaInicioStr: string;
+  fechaFinStr: string;
+  createdAt: number; // timestamp
+}
+
+const borradoresPendientes = new Map<string, BorradorMenu>(); // key: telefono limpio
+
+export function guardarBorrador(telefono: string, borrador: BorradorMenu): void {
+  const norm = telefono.replace(/\D/g, '').slice(-9);
+  borradoresPendientes.set(norm, borrador);
+}
+
+export function obtenerBorrador(telefono: string): BorradorMenu | null {
+  const norm = telefono.replace(/\D/g, '').slice(-9);
+  const draft = borradoresPendientes.get(norm);
+  if (!draft) return null;
+  // Expira en 30 minutos
+  if (Date.now() - draft.createdAt > 30 * 60 * 1000) {
+    borradoresPendientes.delete(norm);
+    return null;
+  }
+  return draft;
+}
+
+export function eliminarBorrador(telefono: string): void {
+  const norm = telefono.replace(/\D/g, '').slice(-9);
+  borradoresPendientes.delete(norm);
+}
+
 // ─── Anti-duplicados en memoria (capa rápida, se resetea en cada deploy) ───
 // Formato: `${aliadoId}_${YYYY-MM-DD}` → true
 const publicacionesHoy = new Map<string, number>(); // → promoId

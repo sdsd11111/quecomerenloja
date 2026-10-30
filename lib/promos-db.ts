@@ -205,7 +205,7 @@ export async function createPromo(data: {
   lugar?: string | null;
   whatsapp_url?: string | null;
   color_marca?: string;
-}): Promise<number> {
+}): Promise<{ id: number; slug: string }> {
   const pool = getGastroPool();
   const slug = slugifyPromo(data.titulo, data.aliado_slug);
   const [result] = await pool.query<ResultSetHeader>(
@@ -233,7 +233,7 @@ export async function createPromo(data: {
       data.color_marca ?? '#153E3E',
     ]
   );
-  return result.insertId;
+  return { id: result.insertId, slug };
 }
 
 /** Actualizar promo */

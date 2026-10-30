@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         .join(' ');
     }
 
-    const newId = await createPromo({
+    const { id: newId, slug: newSlug } = await createPromo({
       aliado_slug,
       aliado_nombre: nombreAliado || aliado_slug,
       titulo,
@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       id: newId,
+      slug: newSlug,
       message: 'Promoción publicada correctamente',
     });
   } catch (err: any) {
