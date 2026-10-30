@@ -231,7 +231,18 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 6. Extraer detalles y parsear menú ───────────────────────────────
-    const { textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
+    const { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
+
+    // REGLA ESTRICTA:
+    // Para que se inicie un borrador, debe:
+    // a) Empezar con MENU:, PROMO:, OFERTA: o EVENTO:
+    // b) O haber enviado una IMAGEN/AFICHE donde el OCR extrajo palabras de menú
+    const esMensajeValido = tienePrefijo || (hasImage && textoOcr.length > 20);
+
+    if (!esMensajeValido) {
+      // Ignorar mensajes de saludo o charla casual ("Hola?", "¿Cómo estás?", etc.)
+      return NextResponse.json({ status: 'ignored', reason: 'no_prefix_and_no_menu_image' });
+    }
 
     if (textoLimpio.length < 5 && !hasImage) {
       const msgAyuda = `Hola ${aliado.nombre} 👋\n\nPor favor envía el detalle de los platos del día o una foto del afiche de tu menú para poder publicarlo.`;
