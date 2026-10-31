@@ -104,7 +104,7 @@ function CarruselHabitacion({ imagenes, alt }: { imagenes: string[]; alt: string
     setIdx((i) => (i + delta + imagenes.length) % imagenes.length);
 
   return (
-    <div className="relative h-32 w-full bg-[#153E3E]/5 shrink-0">
+    <div className="relative h-32 w-full bg-purple-50 shrink-0">
       <img
         src={imagenes[actual]}
         alt={alt}
@@ -159,7 +159,7 @@ function CarruselHabitacion({ imagenes, alt }: { imagenes: string[]; alt: string
 type AcentoChat = "purple" | "emerald" | "amber" | "orange" | "teal";
 
 const ACENTO_TITULO: Record<AcentoChat, string> = {
-  purple: "text-[#153E3E]",
+  purple: "text-purple-700",
   emerald: "text-emerald-700",
   amber: "text-amber-600",
   orange: "text-orange-600",
@@ -167,7 +167,7 @@ const ACENTO_TITULO: Record<AcentoChat, string> = {
 };
 
 const ACENTO_BORDE: Record<AcentoChat, string> = {
-  purple: "border-[#153E3E]/10",
+  purple: "border-purple-100",
   emerald: "border-emerald-100",
   amber: "border-amber-200",
   orange: "border-orange-100",
@@ -176,7 +176,7 @@ const ACENTO_BORDE: Record<AcentoChat, string> = {
 
 const ACENTO_BOTON: Record<AcentoChat, string> = {
   purple:
-    "bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] hover:from-[#113232] hover:to-[#1B4D4D] text-white shadow-[#153E3E]/20",
+    "bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-600 hover:to-pink-500 text-white shadow-purple-600/20",
   emerald:
     "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-800/20",
   amber: "bg-amber-500 hover:bg-amber-400 text-black shadow-amber-700/20",
@@ -187,7 +187,7 @@ const ACENTO_BOTON: Record<AcentoChat, string> = {
 };
 
 const ACENTO_VERMAS: Record<AcentoChat, string> = {
-  purple: "border-[#153E3E]/20/70 text-[#153E3E] hover:bg-[#153E3E]/5",
+  purple: "border-purple-200/70 text-purple-700 hover:bg-purple-50",
   emerald: "border-emerald-200/70 text-emerald-700 hover:bg-emerald-50",
   amber: "border-amber-200/70 text-amber-700 hover:bg-amber-50",
   orange: "border-orange-200/70 text-orange-600 hover:bg-orange-50",
@@ -296,8 +296,8 @@ function TarjetaChat({
     <div
       className={`bg-white rounded-xl overflow-hidden shadow-md flex flex-col min-w-0 transition-all ${
         resaltada
-          ? "border-2 border-[#153E3E] shadow-[#153E3E]/25"
-          : `border ${ACENTO_BORDE[acento]} shadow-[#153E3E]/5`
+          ? "border-2 border-purple-500 shadow-purple-500/25"
+          : `border ${ACENTO_BORDE[acento]} shadow-purple-900/5`
       }`}
     >
       {children}
@@ -318,7 +318,7 @@ function TarjetaImagen({
   badges?: ReactNode;
 }) {
   return (
-    <div className="relative h-20 w-full bg-[#153E3E]/5 shrink-0">
+    <div className="relative h-20 w-full bg-purple-50 shrink-0">
       {src ? (
         <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (
@@ -417,12 +417,12 @@ export interface ChatbotWidgetConfig {
 }
 
 export function ChatbotWidget({
-  origen = "quecomerenloja",
-  apiUrl = "/api/chat",
+  origen = "agendacultural",
+  apiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL || "/api/chat",
   sessionStorageKey = "agenda_chat_session_id",
   historyStorageKey = "agenda_chat_history",
   acento = "purple",
-  headerGradient = "from-[#0A2020] via-[#153E3E] to-[#1B4D4D]",
+  headerGradient = "from-purple-800 via-purple-700 to-pink-600",
   iconEmoji = "🎭",
   btnLabel = "¿Qué hacer en Loja?",
   tooltipText = "¿Buscas qué hacer u hospedaje en Loja?",
@@ -736,19 +736,17 @@ export function ChatbotWidget({
         // Inicializar la burbuja del bot en la lista de mensajes
         setMessages((prev) => [...prev, botMsgBase]);
 
-        // Efecto typewriter con ritmo humano:
-        // - Base ~65ms entre ticks (≈15 ticks/s) — un poco más pausado
-        // - Pausa extra en signos de puntuación para que se perciba natural
-        // - Avanza 1-2 chars por tick en textos cortos, 2-3 en largos
+        // Efecto typewriter fluido y ágil:
+        // - Base reducida a ~14-22ms entre ticks (mucho más rápido y responsivo)
+        // - Pausas en signos de puntuación más breves
+        // - Avanza 2-4 caracteres por tick
         await new Promise<void>((resolve) => {
           const longitud = textoCompleto.length;
-          // Cuántos caracteres avanzar por tick según longitud total
-          const pasoBase = longitud > 400 ? 3 : longitud > 200 ? 2 : 1;
+          const pasoBase = longitud > 300 ? 4 : longitud > 150 ? 3 : 2;
           let indiceActual = 0;
 
           const tick = () => {
             if (indiceActual >= longitud) {
-              // Asegurar texto completo al terminar y guardar en historial
               setMessages((prev) => {
                 const finalUpdated = prev.map((m) =>
                   m.id === botId ? { ...m, text: textoCompleto } : m
@@ -766,25 +764,21 @@ export function ChatbotWidget({
               prev.map((m) => (m.id === botId ? { ...m, text: parcial } : m))
             );
 
-            // Calcular el delay del próximo tick:
-            // Pausa larga tras punto/exclamación/interrogación (~370ms)
-            // Pausa media tras coma/punto y coma/dos puntos (~150ms)
-            // Pausa base aleatoria entre 55-80ms para simular variación humana
             const charAnterior = textoCompleto[indiceActual - 1] || "";
             let delay: number;
             if (".!?…".includes(charAnterior)) {
-              delay = 320 + Math.random() * 100; // 320–420ms
+              delay = 100 + Math.random() * 40; // Pausa breve de 100-140ms
             } else if (",;:".includes(charAnterior)) {
-              delay = 130 + Math.random() * 50;  // 130–180ms
+              delay = 50 + Math.random() * 25;  // Pausa mínima de 50-75ms
             } else {
-              delay = 55 + Math.random() * 25;   // 55–80ms
+              delay = 14 + Math.random() * 8;   // Ticks fluidos de 14-22ms
             }
 
             setTimeout(tick, delay);
           };
 
-          // Pausa inicial antes de comenzar a escribir (~280ms)
-          setTimeout(tick, 280);
+          // Pausa inicial mínima antes de arrancar a escribir (~80ms)
+          setTimeout(tick, 80);
         });
       }
     } catch {
@@ -807,8 +801,8 @@ export function ChatbotWidget({
       {/* Botón Flotante con Branding Morado/Magenta de Agenda Cultural Loja */}
       <div className={`fixed bottom-4 sm:bottom-6 right-3 sm:right-6 z-50 flex flex-col items-end pointer-events-none transition-all duration-300 ${!btnVisible && !isOpen ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}>
         {!isOpen && (
-          <div className="pointer-events-auto mb-1.5 sm:mb-2.5 bg-white/95 text-neutral-800 text-[10px] sm:text-xs font-semibold px-2.5 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border border-[#153E3E]/20 shadow-lg shadow-[#153E3E]/10 backdrop-blur-md hidden sm:flex items-center gap-2 animate-bounce">
-            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#153E3E] animate-ping" />
+          <div className="pointer-events-auto mb-1.5 sm:mb-2.5 bg-white/95 text-neutral-800 text-[10px] sm:text-xs font-semibold px-2.5 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border border-purple-200 shadow-lg shadow-purple-900/10 backdrop-blur-md hidden sm:flex items-center gap-2 animate-bounce">
+            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-purple-600 animate-ping" />
             <span>{t("chat.tooltip", "¿Buscas qué hacer u hospedaje en Loja?")}</span>
           </div>
         )}
@@ -885,7 +879,7 @@ export function ChatbotWidget({
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={solicitarUbicacion}
-                    className="px-2.5 py-1 bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] hover:from-[#113232] hover:to-[#1B4D4D] text-white font-bold rounded-lg text-[10px] shadow-sm transition-all"
+                    className="px-2.5 py-1 bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-600 hover:to-pink-500 text-white font-bold rounded-lg text-[10px] shadow-sm transition-all"
                   >
                     Activar
                   </button>
@@ -904,7 +898,7 @@ export function ChatbotWidget({
               {locationStatus === "denied" && (
                 <button
                   onClick={solicitarUbicacion}
-                  className="text-[10px] font-bold text-[#153E3E] hover:underline shrink-0"
+                  className="text-[10px] font-bold text-purple-700 hover:underline shrink-0"
                 >
                   Reintentar
                 </button>
@@ -941,7 +935,7 @@ export function ChatbotWidget({
           <div
             ref={scrollContainerRef}
             onScroll={handleChatScroll}
-            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-[#153E3E]/5/40 via-white to-white no-scrollbar"
+            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50/40 via-white to-white no-scrollbar"
           >
             {messages.map((m) => (
               <div
@@ -952,8 +946,8 @@ export function ChatbotWidget({
                 <div
                   className={`max-w-[88%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                     m.sender === "user"
-                      ? "bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] text-white font-medium rounded-br-none shadow-md shadow-[#153E3E]/20"
-                      : "bg-white border border-[#153E3E]/10 text-neutral-800 rounded-bl-none shadow-sm whitespace-pre-line"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-br-none shadow-md shadow-purple-500/20"
+                      : "bg-white border border-purple-100 text-neutral-800 rounded-bl-none shadow-sm whitespace-pre-line"
                   }`}
                 >
                   {m.text}
@@ -984,7 +978,7 @@ export function ChatbotWidget({
                         type="button"
                         onClick={() => handleSend(respuesta)}
                         disabled={loading}
-                        className="px-3.5 py-2 bg-gradient-to-r from-[#0E2E2E] via-[#153E3E] to-[#1A4545] hover:from-[#0A2020] hover:to-[#153E3E] text-white text-[11px] font-extrabold rounded-xl shadow-md shadow-[#153E3E]/25 hover:shadow-lg hover:shadow-[#153E3E]/30 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 border border-white/20"
+                        className="px-3.5 py-2 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white text-[11px] font-extrabold rounded-xl shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 border border-white/20"
                       >
                         <span>✨</span>
                         <span>{respuesta}</span>
@@ -1008,7 +1002,7 @@ export function ChatbotWidget({
                           alt={evento.nombre}
                           emoji="🎭"
                           badges={
-                            <div className="absolute bottom-1 left-1 bg-white/90 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] text-[#0E2E2E] font-bold border border-[#153E3E]/20 shadow-sm">
+                            <div className="absolute bottom-1 left-1 bg-white/90 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] text-purple-800 font-bold border border-purple-200 shadow-sm">
                               📅{" "}
                               {new Date(evento.fecha).toLocaleDateString("es-EC", {
                                 timeZone: "UTC",
@@ -1059,11 +1053,11 @@ export function ChatbotWidget({
                             emoji={aliado.tipo === "GASTRONOMIA" ? "🍽️" : aliado.tipo === "CAFETERIA" ? "☕" : "🏨"}
                             badges={
                               <>
-                                <div className="absolute top-1 left-1 bg-white/90 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] text-[#0E2E2E] font-bold border border-[#153E3E]/20 shadow-sm flex items-center gap-1">
+                                <div className="absolute top-1 left-1 bg-white/90 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] text-purple-800 font-bold border border-purple-200 shadow-sm flex items-center gap-1">
                                   <span>{aliado.tipo === "GASTRONOMIA" ? "🍽️ Resto" : aliado.tipo === "CAFETERIA" ? "☕ Café" : "🏨 Hotel"}</span>
                                 </div>
                                 {aliado.rangoPrecio && (
-                                  <div className="absolute bottom-1 right-1 bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] text-white font-bold px-1.5 py-0.5 rounded text-[9px] shadow-md">
+                                  <div className="absolute bottom-1 right-1 bg-gradient-to-r from-purple-700 to-pink-600 text-white font-bold px-1.5 py-0.5 rounded text-[9px] shadow-md">
                                     {aliado.rangoPrecio}
                                   </div>
                                 )}
@@ -1141,11 +1135,11 @@ export function ChatbotWidget({
                   [m.aliadoDetalle].map((aliado) => (
                     <div
                       key={`detalle-${m.id}-${aliado.id}`}
-                      className="w-full mt-2 bg-gradient-to-br from-[#153E3E]/5 via-white to-[#D0DB61]/10 border-2 border-[#153E3E]/20 rounded-2xl p-3 space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      className="w-full mt-2 bg-gradient-to-br from-purple-50 via-white to-pink-50 border-2 border-purple-200 rounded-2xl p-3 space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-300"
                     >
                           {/* Progreso del flujo de venta (5 pasos) */}
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-[#153E3E]">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-purple-700">
                               Paso {m.ventaPaso ?? 1} de 5
                             </span>
                             <div className="flex gap-0.5 ml-auto">
@@ -1153,7 +1147,7 @@ export function ChatbotWidget({
                                 <span
                                   key={n}
                                   className={`h-1 w-4 rounded-full ${
-                                    n <= (m.ventaPaso ?? 1) ? "bg-[#153E3E]" : "bg-[#D0DB61]/30"
+                                    n <= (m.ventaPaso ?? 1) ? "bg-purple-600" : "bg-purple-200"
                                   }`}
                                 />
                               ))}
@@ -1167,7 +1161,7 @@ export function ChatbotWidget({
                               <div className="flex items-center gap-2 mt-1">
                                 <EstrellasAliado n={aliado.estrellas} className="text-[11px]" />
                                 {aliado.rangoPrecio && (
-                                  <span className="text-[10px] font-bold text-[#0E2E2E]">
+                                  <span className="text-[10px] font-bold text-purple-800">
                                     {aliado.rangoPrecio}
                                   </span>
                                 )}
@@ -1177,7 +1171,7 @@ export function ChatbotWidget({
                               type="button"
                               onClick={() => handleSend("¿Qué otros hoteles tienen disponibles?")}
                               title="Ver otros hoteles y opciones"
-                              className="shrink-0 px-3 py-1 rounded-xl bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] hover:from-[#0A2020] hover:to-[#153E3E] text-white text-[10px] font-extrabold flex items-center justify-center gap-1 shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer border border-white/20"
+                              className="shrink-0 px-3 py-1 rounded-xl bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white text-[10px] font-extrabold flex items-center justify-center gap-1 shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer border border-white/20"
                             >
                               <span>🔎</span>
                               <span>Ver otros</span>
@@ -1192,8 +1186,8 @@ export function ChatbotWidget({
 
                           {(m.ventaPaso ?? 1) === 4 && (
                           <div className="grid grid-cols-2 gap-2 text-[10px] leading-snug">
-                            <div className="bg-white/80 border border-[#153E3E]/10 rounded-xl p-2 min-w-0">
-                              <p className="text-[9px] font-bold uppercase tracking-wide text-[#153E3E]">
+                            <div className="bg-white/80 border border-purple-100 rounded-xl p-2 min-w-0">
+                              <p className="text-[9px] font-bold uppercase tracking-wide text-purple-700">
                                 📍 Ubicación
                               </p>
                               <p className="text-neutral-700 mt-0.5">{aliado.ubicacion}</p>
@@ -1202,8 +1196,8 @@ export function ChatbotWidget({
                             {(aliado.numeroCuartos != null ||
                               (aliado.cuartos && !(aliado.habitaciones && aliado.habitaciones.length > 0))) &&
                               etiquetasAliado(aliado.tipo).esHospedaje && (
-                              <div className="bg-white/80 border border-[#153E3E]/10 rounded-xl p-2 min-w-0">
-                                <p className="text-[9px] font-bold uppercase tracking-wide text-[#153E3E]">
+                              <div className="bg-white/80 border border-purple-100 rounded-xl p-2 min-w-0">
+                                <p className="text-[9px] font-bold uppercase tracking-wide text-purple-700">
                                   🛏️ Habitaciones
                                 </p>
                                 {aliado.numeroCuartos != null && (
@@ -1218,8 +1212,8 @@ export function ChatbotWidget({
                             )}
 
                             {aliado.servicios && (
-                              <div className="bg-white/80 border border-[#153E3E]/10 rounded-xl p-2 col-span-2 min-w-0">
-                                <p className="text-[9px] font-bold uppercase tracking-wide text-[#153E3E]">
+                              <div className="bg-white/80 border border-purple-100 rounded-xl p-2 col-span-2 min-w-0">
+                                <p className="text-[9px] font-bold uppercase tracking-wide text-purple-700">
                                   ✨ Servicios y comodidades
                                 </p>
                                 <p className="text-neutral-600 mt-0.5">{aliado.servicios}</p>
@@ -1230,17 +1224,17 @@ export function ChatbotWidget({
 
                           {/* PASO 3: tabla de precios por tipo de habitación */}
                           {(m.ventaPaso ?? 1) === 3 && aliado.habitaciones && aliado.habitaciones.length > 0 && (
-                            <div className="bg-white/80 border border-[#153E3E]/10 rounded-xl p-2 space-y-1.5">
-                              <p className="text-[9px] font-bold uppercase tracking-wide text-[#153E3E]">
+                            <div className="bg-white/80 border border-purple-100 rounded-xl p-2 space-y-1.5">
+                              <p className="text-[9px] font-bold uppercase tracking-wide text-purple-700">
                                 {etiquetasAliado(aliado.tipo).precioCategorias}
                               </p>
                               {aliado.habitaciones.map((hab) => (
                                 <div
                                   key={hab.id}
-                                  className="flex items-start justify-between gap-2 text-[10px] border-b border-neutral-100 last:border-0 pb-1 last:pb-0"
+                                  className="flex items-start justify-between gap-2 text-[10px] border-b border-purple-50 last:border-0 pb-1 last:pb-0"
                                 >
                                   <span className="text-neutral-700 leading-snug">{hab.nombre}</span>
-                                  <span className="shrink-0 font-bold text-[#0E2E2E]">
+                                  <span className="shrink-0 font-bold text-purple-800">
                                     {hab.precio || "consultar"}
                                   </span>
                                 </div>
@@ -1256,7 +1250,7 @@ export function ChatbotWidget({
                           {/* TIPOS DE HABITACIÓN (paso 2): precio, qué incluye y carrusel de imágenes */}
                           {(m.ventaPaso ?? 1) === 2 && aliado.habitaciones && aliado.habitaciones.length > 0 && (
                             <div className="space-y-2">
-                              <p className="text-[9px] font-bold uppercase tracking-wide text-[#153E3E]">
+                              <p className="text-[9px] font-bold uppercase tracking-wide text-purple-700">
                                 {etiquetasAliado(aliado.tipo).categorias} ({aliado.habitaciones.length})
                               </p>
 
@@ -1264,7 +1258,7 @@ export function ChatbotWidget({
                                 {aliado.habitaciones.map((hab) => (
                                   <div
                                     key={hab.id}
-                                    className="bg-white border border-[#153E3E]/10 rounded-xl overflow-hidden shadow-sm shadow-[#153E3E]/5"
+                                    className="bg-white border border-purple-100 rounded-xl overflow-hidden shadow-sm shadow-purple-900/5"
                                   >
                                     <CarruselHabitacion
                                       imagenes={parseImagenesHabitacion(hab.imagenes)}
@@ -1276,7 +1270,7 @@ export function ChatbotWidget({
                                           {hab.nombre}
                                         </h5>
                                         {hab.precio && (
-                                          <span className="shrink-0 text-[10px] font-bold text-[#0E2E2E] bg-[#153E3E]/5 border border-[#153E3E]/10 px-1.5 py-0.5 rounded-lg">
+                                          <span className="shrink-0 text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-100 px-1.5 py-0.5 rounded-lg">
                                             {hab.precio}
                                           </span>
                                         )}
@@ -1295,7 +1289,7 @@ export function ChatbotWidget({
 
                           {/* Botones de Acción Comercial (a partir del paso 4: qué incluye y cierre) */}
                           {(m.ventaPaso ?? 1) >= 4 && (
-                          <div className="pt-2 border-t border-[#153E3E]/10 flex flex-col gap-1.5">
+                          <div className="pt-2 border-t border-purple-100 flex flex-col gap-1.5">
                             {aliado.telefono && (
                               <a
                                 href={`https://wa.me/${aliado.telefono.replace(
@@ -1319,7 +1313,7 @@ export function ChatbotWidget({
                                   href={aliado.mapaUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex-1 py-1.5 bg-[#153E3E]/5 hover:bg-[#153E3E]/10 text-[#153E3E] text-[10px] font-bold rounded-lg flex items-center justify-center gap-1 border border-[#153E3E]/10 transition-all"
+                                  className="flex-1 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-[10px] font-bold rounded-lg flex items-center justify-center gap-1 border border-purple-100 transition-all"
                                 >
                                   <span>📍</span> Ubicación
                                 </a>
@@ -1401,8 +1395,8 @@ export function ChatbotWidget({
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-neutral-500 text-xs italic bg-[#153E3E]/5/70 p-3 rounded-2xl w-fit border border-[#153E3E]/10">
-                <span className="h-2 w-2 rounded-full bg-[#153E3E] animate-ping" />
+              <div className="flex items-center gap-2 text-neutral-500 text-xs italic bg-purple-50/70 p-3 rounded-2xl w-fit border border-purple-100">
+                <span className="h-2 w-2 rounded-full bg-purple-600 animate-ping" />
                 <span>Consultando información turística y aliados de Loja...</span>
               </div>
             )}
@@ -1413,7 +1407,7 @@ export function ChatbotWidget({
                 <div className="flex items-center justify-between px-0.5">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs">💡</span>
-                    <p className="text-[10px] font-black uppercase tracking-wider text-[#153E3E]">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-purple-700">
                       Preguntas sugeridas:
                     </p>
                   </div>
@@ -1424,7 +1418,7 @@ export function ChatbotWidget({
                       setMostrarSugerencias(false);
                     }}
                     title="Cerrar sugerencias"
-                    className="p-1 rounded-md text-neutral-400 hover:text-neutral-700 hover:bg-[#153E3E]/10 transition-all text-[11px] font-bold leading-none flex items-center justify-center cursor-pointer"
+                    className="p-1 rounded-md text-neutral-400 hover:text-neutral-700 hover:bg-purple-100/60 transition-all text-[11px] font-bold leading-none flex items-center justify-center cursor-pointer"
                   >
                     ✕
                   </button>
@@ -1436,7 +1430,7 @@ export function ChatbotWidget({
                       type="button"
                       onClick={() => handleSend(pregunta)}
                       disabled={loading}
-                      className="px-3 py-2.5 bg-gradient-to-r from-[#0E2E2E] via-[#153E3E] to-[#1A4545] hover:from-[#0A2020] hover:to-[#153E3E] text-white text-[11px] font-extrabold rounded-xl shadow-md shadow-[#153E3E]/25 hover:shadow-lg hover:shadow-[#153E3E]/30 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 border border-white/20 text-center leading-snug"
+                      className="px-3 py-2.5 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white text-[11px] font-extrabold rounded-xl shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 border border-white/20 text-center leading-snug"
                     >
                       <span>✨</span>
                       <span className="line-clamp-2">{pregunta}</span>
@@ -1450,7 +1444,7 @@ export function ChatbotWidget({
           </div>
 
           {/* Barra de Entrada / Textarea auto-expansible con scrollbar */}
-          <div className="p-3 bg-white border-t border-[#153E3E]/10 flex items-end gap-2">
+          <div className="p-3 bg-white border-t border-purple-100 flex items-end gap-2">
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
@@ -1469,7 +1463,7 @@ export function ChatbotWidget({
                   }
                 }}
                 placeholder="Escribe tu pregunta sobre qué hacer u hospedaje..."
-                className="w-full resize-none max-h-[120px] min-h-[42px] overflow-y-auto bg-neutral-50 border border-neutral-200 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-[#153E3E] placeholder:text-neutral-400 transition-all leading-relaxed block"
+                className="w-full resize-none max-h-[120px] min-h-[42px] overflow-y-auto bg-neutral-50 border border-neutral-200 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-purple-600 placeholder:text-neutral-400 transition-all leading-relaxed block"
                 style={{
                   scrollbarWidth: "thin",
                   scrollbarColor: "#c084fc #f3f4f6",
@@ -1479,7 +1473,7 @@ export function ChatbotWidget({
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="h-[42px] px-4 bg-gradient-to-r from-[#0E2E2E] to-[#153E3E] hover:from-[#113232] hover:to-[#1B4D4D] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#153E3E]/20 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0"
+              className="h-[42px] px-4 bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-600 hover:to-pink-500 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-purple-600/20 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shrink-0"
               title="Enviar mensaje (Enter)"
             >
               ➤
