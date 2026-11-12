@@ -73,6 +73,7 @@ export interface Solicitud {
   emailPersonal: string | null;
   direccion: string;
   referencias: string | null;
+  mapaUrl: string | null;
   lat: number | null;
   lng: number | null;
   horarios: string | null;

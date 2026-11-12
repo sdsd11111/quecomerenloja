@@ -9,9 +9,14 @@ import {
   normalizarTelefonoEC,
   telefonoInternacional,
 } from '@/lib/formulario';
-import { cifrarTexto } from '@/lib/cifrado';
 import { subirArchivoBunny } from '@/lib/bunny';
-import { crearSolicitud, guardarOcrEnSolicitud } from '@/lib/solicitudes-db';
+import {
+  crearSolicitud,
+  guardarOcrEnSolicitud,
+  obtenerSolicitud,
+  actualizarSolicitud,
+} from '@/lib/solicitudes-db';
+import { crearAliadoPendiente } from '@/lib/publicar-solicitud';
 import { leerCartaDesdeImagen } from '@/lib/services/cartaOcr';
 
 export const runtime = 'nodejs';
@@ -71,28 +76,30 @@ export async function POST(request: Request) {
     // ── Validación de datos ────────────────────────────────────────────────
     const nombreComercial = texto(fd, 'nombreComercial');
     const ruc = texto(fd, 'ruc');
-    const propietario = texto(fd, 'propietario');
     const telefono = texto(fd, 'telefono');
     const email = texto(fd, 'email');
     const direccion = texto(fd, 'direccion');
     const categoria = texto(fd, 'categoria') || 'tradicional';
     const horarios = texto(fd, 'horarios');
     const cartaTexto = texto(fd, 'cartaTexto');
+    const lat = numero(fd, 'lat');
+    const lng = numero(fd, 'lng');
+    const enlaceMapa = texto(fd, 'enlaceMapa');
 
     const faltantes: string[] = [];
     if (!nombreComercial) faltantes.push('nombre comercial');
-    if (!ruc) faltantes.push('RUC o cédula');
     if (!telefono) faltantes.push('WhatsApp');
     if (!email) faltantes.push('correo');
     if (!direccion) faltantes.push('dirección');
     if (!horarios) faltantes.push('horarios');
+    if (!lat || !lng) faltantes.push('ubicación en el mapa');
     if (faltantes.length > 0) {
       return NextResponse.json(
         { error: `Falta completar: ${faltantes.join(', ')}.` },
         { status: 400 }
       );
     }
-    if (!esDocumentoValido(ruc)) {
+    if (ruc && !esDocumentoValido(ruc)) {
       return NextResponse.json({ error: 'El RUC o la cédula no parece válido (13 o 10 dígitos).' }, { status: 400 });
     }
     if (!esTelefonoValido(telefono)) {
@@ -160,20 +167,23 @@ export async function POST(request: Request) {
       });
     }
 
-    const cuentaBancaria = texto(fd, 'cuentaBancaria');
+    const mapaUrl =
+      texto(fd, 'mapaUrl') ||
+      `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
     const { id, folio } = await crearSolicitud({
       nombreComercial,
-      ruc,
-      propietario,
+      ruc: ruc || null,
+      propietario: texto(fd, 'propietario') || null,
       telefono: normalizarTelefonoEC(telefono),
-      telefonoAlt: texto(fd, 'telefonoAlt') ? normalizarTelefonoEC(texto(fd, 'telefonoAlt')) : null,
+      telefonoAlt: null,
       email,
-      emailPersonal: texto(fd, 'emailPersonal') || null,
+      emailPersonal: null,
       direccion,
       referencias: texto(fd, 'referencias') || null,
-      lat: numero(fd, 'lat'),
-      lng: numero(fd, 'lng'),
+      mapaUrl,
+      lat,
+      lng,
       horarios,
       categorias: [categoria],
       momentos: lista(fd, 'momentos'),
@@ -181,11 +191,27 @@ export async function POST(request: Request) {
       servicios: [],
       metodosPago: lista(fd, 'metodosPago'),
       redesUrl: texto(fd, 'redesUrl') || null,
-      cuentaBancaria: cuentaBancaria ? cifrarTexto(cuentaBancaria) : null,
+      cuentaBancaria: null,
       notas: texto(fd, 'notas') || null,
       cartaTexto: cartaTexto || null,
       archivos: guardados.map(({ bytes: _bytes, ...resto }) => resto),
     });
+
+    // ── El aliado se crea de inmediato (inactivo) para que ya aparezca
+    //    en /admin y pueda editarse antes de publicarlo ────────────────────
+    try {
+      const solicitud = await obtenerSolicitud(id);
+      if (solicitud) {
+        const aliadoId = await crearAliadoPendiente(solicitud, {
+          imagenUrl: guardados.find((a) => a.tipo === 'foto')?.url || null,
+        });
+        if (aliadoId) {
+          await actualizarSolicitud(id, { aliadoId });
+        }
+      }
+    } catch (e: any) {
+      console.warn('[formulario] No se pudo crear el aliado pendiente:', e?.message);
+    }
 
     // ── Lectura automática de la carta (en segundo plano) ──────────────────
     const imagen = guardados.find((a) => a.tipo === 'carta' && (a.mime || '').startsWith('image/'));

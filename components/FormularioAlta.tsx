@@ -3,31 +3,30 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CATEGORIAS_FORMULARIO,
-  METODOS_PAGO,
   MOMENTOS_FORMULARIO,
   RANGOS_PRECIO,
 } from '@/lib/formulario';
+import { extractGpsFromGoogleMaps } from '@/lib/maps-extractor';
 
-const CLAVE_ALMACEN = 'qccl-formulario-alta-v1';
+const CLAVE_ALMACEN = 'qccl-formulario-alta-v2';
 const WHATSAPP = '593986962872';
+const CENTRO_LOJA: [number, number] = [-3.9965, -79.205];
 
 type Datos = {
   nombreComercial: string;
   ruc: string;
   propietario: string;
   telefono: string;
-  telefonoAlt: string;
   email: string;
-  emailPersonal: string;
   direccion: string;
   referencias: string;
   horarios: string;
   categoria: string;
   momentos: string[];
   rangoPrecio: string;
-  metodosPago: string[];
-  redesUrl: string;
-  cuentaBancaria: string;
+  enlaceMapa: string;
+  lat: number | null;
+  lng: number | null;
   notas: string;
   cartaTexto: string;
 };
@@ -37,25 +36,23 @@ const DATOS_INICIALES: Datos = {
   ruc: '',
   propietario: '',
   telefono: '',
-  telefonoAlt: '',
   email: '',
-  emailPersonal: '',
   direccion: '',
   referencias: '',
   horarios: '',
   categoria: 'tradicional',
   momentos: ['almuerzo'],
   rangoPrecio: '$$',
-  metodosPago: ['Efectivo'],
-  redesUrl: '',
-  cuentaBancaria: '',
+  enlaceMapa: '',
+  lat: null,
+  lng: null,
   notas: '',
   cartaTexto: '',
 };
 
 const PASOS = [
-  { n: 1, titulo: 'El restaurante', ayuda: 'Datos básicos de tu negocio' },
-  { n: 2, titulo: 'Contacto y cobro', ayuda: 'Cómo te llamamos y te cobramos' },
+  { n: 1, titulo: 'El restaurante', ayuda: 'Datos básicos' },
+  { n: 2, titulo: 'Tu ubicación', ayuda: 'El pin exacto en el mapa' },
   { n: 3, titulo: 'Tu carta', ayuda: 'Una foto y la cargamos nosotros' },
   { n: 4, titulo: 'Enviar', ayuda: 'Revisa y listo' },
 ];
@@ -66,12 +63,18 @@ export default function FormularioAlta() {
   const [carta, setCarta] = useState<File[]>([]);
   const [fotos, setFotos] = useState<File[]>([]);
   const [error, setError] = useState('');
+  const [aviso, setAviso] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [exito, setExito] = useState<{ folio: string; mensaje: string } | null>(null);
+  const [ubicacionLista, setUbicacionLista] = useState(false);
+
   const cartaRef = useRef<HTMLInputElement>(null);
   const fotosRef = useRef<HTMLInputElement>(null);
+  const mapaRef = useRef<HTMLDivElement>(null);
+  const mapaInstancia = useRef<any>(null);
+  const marcador = useRef<any>(null);
 
-  // ── Guardado automático (para no perder nada si se cierra la página) ────
+  // ── Guardado automático ─────────────────────────────────────────────────
   useEffect(() => {
     try {
       const guardado = window.localStorage.getItem(CLAVE_ALMACEN);
@@ -95,10 +98,84 @@ export default function FormularioAlta() {
     }
   }, [datos]);
 
+  // ── Mini mapa (Leaflet) ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (paso !== 2) return;
+    let vivo = true;
+
+    (async () => {
+      const L = await import('leaflet');
+      if (!vivo || !mapaRef.current || mapaInstancia.current) return;
+
+      const contenedor = mapaRef.current as any;
+      if (contenedor._leaflet_id) contenedor._leaflet_id = null;
+
+      const mapa = L.map(contenedor, {
+        center: CENTRO_LOJA,
+        zoom: 14,
+        zoomControl: true,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(mapa);
+
+      const icono = L.divIcon({
+        className: 'custom-leaflet-marker',
+        html: `<div style="display:flex;flex-direction:column;align-items:center;">
+                 <div style="background-color:#153E3E;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);font-size:17px;">📍</div>
+                 <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #153E3E;"></div>
+               </div>`,
+        iconSize: [34, 40],
+        iconAnchor: [17, 40],
+      });
+
+      const ponerPin = (lat: number, lng: number) => {
+        if (marcador.current) {
+          marcador.current.setLatLng([lat, lng]);
+        } else {
+          marcador.current = L.marker([lat, lng], { icon: icono, draggable: true }).addTo(mapa);
+          marcador.current.on('dragend', () => {
+            const pos = marcador.current.getLatLng();
+            fijarCoordenadas(pos.lat, pos.lat);
+          });
+        }
+      };
+
+      const fijarCoordenadas = (lat: number, lng: number) => {
+        setDatos((d) => ({
+          ...d,
+          lat: Number(lat.toFixed(6)),
+          lng: Number(lng.toFixed(6)),
+        }));
+        setUbicacionLista(true);
+      };
+
+      mapa.on('click', (e: any) => {
+        ponerPin(e.latlng.lat, e.latlng.lng);
+        fijarCoordenadas(e.latlng.lat, e.latlng.lng);
+      });
+
+      mapaInstancia.current = mapa;
+
+      if (datos.lat && datos.lng) {
+        ponerPin(datos.lat, datos.lng);
+        mapa.setView([datos.lat, datos.lng], 16);
+      }
+    })();
+
+    return () => {
+      vivo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paso]);
+
   const set = <K extends keyof Datos>(campo: K, valor: Datos[K]) =>
     setDatos((d) => ({ ...d, [campo]: valor }));
 
-  const alternar = (campo: 'momentos' | 'metodosPago', valor: string) =>
+  const alternar = (campo: 'momentos', valor: string) =>
     setDatos((d) => {
       const lista = d[campo] as string[];
       return {
@@ -107,16 +184,61 @@ export default function FormularioAlta() {
       };
     });
 
+  // ── Ubicación ───────────────────────────────────────────────────────────
+  const extraerCoordenadas = () => {
+    const coords = extractGpsFromGoogleMaps(datos.enlaceMapa);
+    if (!coords) {
+      setAviso('No encontré coordenadas en ese enlace. Abre el pin en Google Maps y copia la URL completa.');
+      setUbicacionLista(false);
+      return;
+    }
+    setDatos((d) => ({ ...d, lat: coords.lat, lng: coords.lng }));
+    setUbicacionLista(true);
+    setAviso('✓ Coordenadas listas.');
+    if (mapaInstancia.current && marcador.current) {
+      marcador.current.setLatLng([coords.lat, coords.lng]);
+      mapaInstancia.current.setView([coords.lat, coords.lng], 16);
+    }
+  };
+
+  const usarMiUbicacion = () => {
+    if (!navigator.geolocation) {
+      setAviso('Tu navegador no permite obtener la ubicación. Usa el enlace de Google Maps o marca el pin en el mapa.');
+      return;
+    }
+    setAviso('Buscando tu ubicación…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setDatos((d) => ({ ...d, lat: latitude, lng: longitude }));
+        setUbicacionLista(true);
+        setAviso('✓ Ubicación detectada. Ajusta el pin si hace falta.');
+        if (mapaInstancia.current) {
+          if (marcador.current) marcador.current.setLatLng([latitude, longitude]);
+          mapaInstancia.current.setView([latitude, longitude], 16);
+        }
+      },
+      () => {
+        setAviso('No pudimos obtener tu ubicación. Marca el pin en el mapa o pega el enlace de Google Maps.');
+        setUbicacionLista(false);
+      },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
+  // ── Validación y navegación ────────────────────────────────────────────
   const validarPaso = (n: number): string => {
     if (n === 1) {
       if (!datos.nombreComercial.trim()) return 'Escribe el nombre comercial del restaurante.';
-      if (!/^\d{10}$|^\d{13}$/.test(datos.ruc.replace(/\D/g, '')))
-        return 'El RUC (13 dígitos) o la cédula (10 dígitos) no parece válido.';
-      if (datos.telefono.replace(/\D/g, '').length < 9) return 'Escribe tu WhatsApp con 9 dígitos.';
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email.trim()))
-        return 'Revisa el correo del establecimiento.';
+      if (!/^\d{10}$|^\d{13}$/.test(datos.ruc.replace(/\D/g, '')) && datos.ruc.trim())
+        return 'El RUC o la cédula debe tener 13 o 10 dígitos.';
+      if (datos.telefono.replace(/\D/g, '').length < 9) return 'Escribe tu WhatsApp de pedidos.';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email.trim())) return 'Revisa el correo.';
       if (!datos.direccion.trim()) return 'Escribe la dirección del restaurante.';
       if (!datos.horarios.trim()) return 'Escribe tus horarios de atención.';
+    }
+    if (n === 2) {
+      if (!datos.lat || !datos.lng) return 'Marca la ubicación de tu restaurante en el mapa.';
     }
     if (n === 3) {
       if (carta.length === 0 && !datos.cartaTexto.trim())
@@ -132,6 +254,7 @@ export default function FormularioAlta() {
       return;
     }
     setError('');
+    setAviso('');
     setPaso((p) => Math.min(4, p + 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -143,10 +266,10 @@ export default function FormularioAlta() {
   };
 
   const enviar = async () => {
-    const mensaje = validarPaso(1) || validarPaso(3);
-    if (mensaje) {
-      setError(mensaje);
-      setPaso(mensaje === validarPaso(1) ? 1 : 3);
+    const problema = validarPaso(1) || validarPaso(2) || validarPaso(3);
+    if (problema) {
+      setError(problema);
+      setPaso(problema === validarPaso(1) ? 1 : problema === validarPaso(2) ? 2 : 3);
       return;
     }
 
@@ -186,11 +309,14 @@ export default function FormularioAlta() {
   const resumen = useMemo(
     () => [
       ['Restaurante', datos.nombreComercial || '—'],
-      ['RUC / cédula', datos.ruc || '—'],
       ['WhatsApp', datos.telefono || '—'],
       ['Correo', datos.email || '—'],
       ['Dirección', datos.direccion || '—'],
       ['Horarios', datos.horarios || '—'],
+      ['Ubicación',
+        datos.lat && datos.lng
+          ? `${datos.lat.toFixed(5)}, ${datos.lng.toFixed(5)}`
+          : '—'],
       ['Tipo', CATEGORIAS_FORMULARIO.find((c) => c.slug === datos.categoria)?.nombre || '—'],
       ['Carta', carta.length > 0 ? `${carta.length} archivo(s)` : 'texto escrito'],
     ],
@@ -211,8 +337,8 @@ export default function FormularioAlta() {
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted">Número de solicitud</p>
             <p className="mt-1 font-serif text-2xl font-bold text-petroleo">{exito.folio}</p>
             <p className="mt-3 text-sm text-muted">
-              Qué sigue: revisamos tu carta, cargamos tus platos y publicamos tu ficha. Si falta algo te
-              escribimos por WhatsApp.
+              Ya tenemos tu ficha con su ubicación. Revisamos tu carta, cargamos tus platos y
+              publicamos tu menú. Si falta algo te escribimos por WhatsApp.
             </p>
           </div>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -241,7 +367,6 @@ export default function FormularioAlta() {
   // ── Formulario ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-porcelana">
-      {/* Encabezado */}
       <section className="relative overflow-hidden bg-petroleo px-5 py-12 text-white sm:py-16">
         <div className="mx-auto max-w-3xl">
           <span className="inline-block rounded-full bg-citrico px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-petroleo">
@@ -251,14 +376,13 @@ export default function FormularioAlta() {
             Hazte aliado de Qué Comer en Loja
           </h1>
           <p className="mt-3 max-w-2xl text-base text-white/80 sm:text-lg">
-            Un solo paso: llena este formulario y nosotros creamos tu ficha, cargamos tu carta y
-            publicamos tu menú del día. Sin formularios, sin que cargues nada.
+            Un solo paso: llena este formulario y nosotros creamos tu ficha con su ubicación en el
+            mapa, cargamos tu carta y publicamos tu menú del día.
           </p>
         </div>
       </section>
 
       <div className="mx-auto max-w-3xl px-5 py-10">
-        {/* Stepper */}
         <ol className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {PASOS.map((p) => {
             const activo = paso === p.n;
@@ -301,43 +425,23 @@ export default function FormularioAlta() {
           {/* PASO 1 */}
           {paso === 1 && (
             <div className="space-y-5">
-              <Campo etiqueta="Nombre comercial del restaurante" obligatorio>
+              <Campo etiqueta="Nombre comercial del restaurante" ayuda="Como te ven los clientes">
                 <input
                   className="input"
                   value={datos.nombreComercial}
                   onChange={(e) => set('nombreComercial', e.target.value)}
-                  placeholder="Chimichurri Fast Food"
+                  placeholder="Restaurante de Ejemplo"
                 />
               </Campo>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Campo etiqueta="RUC o cédula" obligatorio ayuda="13 dígitos (RUC) o 10 (cédula)">
-                  <input
-                    className="input"
-                    inputMode="numeric"
-                    value={datos.ruc}
-                    onChange={(e) => set('ruc', e.target.value.replace(/\D/g, ''))}
-                    placeholder="0999999999000"
-                  />
-                </Campo>
-                <Campo etiqueta="Nombre del propietario" ayuda="Quien firma el acuerdo">
-                  <input
-                    className="input"
-                    value={datos.propietario}
-                    onChange={(e) => set('propietario', e.target.value)}
-                    placeholder="José Mauricio Pardo Acaro"
-                  />
-                </Campo>
-              </div>
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Campo etiqueta="WhatsApp de pedidos" obligatorio ayuda="Con el 0 inicial">
+                <Campo etiqueta="WhatsApp de pedidos" ayuda="Con el 0 inicial">
                   <input
                     className="input"
                     inputMode="tel"
                     value={datos.telefono}
                     onChange={(e) => set('telefono', e.target.value)}
-                    placeholder="0984222336"
+                    placeholder="0987654321"
                   />
                 </Campo>
                 <Campo etiqueta="Correo del establecimiento">
@@ -346,17 +450,17 @@ export default function FormularioAlta() {
                     type="email"
                     value={datos.email}
                     onChange={(e) => set('email', e.target.value)}
-                    placeholder="chefmauriciopardo@gmail.com"
+                    placeholder="correo@restaurante-ejemplo.com"
                   />
                 </Campo>
               </div>
 
-              <Campo etiqueta="Dirección del restaurante" obligatorio>
+              <Campo etiqueta="Dirección del restaurante">
                 <input
                   className="input"
                   value={datos.direccion}
                   onChange={(e) => set('direccion', e.target.value)}
-                  placeholder="Calles Zoilo Rodríguez y 24 de Mayo, Loja"
+                  placeholder="Av. Siempre Viva 123 y Calle Ficticia, Loja"
                 />
               </Campo>
 
@@ -369,7 +473,7 @@ export default function FormularioAlta() {
                     placeholder="Frente al parque central"
                   />
                 </Campo>
-                <Campo etiqueta="Horarios de atención" obligatorio ayuda="Uno por línea, por día">
+                <Campo etiqueta="Horarios de atención" ayuda="Uno por línea, por día">
                   <input
                     className="input"
                     value={datos.horarios}
@@ -378,6 +482,16 @@ export default function FormularioAlta() {
                   />
                 </Campo>
               </div>
+
+              <Campo etiqueta="RUC o cédula" ayuda="Opcional: solo si te facturamos">
+                <input
+                  className="input"
+                  inputMode="numeric"
+                  value={datos.ruc}
+                  onChange={(e) => set('ruc', e.target.value.replace(/\D/g, ''))}
+                  placeholder="0999999999000"
+                />
+              </Campo>
 
               <fieldset>
                 <legend className="mb-2 text-sm font-bold text-petroleo">Tipo de restaurante</legend>
@@ -437,73 +551,74 @@ export default function FormularioAlta() {
             </div>
           )}
 
-          {/* PASO 2 */}
+          {/* PASO 2: UBICACIÓN */}
           {paso === 2 && (
             <div className="space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Campo etiqueta="Teléfono secundario" ayuda="Opcional">
+              <p className="text-sm text-muted">
+                Con el pin exacto tu restaurante aparece en el mapa de Loja, en el buscador y con la
+                ruta más corta desde el centro.
+              </p>
+
+              <Campo etiqueta="Enlace de Google Maps" ayuda="Abre tu negocio en Google Maps, copia el enlace y pégalo aquí">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <input
                     className="input"
-                    inputMode="tel"
-                    value={datos.telefonoAlt}
-                    onChange={(e) => set('telefonoAlt', e.target.value)}
-                    placeholder="0979332245"
+                    value={datos.enlaceMapa}
+                    onChange={(e) => set('enlaceMapa', e.target.value)}
+                    placeholder="https://maps.app.goo.gl/..."
                   />
-                </Campo>
-                <Campo etiqueta="Correo personal" ayuda="Opcional">
-                  <input
-                    className="input"
-                    type="email"
-                    value={datos.emailPersonal}
-                    onChange={(e) => set('emailPersonal', e.target.value)}
-                    placeholder="mpardoacaro@gmail.com"
-                  />
-                </Campo>
-              </div>
-
-              <Campo etiqueta="Redes sociales o web actual" ayuda="Opcional">
-                <input
-                  className="input"
-                  value={datos.redesUrl}
-                  onChange={(e) => set('redesUrl', e.target.value)}
-                  placeholder="https://facebook.com/turestaurante"
-                />
-              </Campo>
-
-              <Campo etiqueta="Métodos de pago">
-                <div className="flex flex-wrap gap-2">
-                  {METODOS_PAGO.map((m) => (
-                    <Chip
-                      key={m}
-                      activo={datos.metodosPago.includes(m)}
-                      onClick={() => alternar('metodosPago', m)}
-                    >
-                      {m}
-                    </Chip>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={extraerCoordenadas}
+                    className="shrink-0 rounded-xl bg-petroleo px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#0E2E2E]"
+                  >
+                    Extraer
+                  </button>
                 </div>
               </Campo>
 
-              <Campo
-                etiqueta="Cuenta bancaria para el cobro mensual"
-                ayuda="Opcional. Solo la vemos nosotros; nunca se publica."
-              >
-                <textarea
-                  className="input min-h-[88px]"
-                  value={datos.cuentaBancaria}
-                  onChange={(e) => set('cuentaBancaria', e.target.value)}
-                  placeholder="Banco, tipo de cuenta, número y titular"
-                />
-              </Campo>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={usarMiUbicacion}
+                  className="rounded-xl border border-petroleo px-5 py-2.5 text-sm font-bold text-petroleo transition hover:bg-white"
+                >
+                  📍 Usar mi ubicación actual
+                </button>
+                {datos.lat && datos.lng && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${datos.lat},${datos.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-petroleo underline"
+                  >
+                    Ver el pin en Google Maps
+                  </a>
+                )}
+              </div>
 
-              <Campo etiqueta="Algo más que debamos saber" ayuda="Opcional">
-                <textarea
-                  className="input min-h-[88px]"
-                  value={datos.notas}
-                  onChange={(e) => set('notas', e.target.value)}
-                  placeholder="Polo especial los fines de semana, tenemos parqueadero…"
-                />
-              </Campo>
+              <div
+                ref={mapaRef}
+                className="h-72 w-full overflow-hidden rounded-xl border border-niebla"
+                aria-label="Mapa para marcar la ubicación del restaurante"
+              />
+
+              {aviso && (
+                <p className="rounded-xl bg-porcelana px-4 py-3 text-sm font-semibold text-grafito">
+                  {aviso}
+                </p>
+              )}
+
+              {ubicacionLista && datos.lat && datos.lng ? (
+                <p className="rounded-xl bg-citrico/25 px-4 py-3 text-sm font-semibold text-petroleo">
+                  ✓ Ubicación guardada: {datos.lat.toFixed(5)}, {datos.lng.toFixed(5)}. Puedes
+                  arrastrar el pin para ajustarlo.
+                </p>
+              ) : (
+                <p className="rounded-xl border border-dashed border-niebla px-4 py-3 text-sm text-muted">
+                  Haz clic en el mapa para marcar tu local.
+                </p>
+              )}
             </div>
           )}
 
@@ -580,7 +695,7 @@ export default function FormularioAlta() {
                   className="input min-h-[140px]"
                   value={datos.cartaTexto}
                   onChange={(e) => set('cartaTexto', e.target.value)}
-                  placeholder={"Menú del día\n1. Arroz con menestra $6.50\n2. Cecina asada $8.00\n…"}
+                  placeholder={'Menú del día\n1. Arroz con menestra $6.50\n2. Cecina asada $8.00\n…'}
                 />
               </Campo>
             </div>
@@ -621,7 +736,6 @@ export default function FormularioAlta() {
             </p>
           )}
 
-          {/* Navegación */}
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
             <button
               type="button"
@@ -657,7 +771,7 @@ export default function FormularioAlta() {
           ¿Prefieres escribir?{' '}
           <a
             href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
-              'Hola, quiero hazerme aliado de Qué Comer en Loja.'
+              'Hola, quiero hacerme aliado de Qué Comer en Loja.'
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -689,24 +803,18 @@ export default function FormularioAlta() {
   );
 }
 
-// ── Piezas auxiliares ─────────────────────────────────────────────────────
 function Campo({
   etiqueta,
   ayuda,
-  obligatorio,
   children,
 }: {
   etiqueta: string;
   ayuda?: string;
-  obligatorio?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-bold text-petroleo">
-        {etiqueta}
-        {obligatorio && <span className="ml-1 text-xs font-semibold text-muted">· obligatorio</span>}
-      </span>
+      <span className="mb-1.5 block text-sm font-bold text-petroleo">{etiqueta}</span>
       {ayuda && <span className="mb-1.5 block text-xs text-muted">{ayuda}</span>}
       {children}
     </label>

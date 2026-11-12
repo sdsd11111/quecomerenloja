@@ -73,6 +73,14 @@ export function ensureTablasSolicitudes(): Promise<void> {
             REFERENCES solicitudes_alta (id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
       `);
+
+      // Columnas añadidas después del primer despliegue
+      await pool.query(
+        'ALTER TABLE solicitudes_alta ADD COLUMN IF NOT EXISTS mapa_url VARCHAR(500) NULL AFTER referencias'
+      );
+      await pool.query(
+        'ALTER TABLE solicitudes_alta ADD COLUMN IF NOT EXISTS aliado_id INT NULL AFTER borrador'
+      );
     })().catch((err) => {
       tablasReady = null;
       throw err;
@@ -94,6 +102,7 @@ interface FilaSolicitud extends RowDataPacket {
   email_personal: string | null;
   direccion: string;
   referencias: string | null;
+  mapaUrl: string | null;
   lat: number | null;
   lng: number | null;
   horarios: string | null;
@@ -128,6 +137,7 @@ function mapearSolicitud(fila: FilaSolicitud, archivos: ArchivoSolicitud[] = [])
     emailPersonal: fila.email_personal,
     direccion: fila.direccion,
     referencias: fila.referencias,
+    mapaUrl: fila.mapa_url,
     lat: fila.lat === null ? null : Number(fila.lat),
     lng: fila.lng === null ? null : Number(fila.lng),
     horarios: fila.horarios,
@@ -188,6 +198,8 @@ export interface NuevaSolicitud {
   emailPersonal?: string | null;
   direccion: string;
   referencias?: string | null;
+  mapaUrl?: string | null;
+  aliadoId?: number | null;
   lat?: number | null;
   lng?: number | null;
   horarios?: string | null;
@@ -218,10 +230,10 @@ export async function crearSolicitud(datos: NuevaSolicitud): Promise<{ id: numbe
   const [resultado] = await pool.query<ResultSetHeader>(
     `INSERT INTO solicitudes_alta (
        folio, slug, nombre_comercial, ruc, propietario, telefono, telefono_alt,
-       email, email_personal, direccion, referencias, lat, lng, horarios,
+       email, email_personal, direccion, referencias, mapa_url, lat, lng, horarios,
        categorias, momentos, rango_precio, servicios, metodos_pago, redes_url,
-       cuenta_bancaria, notas, carta_texto, estado
-     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+       cuenta_bancaria, notas, carta_texto, estado, aliado_id
+     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       folio,
       slugify(datos.nombreComercial),
@@ -234,6 +246,7 @@ export async function crearSolicitud(datos: NuevaSolicitud): Promise<{ id: numbe
       datos.emailPersonal || null,
       datos.direccion,
       datos.referencias || null,
+      datos.mapaUrl || null,
       datos.lat ?? null,
       datos.lng ?? null,
       datos.horarios || null,
@@ -247,6 +260,7 @@ export async function crearSolicitud(datos: NuevaSolicitud): Promise<{ id: numbe
       datos.notas || null,
       datos.cartaTexto || null,
       'recibido',
+      datos.aliadoId ?? null,
     ]
   );
 

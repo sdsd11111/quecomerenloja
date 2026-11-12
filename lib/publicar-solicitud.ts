@@ -1,6 +1,6 @@
 import 'server-only';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import { getGastroPool, createAliado } from '@/lib/aliados-db';
+import { getGastroPool, createAliado, updateAliado } from '@/lib/aliados-db';
 import { createPromo } from '@/lib/promos-db';
 import type { PlatoBorrador, Solicitud } from '@/lib/formulario';
 import { slugify } from '@/lib/formulario';
@@ -115,6 +115,59 @@ async function asegurarPlatoCatalogo(
   return ins.insertId;
 }
 
+/**
+ * Crea el aliado en la tabla `aliados` en estado INACTIVO en el momento en que
+ * llega la solicitud: así el restaurante ya aparece en /admin (pestaña
+ * Aliados) y se puede editar ahí mismo. Queda pendiente de publicar
+ * (activo = 0) hasta que alguien lo revise y apruebe.
+ */
+export async function crearAliadoPendiente(
+  solicitud: Solicitud,
+  opciones: { imagenUrl?: string | null } = {}
+): Promise<number | null> {
+  const descripcion =
+    solicitud.notas ||
+    `${solicitud.nombreComercial}, en ${solicitud.direccion}. ${
+      solicitud.horarios ? `Horario: ${solicitud.horarios}.` : ''
+    } Menú y datos actualizados por Qué Comer en Loja.`;
+
+  const mapaUrl = solicitud.mapaUrl || construirMapaUrl(solicitud);
+
+  try {
+    return await createAliado({
+      nombre: solicitud.nombreComercial,
+      tipo: 'GASTRONOMIA',
+      descripcion,
+      ubicacion: solicitud.direccion,
+      telefono: solicitud.telefono,
+      rangoPrecio: solicitud.rangoPrecio,
+      mapaUrl,
+      websiteUrl: solicitud.redesUrl,
+      ubicacionLat: solicitud.lat,
+      ubicacionLng: solicitud.lng,
+      imagenUrl: opciones.imagenUrl || null,
+      servicios: solicitud.momentos.join(', ') || null,
+      destacado: false,
+      activo: false,
+      estrellas: null,
+      momentos: (solicitud.momentos || []) as any,
+      platos: [],
+    });
+  } catch (e: any) {
+    console.warn('[publicar-solicitud] No se pudo crear el aliado pendiente:', e?.message);
+    return null;
+  }
+}
+
+function construirMapaUrl(solicitud: Solicitud): string {
+  if (solicitud.lat && solicitud.lng) {
+    return `https://www.google.com/maps/search/?api=1&query=${solicitud.lat},${solicitud.lng}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${solicitud.direccion}, Loja`
+  )}`;
+}
+
 export async function publicarSolicitud(
   solicitud: Solicitud,
   platos: PlatoBorrador[],
@@ -122,7 +175,7 @@ export async function publicarSolicitud(
 ): Promise<ResultadoPublicacion> {
   const pool = getGastroPool();
   const avisos: string[] = [];
-  let aliadoId: number | null = null;
+  let aliadoId: number | null = solicitud.aliadoId ?? null;
   let platosPublicados = 0;
   let enlacesCreados = 0;
 
@@ -133,16 +186,12 @@ export async function publicarSolicitud(
       solicitud.horarios ? `Horario: ${solicitud.horarios}.` : ''
     } Menú y datos actualizados por Qué Comer en Loja.`;
 
-  const mapaUrl =
-    solicitud.lat && solicitud.lng
-      ? `https://www.google.com/maps/search/?api=1&query=${solicitud.lat},${solicitud.lng}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(solicitud.direccion)}`;
-
+  const mapaUrl = solicitud.mapaUrl || construirMapaUrl(solicitud);
   const whatsappUrl = `https://wa.me/${solicitud.telefono.replace(/\D/g, '')}`;
 
-  // ── 1. Ficha del restaurante ────────────────────────────────────────────
+  // ── 1. Ficha: si ya existe (creada al enviar el formulario), se activa ──
   try {
-    aliadoId = await createAliado({
+    const datosAliado = {
       nombre: solicitud.nombreComercial,
       tipo: 'GASTRONOMIA',
       descripcion,
@@ -160,9 +209,15 @@ export async function publicarSolicitud(
       estrellas: null,
       momentos: (solicitud.momentos || []) as any,
       platos: platos.map((p) => slugify(p.nombre)).filter(Boolean),
-    });
+    };
+
+    if (aliadoId) {
+      await updateAliado(aliadoId, datosAliado as any);
+    } else {
+      aliadoId = await createAliado(datosAliado);
+    }
   } catch (e: any) {
-    avisos.push(`No se pudo crear la ficha: ${e?.message}.`);
+    avisos.push(`No se pudo publicar la ficha: ${e?.message}.`);
   }
 
   // ── 2 y 3. Platos del catálogo + vínculo con el restaurante ─────────────

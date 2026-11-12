@@ -25,7 +25,86 @@
 
 ---
 
-## 1. Stack (lo que ya existe, sin dependencias nuevas de pago)
+## 0-B. Plan v2: formulario simple, ubicación exacta y alta automática como aliado
+
+> Pedido: formulario corto, **sin datos reales de ejemplo**, **sin** cuenta bancaria / teléfono
+> secundario / correo personal, **ubicación exacta de Google Maps sí o sí**, y que la solicitud
+> se convierta sola en un aliado visible en `/admin` que después aparece en el resto de páginas.
+
+### 1. Formulario: qué se quita y qué se queda
+
+| Campo | Decisión | Motivo |
+| :--- | :--- | :--- |
+| Nombre comercial | **Se queda** (obligatorio) | Identifica al aliado |
+| RUC o cédula | **Se queda, pero opcional** | Solo hace falta si luego facturamos; hoy la tabla `aliados` ni siquiera tiene esa columna |
+| Teléfono secundario | **Se quita** | El WhatsApp principal basta |
+| Correo personal | **Se quita** | El correo del establecimiento basta |
+| **Cuenta bancaria** | **Se quita** | No la pide el alta y es dato sensible |
+| Dirección + referencias | **Se quedan** | Texto legible para la ficha |
+| Horarios | **Se queda** | Alimenta la ficha y el chat |
+| Tipo de restaurante, momentos, rango de precio | **Se quedan** | Alimentan el buscador por plato y por momento |
+| **Ubicación exacta** | **Se agrega (obligatoria)** | Sin `lat/lng` el aliado no tiene pin en el mapa |
+| Carta / fotos | **Se quedan** | Alimentan el menú y el SEO |
+
+Nada de etiquetas "· obligatorio": los campos obligatorios se marcan con un asterisco y se validan
+al avanzar de paso.
+
+**Ejemplos 100 % ficticios** (nunca datos de clientes reales):
+`Restaurante de Ejemplo` · `0987654321` · `correo@restaurante-ejemplo.com` ·
+`Av. Siempre Viva 123 y Calle Ficticia, Loja` · `Lun-Dom 10:00 a 22:00`.
+
+### 2. Ubicación exacta: tres formas de obtenerla
+
+1. **Pegar el enlace de Google Maps** → se extraen las coordenadas con `extractGpsFromGoogleMaps`
+   (ya existe en `lib/maps-extractor.ts` y ya lo usa el panel de aliados).
+2. **Botón "Usar mi ubicación actual"** → `navigator.geolocation` (el restaurante está en el local).
+3. **Clic en el mapa** → mini mapa Leaflet centrado en Loja; el clic deja el pin exacto.
+
+La ubicación es **obligatoria**: sin `lat/lng` no se puede publicar la ficha (quedaría sin pin en
+`/restaurantes`, en el mapa y en el chat).
+
+Datos que se guardan: `direccion` (texto), `lat`, `lng`, `mapaUrl` (enlace de Google Maps) y
+`referencias`. Con eso el aliado aparece con su pin en el mapa, su ficha y su botón de WhatsApp.
+
+### 3. Flujo: el formulario crea el aliado y el admin lo publica
+
+```
+Envío del formulario
+   ├─ crea la SOLICITUD (folio ALT-AAAA-####) con carta + OCR en segundo plano
+   └─ crea el ALIADO en la tabla `aliados` con activo = 0  ← ya se ve en /admin
+                ↓
+   /admin (pestaña Aliados): el restaurante aparece, se puede editar ahí mismo
+   /admin/solicitudes: revisión de la carta + borrador de platos + "Publicar"
+                ↓
+   "Publicar ficha" → activa el aliado (activo = 1), publica platos y menú
+                ↓
+   Aparece solo en /restaurantes, /que-comer-hoy, el mapa, el chat y el buscador por plato
+```
+
+El paso de "Publicar" **no crea un aliado nuevo**: actualiza el que ya existe (mismo nombre, misma
+ubicación) para no duplicar fichas.
+
+### 4. Tareas del sprint — **✅ implementadas**
+
+| # | Tarea | Archivo | Estado |
+| :--- | :--- | :--- | :--- |
+| 1 | Limpiar campos y ejemplos ficticios | `components/FormularioAlta.tsx` | ✅ |
+| 2 | Nuevo paso de ubicación con Leaflet + GPS + enlace | `components/FormularioAlta.tsx` | ✅ |
+| 3 | Validar `lat/lng` y guardar `mapaUrl` | `app/api/formulario/route.ts` | ✅ |
+| 4 | Crear el aliado (inactivo) al enviar y vincularlo | `lib/publicar-solicitud.ts` | ✅ |
+| 5 | Al publicar: activar el aliado existente en vez de duplicarlo | `lib/publicar-solicitud.ts` | ✅ |
+| 6 | Panel: mostrar el aliado vinculado, las coordenadas y el enlace a Maps | `app/admin/solicitudes/page.tsx` | ✅ |
+
+**Comprobado en producción** (2026-11-12): envío → `ALT-2026-0001` → aliado #13 creado **inactivo** con
+coordenadas y enlace de Maps → "Publicar" → **el mismo aliado #13 pasa a activo** (sin duplicados) →
+4 platos y 4 enlaces en el catálogo → limpieza de los datos de prueba.
+
+**Nota de seguridad:** los scripts de prueba limpian **por id**, nunca por nombre (un borrado por
+nombre llegó a tocar dos platos reales del catálogo; se restauraron desde el dump
+`/root/migracion_dbs/db_gastronomia.sql` y se verificaron).
+
+---
+
 
 | Necesidad | Herramienta real | Nota |
 | :--- | :--- | :--- |

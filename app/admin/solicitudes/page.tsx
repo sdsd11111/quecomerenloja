@@ -25,6 +25,9 @@ type Solicitud = {
   emailPersonal: string | null;
   direccion: string;
   referencias: string | null;
+  lat: number | null;
+  lng: number | null;
+  mapaUrl: string | null;
   horarios: string | null;
   categorias: string[];
   momentos: string[];
@@ -293,9 +296,7 @@ export default function AdminSolicitudesPage() {
                   <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                     <Dato etiqueta="RUC / cédula" valor={seleccion.ruc} />
                     <Dato etiqueta="WhatsApp" valor={seleccion.telefono} />
-                    <Dato etiqueta="Teléfono alterno" valor={seleccion.telefonoAlt} />
                     <Dato etiqueta="Correo" valor={seleccion.email} />
-                    <Dato etiqueta="Correo personal" valor={seleccion.emailPersonal} />
                     <Dato etiqueta="Horarios" valor={seleccion.horarios} />
                     <Dato etiqueta="Dirección" valor={seleccion.direccion} />
                     <Dato etiqueta="Referencias" valor={seleccion.referencias} />
@@ -304,9 +305,32 @@ export default function AdminSolicitudesPage() {
                     <Dato etiqueta="Precio" valor={seleccion.rangoPrecio} />
                     <Dato etiqueta="Métodos de pago" valor={seleccion.metodosPago.join(', ')} />
                     <Dato etiqueta="Redes" valor={seleccion.redesUrl} />
-                    <Dato etiqueta="Cuenta bancaria" valor={seleccion.cuentaBancaria} />
                     <Dato etiqueta="Notas" valor={seleccion.notas} />
                   </dl>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-porcelana px-4 py-3 text-sm">
+                    <span className="font-bold text-petroleo">Ubicación</span>
+                    <span className="text-muted">
+                      {seleccion.lat && seleccion.lng
+                        ? `${seleccion.lat.toFixed(5)}, ${seleccion.lng.toFixed(5)}`
+                        : 'Sin coordenadas'}
+                    </span>
+                    {seleccion.lat && seleccion.lng && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${seleccion.lat},${seleccion.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-petroleo underline"
+                      >
+                        Ver en Google Maps ↗
+                      </a>
+                    )}
+                    {seleccion.aliadoId && (
+                      <span className="ml-auto rounded-full bg-citrico/30 px-3 py-1 text-xs font-bold text-petroleo">
+                        Aliado #{seleccion.aliadoId} creado (inactivo hasta publicar)
+                      </span>
+                    )}
+                  </div>
 
                   {seleccion.cartaTexto && (
                     <details className="mt-4 rounded-lg bg-porcelana p-3">
