@@ -358,7 +358,7 @@ export default async function QueComerHoyPage({ searchParams }: PageProps) {
 
           <AliadosSlideInfinito
             aliados={aliadosFiltrados}
-            waAfiliacionUrl="https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja"
+            waAfiliacionUrl="https://wa.me/593986962872?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja"
             badgeTexto="Oficial de Hoy"
           />
         </div>

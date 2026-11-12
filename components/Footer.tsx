@@ -111,6 +111,9 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-4">
+            <Link href="/formulario" className="font-semibold text-petroleo hover:underline">
+              Hazte aliado
+            </Link>
             <Link href="/restaurantes" className="font-semibold text-petroleo hover:underline">
               Restaurantes de Loja
             </Link>

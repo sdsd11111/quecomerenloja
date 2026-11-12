@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+<title id="title">Símbolo Qué comer en Loja</title><g transform="translate(0 0) scale(1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="57" cy="56" r="41" stroke="#153E3E" stroke-width="8"/>
+      <circle cx="57" cy="56" r="25" stroke="#D0DB61" stroke-width="2.7"/>
+      <path d="M82 84 C91 92 102 103 112 113" stroke="#153E3E" stroke-width="8"/>
+      <circle cx="57" cy="56" r="5.5" fill="#153E3E" stroke="none"/>
+      <circle cx="112" cy="113" r="5.7" fill="#D0DB61" stroke="none"/>
+    </g></svg>

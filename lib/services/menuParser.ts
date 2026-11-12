@@ -77,25 +77,45 @@ Tu tarea es estructurar estos datos en formato JSON estricto con los siguientes 
 
 IMPORTANTE: Responde ÚNICAMENTE con el objeto JSON válido, sin texto adicional ni bloques markdown.`;
 
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.2,
-          max_tokens: 600,
-          response_format: { type: 'json_object' },
-        }),
-      });
+      // La cuenta de Groq del proyecto tiene acceso a estos modelos; el resto
+      // se prueba en orden hasta que uno responda.
+      const MODELOS = [
+        'qwen/qwen3.8-27b',
+        'openai/gpt-oss-120b',
+        'openai/gpt-oss-20b',
+        'llama-3.3-70b-versatile',
+      ];
 
-      if (res.ok) {
+      for (const modelo of MODELOS) {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: modelo,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.2,
+            max_tokens: 600,
+            response_format: { type: 'json_object' },
+          }),
+        });
+
+        if (!res.ok) {
+          console.warn(`[parsearMenuConIA] ${modelo} respondió ${res.status}`);
+          continue;
+        }
+
         const data = await res.json();
-        const content = data.choices?.[0]?.message?.content;
-        if (content) {
+        let content: string = data.choices?.[0]?.message?.content || '';
+        if (!content) continue;
+        if (!content.trim().startsWith('{')) {
+          const match = content.match(/\{[\s\S]*\}/);
+          if (match) content = match[0];
+        }
+
+        try {
           const parsed = JSON.parse(content);
           if (parsed.titulo && parsed.descripcion) {
             return {
@@ -106,6 +126,8 @@ IMPORTANTE: Responde ÚNICAMENTE con el objeto JSON válido, sin texto adicional
               precioOriginal: parsed.precioOriginal ? String(parsed.precioOriginal) : null,
             };
           }
+        } catch {
+          // respuesta no JSON: probamos con el siguiente modelo
         }
       }
     } catch (e) {

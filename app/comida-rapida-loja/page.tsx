@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const WA_AFILIACION_CENAS = "https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20local%20de%20comida%20r%C3%A1pida%20o%20cenas%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja";
+const WA_AFILIACION_CENAS = "https://wa.me/593986962872?text=Hola%2C%20tengo%20un%20local%20de%20comida%20r%C3%A1pida%20o%20cenas%20en%20Loja%20y%20deseo%20afiliarlo%20a%20Qu%C3%A9%20Comer%20en%20Loja";
 
 const NIGHT_SLOTS = [
   {

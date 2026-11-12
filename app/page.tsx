@@ -241,7 +241,7 @@ export default async function Home() {
                 Explorar restaurantes →
               </Link>
               <a
-                href="https://wa.me/593988888888?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n"
+                href="https://wa.me/593986962872?text=Hola%2C%20tengo%20un%20restaurante%20en%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-md px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-white hover:bg-white/20 transition hover:-translate-y-0.5"
@@ -341,7 +341,7 @@ export default async function Home() {
               </p>
             </div>
             <a
-              href="https://wa.me/593988888888?text=Hola%2C%20quisiera%20postular%20mi%20restaurante%20en%20Qu%C3%A9%20Comer%20en%20Loja"
+              href="https://wa.me/593986962872?text=Hola%2C%20quisiera%20postular%20mi%20restaurante%20en%20Qu%C3%A9%20Comer%20en%20Loja"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl bg-petroleo px-6 py-3.5 text-xs font-bold text-white transition hover:bg-[#0E2E2E] shadow-md"
@@ -372,7 +372,7 @@ export default async function Home() {
             </div>
             <div className="mt-6 flex flex-shrink-0 gap-3 md:mt-0">
               <a
-                href="https://wa.me/593988888888?text=Hola%2C%20deseo%20conocer%20planes%20y%20beneficios%20para%20mi%20restaurante"
+                href="https://wa.me/593986962872?text=Hola%2C%20deseo%20conocer%20planes%20y%20beneficios%20para%20mi%20restaurante"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl bg-citrico px-6 py-3.5 text-xs font-bold text-petroleo transition hover:brightness-110 shadow-md"

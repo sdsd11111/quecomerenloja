@@ -207,6 +207,18 @@ export function Header() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/formulario"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-bold text-petroleo bg-citrico/20 transition hover:bg-citrico/40"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>🍽️</span> Hazte aliado
+                  </span>
+                  <span className="text-petroleo text-xs">→</span>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -214,7 +226,7 @@ export function Header() {
         {/* Footer del Drawer */}
         <div className="border-t border-niebla/60 bg-porcelana/40 p-6 space-y-3">
           <a
-            href="https://wa.me/593988888888?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20Qu%C3%A9%20Comer%20en%20Loja"
+            href="https://wa.me/593986962872?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20Qu%C3%A9%20Comer%20en%20Loja"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}

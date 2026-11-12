@@ -496,6 +496,14 @@ export default function AdminPage() {
             <span>🤖</span>
             <span>Bot WhatsApp</span>
           </button>
+
+          <Link
+            href="/admin/solicitudes"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
+          >
+            <span>📨</span>
+            <span>Solicitudes de alta</span>
+          </Link>
         </div>
 
         {/* CONTENIDO DE LA PESTAÑA 1: ALIADOS GASTRONÓMICOS */}

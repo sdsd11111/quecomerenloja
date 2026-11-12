@@ -49,6 +49,11 @@ git pull origin main
 echo "Reconstruyendo contenedor Docker en puerto 3006..."
 docker compose up -d --build
 docker ps --filter "name=$containerName"
+
+echo "Limpiando caché de builds antigua (evita que el disco del VPS se llene)..."
+docker builder prune -f --filter "until=168h" 2>&1 | tail -2
+echo "Disco tras la limpieza:"
+df -h / | tail -1
 "@
 & ssh -i $keyDst -o StrictHostKeyChecking=no $vpsHost $deployCmd
 

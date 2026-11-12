@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es-EC">
+<head>
+<meta charset="utf-8">
+<title>Cotización COT-2026-001 · Ing. Mauricio — Qué Comer en Loja</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  ============================================================
+  PLANTILLA DE COTIZACIÓN — QUÉ COMER EN LOJA
+  ------------------------------------------------------------
+  Cómo usarla:
+  1. Duplica este archivo y renómbralo (ej. COT-2026-001.html).
+  2. Cambia los textos entre [corchetes] y los ítems de la tabla.
+  3. Genera el PDF con:  .\generar-pdf.ps1 .\COT-2026-001.html
+     (o abre el HTML en Chrome > Imprimir > Guardar como PDF)
+  Los totales, el IVA y el valor en letras se calculan solos.
+  ============================================================
+-->
+
+<style>
+  /* ── FUENTES DE MARCA (autoalojadas, sin depender de internet) ── */
+  @font-face {
+    font-family: "League Spartan";
+    src: url("assets/fonts/league-spartan.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("assets/fonts/jakarta.woff2") format("woff2");
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("assets/fonts/jakarta-italic.woff2") format("woff2");
+    font-weight: 200 800;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* ── TOKENS DE MARCA ── */
+  :root {
+    --petroleo: #153E3E;
+    --petroleo-oscuro: #0E2E2E;
+    --petroleo-medio: #1F5252;
+    --citrico: #D0DB61;
+    --grafito: #1F2928;
+    --porcelana: #F5F6F1;
+    --niebla: #DCE4E0;
+    --muted: #5C7270;
+    --blanco: #FFFFFF;
+    --rojo: #8B3A2A;
+
+    --fuente-titulo: "League Spartan", Georgia, serif;
+    --fuente-texto: "Plus Jakarta Sans", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--fuente-texto);
+    color: var(--grafito);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     ESTRUCTURA DE PÁGINA
+     Una tabla con thead/tfoot: Chrome repite cabecera y pie
+     automáticamente en cada página al imprimir.
+     ══════════════════════════════════════════════════════════ */
+  table.pagina {
+    width: 210mm;
+    height: 297mm;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: var(--blanco);
+  }
+  table.pagina > thead > tr > td,
+  table.pagina > tfoot > tr > td,
+  table.pagina > tbody > tr > td { padding: 0; }
+  .celda-cuerpo { vertical-align: top; }
+
+  /* ══════════════════════════════════════════════════════════
+     CABECERA
+     ══════════════════════════════════════════════════════════ */
+  .doc-header {
+    position: relative;
+    height: 33mm;
+    background: var(--petroleo);
+    color: var(--blanco);
+    overflow: hidden;
+    padding: 8mm 15mm 0;
+  }
+  /* Textura andina sutil, como en el hero del sitio */
+  .doc-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 22px, var(--citrico) 23px 24px, transparent 25px 47px),
+      repeating-linear-gradient(-45deg, transparent 0 22px, var(--citrico) 23px 24px, transparent 25px 47px);
+  }
+  .doc-header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 88% 0%, rgba(31,82,82,.9) 0, transparent 62%);
+  }
+  .hdr-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8mm;
+  }
+  .hdr-brand { display: flex; flex-direction: column; gap: 2.4mm; }
+  .hdr-logo { width: 56mm; height: auto; display: block; }
+  .hdr-descriptor {
+    font-size: 6.6pt;
+    font-weight: 600;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+    color: rgba(245,246,241,.66);
+    padding-left: .4mm;
+  }
+  .hdr-doc { text-align: right; flex-shrink: 0; padding-top: .5mm; }
+  .hdr-kicker {
+    display: inline-block;
+    font-size: 6.4pt;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--citrico);
+    border: .3mm solid rgba(208,219,97,.4);
+    border-radius: 99px;
+    padding: 1mm 2.8mm;
+    margin-bottom: 2.4mm;
+  }
+  .hdr-title {
+    font-family: var(--fuente-titulo);
+    font-size: 22pt;
+    font-weight: 800;
+    letter-spacing: .04em;
+    line-height: .95;
+    margin: 0;
+    color: var(--blanco);
+  }
+  .hdr-number {
+    margin: 2mm 0 0;
+    font-size: 7.6pt;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: rgba(245,246,241,.7);
+  }
+  .hdr-number strong { color: var(--citrico); font-weight: 700; letter-spacing: .05em; }
+  .hdr-rule {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1.6mm;
+    background: var(--citrico);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CUERPO
+     ══════════════════════════════════════════════════════════ */
+  .doc-body { padding: 6mm 15mm 2mm; font-size: 8.6pt; }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1.06fr .94fr;
+    gap: 4.5mm;
+    align-items: stretch;
+  }
+  .card {
+    border-radius: 3mm;
+    padding: 4mm 5mm;
+    min-height: 29mm;
+  }
+  .card--cliente {
+    background: var(--blanco);
+    border: .3mm solid var(--niebla);
+    border-left: 1.3mm solid var(--petroleo);
+  }
+  .card--detalles { background: var(--porcelana); border: .3mm solid var(--niebla); }
+
+  .card-label {
+    font-size: 6.4pt;
+    font-weight: 800;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 2.2mm;
+    display: flex;
+    align-items: center;
+    gap: 1.6mm;
+  }
+  .card-label::before {
+    content: "";
+    width: 1.7mm; height: 1.7mm;
+    background: var(--citrico);
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .cliente-nombre {
+    font-family: var(--fuente-titulo);
+    font-size: 11.5pt;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1.15;
+    margin: 0 0 1mm;
+    color: var(--petroleo);
+  }
+  .cliente-linea {
+    font-size: 7.7pt;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+  }
+  .cliente-linea strong { color: var(--grafito); font-weight: 600; }
+
+  .detalle-lista { display: grid; gap: 1.1mm; }
+  .detalle-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 3mm;
+    font-size: 7.7pt;
+    line-height: 1.4;
+  }
+  .detalle-fila span { color: var(--muted); white-space: nowrap; }
+  .detalle-fila strong { color: var(--grafito); font-weight: 700; text-align: right; }
+
+  .intro {
+    font-size: 8.2pt;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 3mm 0 0;
+    max-width: 168mm;
+  }
+  .intro strong { color: var(--petroleo); font-weight: 700; }
+
+  /* ── TABLA DE ÍTEMS ── */
+  .seccion-titulo {
+    font-family: var(--fuente-titulo);
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--petroleo);
+    margin: 4mm 0 2mm;
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+  }
+  .seccion-titulo::after {
+    content: "";
+    flex: 1;
+    height: .3mm;
+    background: var(--niebla);
+  }
+
+  table.items {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.3pt;
+  }
+  table.items thead th {
+    background: var(--petroleo);
+    color: var(--blanco);
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 2.4mm 3mm;
+    border: none;
+  }
+  table.items thead th:first-child { border-radius: 1.8mm 0 0 1.8mm; }
+  table.items thead th:last-child  { border-radius: 0 1.8mm 1.8mm 0; }
+  table.items th.num, table.items td.num { text-align: right; }
+  table.items th.cant, table.items td.cant { text-align: center; }
+
+  table.items tbody td {
+    padding: 2mm 3mm;
+    border-bottom: .3mm solid var(--niebla);
+    vertical-align: top;
+  }
+  table.items tbody tr:nth-child(even) td { background: #FAFBF8; }
+  table.items tbody tr:last-child td { border-bottom: .45mm solid var(--niebla); }
+
+  .item-nombre {
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--grafito);
+    line-height: 1.3;
+    display: block;
+  }
+  .item-detalle {
+    font-size: 7.4pt;
+    line-height: 1.4;
+    color: var(--muted);
+    display: block;
+    margin-top: .8mm;
+    max-width: 104mm;
+  }
+  .item-etiqueta {
+    display: inline-block;
+    font-size: 6.7pt;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--petroleo);
+    background: #EAF0E7;
+    border-radius: 99px;
+    padding: .5mm 1.9mm;
+    margin-top: 1.2mm;
+  }
+  .mono { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+
+  /* ── TOTALES ── */
+  .cierre {
+    display: grid;
+    grid-template-columns: 1fr 80mm;
+    gap: 7mm;
+    margin-top: 2.5mm;
+    align-items: start;
+  }
+  .letras {
+    font-size: 7.4pt;
+    line-height: 1.5;
+    color: var(--muted);
+    background: var(--porcelana);
+    border: .3mm solid var(--niebla);
+    border-radius: 2.2mm;
+    padding: 3.2mm 3.8mm;
+  }
+  .letras span {
+    display: block;
+    font-size: 6.2pt;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.1mm;
+  }
+  .letras strong {
+    font-size: 7.8pt;
+    font-weight: 700;
+    color: var(--petroleo);
+    line-height: 1.45;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+
+  .totales { display: grid; gap: 0; }
+  .total-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1.5mm 0;
+    font-size: 8.3pt;
+    border-bottom: .3mm solid var(--niebla);
+  }
+  .total-fila span { color: var(--muted); }
+  .total-fila strong { font-weight: 600; color: var(--grafito); }
+  .total-fila--desc strong { color: var(--petroleo); }
+  .total-caja {
+    margin-top: 2.2mm;
+    background: var(--petroleo);
+    color: var(--blanco);
+    border-radius: 2.4mm;
+    padding: 3.6mm 4.2mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3mm;
+  }
+  .total-caja .etq {
+    font-size: 6.8pt;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(245,246,241,.82);
+  }
+  .total-caja .etq small {
+    display: block;
+    font-size: 6.7pt;
+    letter-spacing: .1em;
+    font-weight: 600;
+    color: rgba(245,246,241,.55);
+    margin-top: .7mm;
+  }
+  .total-caja .monto {
+    font-family: var(--fuente-titulo);
+    font-size: 17pt;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--citrico);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ── CONDICIONES ── */
+  .condiciones {
+    margin-top: 4mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4.5mm 6.5mm;
+    border-top: .3mm solid var(--niebla);
+    padding-top: 3mm;
+  }
+  .cond-titulo {
+    font-size: 6.5pt;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--petroleo);
+    margin: 0 0 1.6mm;
+  }
+  .cond-lista { margin: 0; padding: 0; list-style: none; }
+  .cond-lista li {
+    font-size: 7.7pt;
+    line-height: 1.45;
+    color: var(--muted);
+    padding-left: 3mm;
+    position: relative;
+    margin-bottom: 1mm;
+  }
+  .cond-lista li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 1.4mm;
+    width: 1.3mm; height: 1.3mm;
+    border-radius: 50%;
+    background: var(--citrico);
+  }
+  .cond-lista strong { color: var(--grafito); font-weight: 700; }
+
+  /* ── FIRMAS ── */
+  .firmas {
+    margin-top: 6mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18mm;
+  }
+  .firma-linea {
+    border-top: .35mm solid var(--petroleo);
+    padding-top: 1.5mm;
+  }
+  .firma-rol {
+    font-size: 6.2pt;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: .7mm;
+  }
+  .firma-nombre {
+    font-size: 8.3pt;
+    font-weight: 700;
+    color: var(--grafito);
+    line-height: 1.35;
+  }
+  .firma-dato {
+    font-size: 7pt;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .gracias {
+    margin: 4.5mm 0 0;
+    text-align: center;
+    font-size: 8.4pt;
+    font-style: italic;
+    color: var(--petroleo);
+    letter-spacing: .01em;
+  }
+  .gracias strong { font-style: normal; }
+
+  /* ══════════════════════════════════════════════════════════
+     PIE DE PÁGINA
+     ══════════════════════════════════════════════════════════ */
+  .doc-footer { background: var(--porcelana); height: 24mm; }
+  .ftr-rule { height: 1.2mm; background: var(--citrico); }
+  .ftr-inner {
+    height: 16.2mm;
+    padding: 0 15mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6mm;
+    border-top: .3mm solid var(--niebla);
+  }
+  .ftr-marca { display: flex; align-items: center; gap: 2.4mm; }
+  .ftr-simbolo {
+    width: 6.6mm; height: 6.6mm;
+    border-radius: 1.8mm;
+    background: var(--petroleo);
+    padding: 1.3mm;
+    flex-shrink: 0;
+  }
+  .ftr-simbolo img { width: 100%; height: 100%; display: block; }
+  .ftr-nombre {
+    font-family: var(--fuente-titulo);
+    font-size: 7.8pt;
+    font-weight: 700;
+    color: var(--petroleo);
+    line-height: 1.15;
+  }
+  .ftr-lema {
+    font-size: 6pt;
+    letter-spacing: .05em;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .ftr-contacto {
+    display: flex;
+    gap: 2.6mm;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 6.6pt;
+    color: var(--muted);
+  }
+  .ftr-contacto span { white-space: nowrap; }
+  .ftr-contacto .punto {
+    width: .9mm; height: .9mm;
+    border-radius: 50%;
+    background: var(--citrico);
+    display: inline-block;
+  }
+  .ftr-lugar {
+    font-size: 6.6pt;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--petroleo);
+    white-space: nowrap;
+  }
+  .ftr-legal {
+    height: 6.6mm;
+    margin: 0 15mm;
+    padding-top: 1.8mm;
+    font-size: 6pt;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 6mm;
+    border-top: .3mm dotted var(--niebla);
+  }
+
+
+  /* ══════════════════════════════════════════════════════════
+     BLOQUES DE LA COTIZACIÓN
+     ══════════════════════════════════════════════════════════ */
+  /* Incluye */
+  .incluye-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2mm 6mm;
+    margin-top: 1mm;
+  }
+  .incluye {
+    display: flex;
+    gap: 2.4mm;
+    align-items: flex-start;
+    font-size: 7.7pt;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .incluye strong { color: var(--grafito); font-weight: 700; }
+  .check {
+    width: 4.6mm; height: 4.6mm;
+    border-radius: 50%;
+    background: #EAF0E7;
+    color: var(--petroleo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6.6pt;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: .1mm;
+  }
+
+  /* Módulo opcional */
+  .opcional {
+    margin-top: 4mm;
+    display: grid;
+    grid-template-columns: 1fr 36mm;
+    gap: 5mm;
+    align-items: center;
+    background: var(--porcelana);
+    border: .3mm solid var(--niebla);
+    border-left: 1.2mm solid var(--citrico);
+    border-radius: 2.6mm;
+    padding: 3.6mm 4.6mm;
+  }
+  .opcional-etq {
+    font-size: 6.2pt;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 1.2mm;
+  }
+  .opcional h4 {
+    font-family: var(--fuente-titulo);
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    color: var(--petroleo);
+    margin: 0 0 1.2mm;
+  }
+  .opcional p { font-size: 7.5pt; line-height: 1.5; color: var(--muted); margin: 0; }
+  .opcional-precio {
+    text-align: right;
+    border-left: .3mm solid var(--niebla);
+    padding-left: 4mm;
+  }
+  .opcional-precio strong {
+    font-family: var(--fuente-titulo);
+    font-size: 17pt;
+    font-weight: 800;
+    color: var(--petroleo);
+    display: block;
+    line-height: 1;
+  }
+  .opcional-precio span {
+    display: block;
+    margin-top: 1.4mm;
+    font-size: 6.2pt;
+    line-height: 1.45;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  /* Pasos */
+  .pasos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5mm;
+    margin-top: 1mm;
+  }
+  .paso { border-top: .4mm solid var(--niebla); padding-top: 2.6mm; }
+  .paso-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 6.4mm; height: 6.4mm;
+    border-radius: 50%;
+    background: var(--petroleo);
+    color: var(--citrico);
+    font-family: var(--fuente-titulo);
+    font-size: 9pt;
+    font-weight: 700;
+    margin-bottom: 1.6mm;
+  }
+  .paso-titulo { font-size: 8.8pt; font-weight: 700; color: var(--grafito); margin: 0 0 .8mm; line-height: 1.3; }
+  .paso-texto { font-size: 7.5pt; line-height: 1.5; color: var(--muted); margin: 0; }
+
+  /* Reparto de tareas */
+  .reparto { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+
+  /* Condiciones en dos columnas sin línea superior */
+  .condiciones--amplias {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+    gap: 4mm 7mm;
+  }
+
+  /* Próximos pasos */
+  .pasos-lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: paso;
+    display: grid;
+    gap: 2mm;
+  }
+  .pasos-lista li {
+    counter-increment: paso;
+    position: relative;
+    padding-left: 8mm;
+    font-size: 7.8pt;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .pasos-lista li::before {
+    content: counter(paso);
+    position: absolute;
+    left: 0;
+    top: -.2mm;
+    width: 5.4mm; height: 5.4mm;
+    border-radius: 50%;
+    background: #EAF0E7;
+    color: var(--petroleo);
+    font-size: 6.8pt;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pasos-lista strong { color: var(--grafito); font-weight: 700; }
+
+  /* Cierre */
+  .cierre-cta {
+    margin-top: 7mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6mm;
+    background: var(--petroleo);
+    color: var(--blanco);
+    border-radius: 3mm;
+    padding: 4.2mm 5.4mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cierre-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .08;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 18px, var(--citrico) 19px 20px, transparent 21px 39px);
+  }
+  .cierre-cta > div { position: relative; z-index: 1; }
+  .cierre-cta-etq {
+    font-size: 6.4pt;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--citrico);
+    font-weight: 800;
+    display: block;
+    margin-bottom: 1mm;
+  }
+  .cierre-cta p {
+    margin: 0;
+    font-size: 8.4pt;
+    line-height: 1.4;
+    color: rgba(245,246,241,.85);
+    max-width: 100mm;
+  }
+  .cierre-cta-datos { text-align: right; flex-shrink: 0; }
+  .cierre-cta-datos strong {
+    display: block;
+    font-family: var(--fuente-titulo);
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--blanco);
+    line-height: 1.2;
+  }
+  .cierre-cta-datos span { font-size: 7pt; color: var(--citrico); }
+
+  /* Salto de página */
+  .salto-pagina { height: 0; }
+
+  /* ══════════════════════════════════════════════════════════
+     IMPRESIÓN / PDF
+     ══════════════════════════════════════════════════════════ */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  @media print {
+    html, body { background: var(--blanco); }
+    .hoja { width: 210mm; }
+    table.pagina { height: 297mm; }
+    .meta-grid, .cierre, .condiciones, .firmas,
+    table.items tr, .letras, .total-caja { break-inside: avoid; }
+    .seccion-titulo { break-after: avoid; }
+    .gracias { break-inside: avoid; }
+    .doc-header, .doc-footer { break-inside: avoid; }
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     VISTA EN PANTALLA (previsualización tipo hoja)
+     ══════════════════════════════════════════════════════════ */
+  @media screen {
+    body {
+      background: #E7EBE7;
+      padding: 28px 12px 56px;
+    }
+    .hoja {
+      width: 210mm;
+      max-width: 100%;
+      margin: 0 auto;
+      box-shadow: 0 18px 50px rgba(21,62,62,.18), 0 2px 6px rgba(21,62,62,.08);
+    }
+  }
+
+  /* Dos hojas explícitas */
+  @media print {
+    table.pagina + table.pagina { break-before: page; }
+  }
+  @media screen {
+    .hoja { box-shadow: none; }
+    table.pagina {
+      box-shadow: 0 18px 50px rgba(21,62,62,.18), 0 2px 6px rgba(21,62,62,.08);
+    }
+    table.pagina + table.pagina { margin-top: 26px; }
+  }
+  .pagina-2 .doc-body > .seccion-titulo:first-child { margin-top: 0; }
+  .pagina-2 .doc-body > .seccion-titulo { margin-top: 6.5mm; }
+  .pagina-2 .cierre-cta { margin-top: 5mm; }
+  .pagina-2 .firmas { margin-top: 15mm; }
+  .pagina-2 .cond-lista li { line-height: 1.42; font-size: 8.1pt; }
+  .pagina-2 .gracias { margin-top: 5mm; }
+
+  /* Bloque del formulario */
+  .formulario-cta {
+    display: grid;
+    grid-template-columns: 1fr 62mm;
+    gap: 6mm;
+    align-items: center;
+    background: var(--porcelana);
+    border: .3mm solid var(--niebla);
+    border-left: 1.2mm solid var(--citrico);
+    border-radius: 2.6mm;
+    padding: 3.6mm 4.4mm;
+  }
+  .formulario-cta-etq {
+    display: block;
+    font-size: 6.2pt;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.1mm;
+  }
+  .formulario-cta p {
+    margin: 0;
+    font-size: 9pt;
+    line-height: 1.45;
+    color: var(--grafito);
+    max-width: 92mm;
+  }
+  .formulario-cta-link {
+    text-align: right;
+    border-left: .3mm solid var(--niebla);
+    padding-left: 4mm;
+  }
+  .formulario-cta-link strong {
+    display: block;
+    font-family: var(--fuente-titulo);
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: var(--petroleo);
+    line-height: 1.25;
+  }
+  .formulario-cta-link span {
+    display: block;
+    margin-top: 1mm;
+    font-size: 6.4pt;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Nota y lista de datos */
+  .nota-seccion {
+    margin: 0 0 2mm;
+    font-size: 8.2pt;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .nota-seccion strong { color: var(--petroleo); }
+  .nota-sub {
+    margin: 1mm 0 1.6mm;
+    font-size: 6.4pt;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lista-datos { columns: 2; column-gap: 10mm; }
+  .lista-datos li { break-inside: avoid; margin-bottom: 1.2mm; }
+  .nota-precio {
+    margin: 1.6mm 0 0;
+    text-align: right;
+    font-size: 6.9pt;
+    color: var(--muted);
+  }
+  .pagina-2 .cond-lista li { margin-bottom: 1.2mm; }
+  .pagina-2 .lista-datos li { margin-bottom: 2mm; }
+  .pagina-2 .pasos-lista { gap: 1.4mm; }
+  .pagina-2 table.pagina tbody td.celda-cuerpo { padding-bottom: 0; }
+</style>
+</head>
+
+<body>
+<div class="hoja">
+<table class="pagina">
+<thead>
+    <tr>
+      <td>
+        <header class="doc-header">
+          <div class="hdr-inner">
+            <div class="hdr-brand">
+              <img class="hdr-logo" src="assets/logo-horizontal-inverso-recorte.svg" alt="Qué Comer en Loja">
+            </div>
+
+            <div class="hdr-doc">
+              <span class="hdr-kicker">Propuesta comercial</span>
+              <h1 class="hdr-title">COTIZACIÓN</h1>
+              <p class="hdr-number">N.º <strong>COT-2026-001</strong></p>
+            </div>
+          </div>
+          <div class="hdr-rule"></div>
+        </header>
+      </td>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>
+        <footer class="doc-footer">
+          <div class="ftr-rule"></div>
+          <div class="ftr-inner">
+            <div class="ftr-marca">
+              <div class="ftr-simbolo"><img src="assets/simbolo-inverso.svg" alt=""></div>
+              <div>
+                <div class="ftr-nombre">Qué Comer en Loja</div>
+                <div class="ftr-lema">La ruta gastronómica de Loja, en tu bolsillo</div>
+              </div>
+            </div>
+
+            <div class="ftr-contacto">
+              <span>quecomerenloja.com</span>
+              <span class="punto"></span>
+              <span>WhatsApp +593 98 696 2872</span>
+            </div>
+
+            <div class="ftr-lugar">Loja — Ecuador</div>
+          </div>
+          <div class="ftr-legal">
+            <span>Documento electrónico emitido por Qué Comer en Loja. Válido como cotización, no como factura.</span>
+            <span>COT-2026-001</span>
+          </div>
+        </footer>
+      </td>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr>
+      <td class="celda-cuerpo">
+        <main class="doc-body">
+          <section class="meta-grid">
+            <!-- Cliente -->
+            <div class="card card--cliente">
+              <p class="card-label">Preparado para</p>
+              <h2 class="cliente-nombre">Ing. Mauricio Pardo</h2>
+              <p class="cliente-linea"><strong>Restaurante:</strong> Chimichurri Fast Food</p>
+              <p class="cliente-linea"><strong>Propietario:</strong> José Mauricio Pardo Acaro</p>
+              <p class="cliente-linea"><strong>Dirección:</strong> Calles Zoilo Rodríguez y 24 de Mayo, Loja</p>
+              <p class="cliente-linea"><strong>Contacto:</strong> +593 98 422 2336 · chefmauriciopardo@gmail.com</p>
+              <p class="cliente-linea"><strong>Secundario:</strong> +593 97 933 2245 · mpardoacaro@gmail.com</p>
+            </div>
+
+            <!-- Detalles -->
+            <div class="card card--detalles">
+              <p class="card-label">Detalles</p>
+              <div class="detalle-lista">
+                <div class="detalle-fila"><span>Fecha de emisión</span><strong>11 de noviembre de 2026</strong></div>
+                <div class="detalle-fila"><span>Válida hasta</span><strong>12 de diciembre de 2026</strong></div>
+                <div class="detalle-fila"><span>Plan</span><strong>Piloto de lanzamiento</strong></div>
+                <div class="detalle-fila"><span>Facturación</span><strong>Mensual · sin permanencia</strong></div>
+              </div>
+            </div>
+          </section>
+
+          <p class="intro">
+            Ing. Mauricio, gracias por el tiempo en nuestra conversación. Esta propuesta resume
+            el plan que le comenté para Chimichurri Fast Food: que su restaurante aparezca
+            cuando alguien busca un plato o un antojo en Loja, y que su menú del día se
+            publique sin que usted tenga que llenar formularios. <strong>La ficha, la carta y la
+            publicación las hacemos nosotros;</strong> usted solo nos envía la foto del menú por
+            WhatsApp.
+          </p>
+
+          <!-- ── Plan ── -->
+          <h3 class="seccion-titulo">Plan recomendado</h3>
+
+          <table class="items">
+            <thead>
+              <tr>
+                <th style="width:7%">#</th>
+                <th>Servicio</th>
+                <th class="cant" style="width:11%">Cant.</th>
+                <th class="num" style="width:18%">P. unitario</th>
+                <th class="num" style="width:18%">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-cant="1" data-cant-label="1 mes" data-precio="10.00">
+                <td class="mono">01</td>
+                <td>
+                  <span class="item-nombre">Plan Piloto de Lanzamiento — Restaurante</span>
+                  <span class="item-detalle">Ficha del restaurante creada por nosotros, publicación diaria del menú, búsqueda por plato o ingrediente, botones de WhatsApp, mapa y pedidos, y sello de negocio verificado.</span>
+                </td>
+                <td class="cant mono">1 mes</td>
+                <td class="num mono">$ 10,00</td>
+                <td class="num mono line-total">$ 10,00</td>
+              </tr>
+              <tr data-cant="1" data-precio="0">
+                <td class="mono">02</td>
+                <td>
+                  <span class="item-nombre">Alta y configuración inicial</span>
+                  <span class="item-detalle">Creamos su ficha desde cero, cargamos la carta y los platos, y configuramos horarios, ubicación, fotos y enlaces.</span>
+                  <span class="item-etiqueta">Incluido en el plan · sin costo de alta</span>
+                </td>
+                <td class="cant mono">1</td>
+                <td class="num mono">$ 0,00</td>
+                <td class="num mono line-total">$ 0,00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="nota-precio">Los precios de la tabla no incluyen IVA; el IVA se añade y se desglosa en el resumen de abajo.</p>
+
+          <!-- ── Totales ── -->
+          <section class="cierre">
+            <div class="letras">
+              <span>Valor en letras</span>
+              <strong id="valor-letras">SON: ONCE DÓLARES CON 50/100</strong>
+            </div>
+
+            <div class="totales" data-descuento="0.00" data-iva="15">
+              <div class="total-fila"><span>Servicio mensual (sin IVA)</span><strong class="mono" id="subtotal">$ 10,00</strong></div>
+              <div class="total-fila"><span>IVA 15%</span><strong class="mono" id="iva">$ 1,50</strong></div>
+              <div class="total-fila"><span>Alta y configuración</span><strong>Incluida</strong></div>
+              <div class="total-caja">
+                <span class="etq">Total primer mes<small>USD · con IVA 15%</small></span>
+                <span class="monto" id="total">$ 11,50</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ── Incluye ── -->
+          <h3 class="seccion-titulo">Todo esto está incluido</h3>
+          <div class="incluye-grid">
+            <div class="incluye"><span class="check">✓</span><span><strong>Ficha completa creada por nosotros.</strong> Nombre, descripción, horarios, ubicación y fotos de su restaurante.</span></div>
+            <div class="incluye"><span class="check">✓</span><span><strong>Carga de su carta y sus platos.</strong> Usted envía la carta una vez; nosotros la dejamos lista.</span></div>
+            <div class="incluye"><span class="check">✓</span><span><strong>Menú del día publicado todos los días.</strong> Solo envíe la foto del menú por WhatsApp.</span></div>
+            <div class="incluye"><span class="check">✓</span><span><strong>Búsquedas por plato.</strong> Puede aparecer cuando alguien busca «arroz con menestra», «cecina» o su especialidad.</span></div>
+            <div class="incluye"><span class="check">✓</span><span><strong>WhatsApp, mapa y pedidos.</strong> Un botón directo para que el cliente le escriba, sin intermediarios ni comisiones por pedido.</span></div>
+            <div class="incluye"><span class="check">✓</span><span><strong>Sello de negocio verificado.</strong> Revisamos la ficha y la marcamos como verificada antes de publicarla.</span></div>
+          </div>
+
+          <!-- ── Opcional ── -->
+          <div class="opcional">
+            <div>
+              <span class="opcional-etq">Opcional · para restaurantes sin página web</span>
+              <h4>Página web propia con dominio .com</h4>
+              <p>Dominio a su nombre por un año, hosting incluido y el menú siempre actualizado. Incluye un módulo que invita a todos sus clientes a dejar su opinión. Entrega en 10 días hábiles, con 2 rondas de ajustes.</p>
+            </div>
+            <div class="opcional-precio">
+              <strong>$ 200</strong>
+              <span>Pago único<br>Más IVA 15% ($ 230)<br>No incluido en el total</span>
+            </div>
+          </div>
+
+          <!-- ══════════ SALTO DE PÁGINA ══════════ -->
+          </main>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="pagina pagina-2">
+<thead>
+    <tr>
+      <td>
+        <header class="doc-header">
+          <div class="hdr-inner">
+            <div class="hdr-brand">
+              <img class="hdr-logo" src="assets/logo-horizontal-inverso-recorte.svg" alt="Qué Comer en Loja">
+            </div>
+
+            <div class="hdr-doc">
+              <span class="hdr-kicker">Propuesta comercial</span>
+              <h1 class="hdr-title">COTIZACIÓN</h1>
+              <p class="hdr-number">N.º <strong>COT-2026-001</strong></p>
+            </div>
+          </div>
+          <div class="hdr-rule"></div>
+        </header>
+      </td>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>
+        <footer class="doc-footer">
+          <div class="ftr-rule"></div>
+          <div class="ftr-inner">
+            <div class="ftr-marca">
+              <div class="ftr-simbolo"><img src="assets/simbolo-inverso.svg" alt=""></div>
+              <div>
+                <div class="ftr-nombre">Qué Comer en Loja</div>
+                <div class="ftr-lema">La ruta gastronómica de Loja, en tu bolsillo</div>
+              </div>
+            </div>
+
+            <div class="ftr-contacto">
+              <span>quecomerenloja.com</span>
+              <span class="punto"></span>
+              <span>WhatsApp +593 98 696 2872</span>
+            </div>
+
+            <div class="ftr-lugar">Loja — Ecuador</div>
+          </div>
+          <div class="ftr-legal">
+            <span>Documento electrónico emitido por Qué Comer en Loja. Válido como cotización, no como factura.</span>
+            <span>COT-2026-001</span>
+          </div>
+        </footer>
+      </td>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr>
+      <td class="celda-cuerpo">
+        <main class="doc-body">
+
+          <!-- ── Lo que necesitamos ── -->
+          <h3 class="seccion-titulo">Lo que necesitamos de usted</h3>
+          <div class="formulario-cta">
+            <div>
+              <span class="formulario-cta-etq">Un solo paso</span>
+              <p>Llene el formulario de alta: nosotros creamos su ficha, cargamos su carta y publicamos su menú.</p>
+            </div>
+            <div class="formulario-cta-link">
+              <strong>quecomerenloja.com/formulario</strong>
+              <span>o escríbanos por WhatsApp</span>
+            </div>
+          </div>
+
+          <!-- ── Condiciones ── -->
+          <h3 class="seccion-titulo">Alcance y condiciones</h3>
+          <div class="condiciones condiciones--amplias">
+            <div>
+              <ul class="cond-lista">
+                <li><strong>Precio piloto:</strong> $10/mes más IVA ($11,50) para los primeros 40 restaurantes, mientras la suscripción esté activa.</li>
+                <li><strong>Pago:</strong> transferencia bancaria mensual; al confirmar el cupo le enviamos los datos de la cuenta. El servicio inicia con el primer pago.</li>
+                <li><strong>Facturación:</strong> mensual y sin permanencia. Puede cancelar avisando con 15 días de anticipación.</li>
+                <li><strong>Actualizaciones:</strong> el plan cubre el menú diario y los cambios de precios u horarios.</li>
+                <li><strong>Publicidad:</strong> no incluye pauta en Google Ads ni en redes sociales; si la necesita, se cotiza aparte.</li>
+              </ul>
+            </div>
+            <div>
+              <ul class="cond-lista">
+                <li><strong>Web opcional ($200 + IVA):</strong> dominio .com a nombre del restaurante por 1 año, hosting por 1 año, menú y módulo de opiniones, entrega en 10 días hábiles y 2 rondas de ajustes. Con IVA 15%: $230. La renovación anual se cobra al costo.</li>
+                <li><strong>Opiniones:</strong> el módulo invita a todos los clientes por igual, sin condicionar la calificación. Cada cliente decide si publica su reseña en Google, conforme a las políticas de Google.</li>
+                <li><strong>Aprobación:</strong> todo contenido se aprueba por WhatsApp antes de publicarse.</li>
+                <li><strong>Responsabilidad:</strong> el restaurante garantiza que precios, horarios y fotos sean exactos, y nos avisa de cualquier cambio.</li>
+                <li><strong>Resultados:</strong> trabajamos la ficha y el contenido para mejorar la visibilidad. No garantizamos una posición específica en Google ni en asistentes de IA: el resultado también depende de la competencia, las reseñas y cada buscador.</li>
+                <li><strong>Impuestos:</strong> precios en USD sin IVA; se añade el 15%. Si necesita factura, emitimos comprobante electrónico.</li>
+                <li><strong>Alcance adicional:</strong> cualquier servicio no descrito en esta cotización se cotiza por separado.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- ── Próximos pasos ── -->
+          <h3 class="seccion-titulo">Próximos pasos</h3>
+          <ol class="pasos-lista">
+            <li><strong>Confirme el plan.</strong> Un mensaje por WhatsApp es suficiente para reservar su cupo del piloto.</li>
+            <li><strong>Envíenos los datos y la carta.</strong> Publicamos su ficha en un plazo de 48 horas.</li>
+            <li><strong>Empiece a enviar el menú del día.</strong> Nosotros lo publicamos y los clientes pueden contactarlo.</li>
+          </ol>
+
+          <!-- ── Cierre ── -->
+          <div class="cierre-cta">
+            <div>
+              <span class="cierre-cta-etq">¿Empezamos?</span>
+              <p>El plan piloto es para 40 restaurantes. Reserve su cupo, llene el formulario y publiquemos Chimichurri Fast Food.</p>
+            </div>
+            <div class="cierre-cta-datos">
+              <strong>quecomerenloja.com</strong>
+              <span>WhatsApp +593 98 696 2872</span>
+            </div>
+          </div>
+
+          <!-- ── Firmas ── -->
+          <section class="firmas">
+            <div>
+              <div class="firma-linea">
+                <span class="firma-rol">Elaborado por</span>
+                <div class="firma-nombre">César Reyes</div>
+                <div class="firma-dato">Fundador · Qué Comer en Loja</div>
+              </div>
+            </div>
+            <div>
+              <div class="firma-linea">
+                <span class="firma-rol">Aceptado por</span>
+                <div class="firma-nombre">Ing. Mauricio Pardo</div>
+                <div class="firma-dato">Fecha: ______ / ______ / ____________</div>
+              </div>
+            </div>
+          </section>
+
+          <p class="gracias">Gracias por su tiempo. Hecho con cariño en Loja, Ecuador.</p>
+
+        </main>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<script>
+  /* ─────────────────────────────────────────────────────────
+     Cálculo automático de totales + valor en letras
+     ───────────────────────────────────────────────────────── */
+  (function () {
+    const money = (n) =>
+      "$ " + n.toLocaleString("es-EC", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const setText = (id, texto) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = texto;
+    };
+
+    // Números a letras (español, hasta millones)
+    const UNIDADES = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+    const DECENAS  = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+    const CENTENAS = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+    const ESPECIALES = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
+    const VEINTENAS  = ["veinte", "veintiún", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve"];
+
+    function tramo(n) {
+      if (n === 0) return "";
+      if (n === 100) return "cien";
+      let out = "";
+      const c = Math.floor(n / 100);
+      const resto = n % 100;
+      if (c) out += CENTENAS[c] + " ";
+      if (resto >= 10 && resto < 20) {
+        out += ESPECIALES[resto - 10];
+      } else if (resto >= 20 && resto < 30) {
+        out += VEINTENAS[resto - 20];
+      } else {
+        const d = Math.floor(resto / 10);
+        const u = resto % 10;
+        if (d) out += DECENAS[d];
+        if (u) out += (d ? " y " : "") + UNIDADES[u];
+      }
+      return out.trim().replace(/\s+/g, " ");
+    }
+
+    function letras(numero) {
+      const entero = Math.floor(numero);
+      const centavos = Math.round((numero - entero) * 100);
+      let texto = "";
+
+      const millones = Math.floor(entero / 1000000);
+      const miles = Math.floor((entero % 1000000) / 1000);
+      const resto = entero % 1000;
+
+      if (millones === 1) texto += "un millón ";
+      else if (millones > 1) texto += tramo(millones) + " millones ";
+
+      if (miles === 1) texto += "mil ";
+      else if (miles > 1) texto += tramo(miles) + " mil ";
+
+      if (resto) texto += tramo(resto);
+
+      texto = texto.trim() || "cero";
+      const moneda = entero === 1 ? "DÓLAR" : "DÓLARES";
+      return ("SON: " + texto.toUpperCase() + " " + moneda + " CON " +
+        String(centavos).padStart(2, "0") + "/100").replace(/\s+/g, " ");
+    }
+
+    function calcular() {
+      const filas = document.querySelectorAll("table.items tbody tr");
+      let subtotal = 0;
+
+      filas.forEach((fila) => {
+        const cant = parseFloat(fila.dataset.cant || "0");
+        const precio = parseFloat(fila.dataset.precio || "0");
+        const totalFila = cant * precio;
+        subtotal += totalFila;
+        const celdaTotal = fila.querySelector(".line-total");
+        if (celdaTotal) celdaTotal.textContent = money(totalFila);
+        const celdaCant = fila.querySelector(".cant");
+        if (celdaCant) celdaCant.textContent = fila.dataset.cantLabel || String(cant);
+        const celdaPrecio = fila.querySelectorAll(".num")[0];
+        if (celdaPrecio) celdaPrecio.textContent = money(precio);
+      });
+
+      const caja = document.querySelector(".totales");
+      const descuento = parseFloat(caja.dataset.descuento || "0");
+      const ivaPct = parseFloat(caja.dataset.iva || "15");
+      // Precios de la tabla sin IVA: el IVA se añade encima del subtotal.
+      const base = Math.max(subtotal - descuento, 0);
+      const iva = base * (ivaPct / 100);
+      const total = base + iva;
+
+      setText("subtotal", money(subtotal));
+      setText("descuento", money(descuento));
+      setText("iva", money(iva));
+      setText("total", money(total));
+      setText("valor-letras", letras(total));
+    }
+
+    document.addEventListener("DOMContentLoaded", calcular);
+  })();
+</script>
+</body>
+</html>

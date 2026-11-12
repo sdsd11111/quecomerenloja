@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
+  // Tesseract.js necesita resolverse con `require` nativo: su worker script
+  // usa __dirname y no sobrevive al empaquetado del servidor.
+  serverExternalPackages: ["tesseract.js"],
   images: {
     remotePatterns: [
       {
