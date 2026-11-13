@@ -86,7 +86,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="contenido">{children}</main>
         <Footer />
         <FloatingSearchWidget />
-        <ChatbotWidget origen="quecomerenloja" />
+        <ChatbotWidget
+          origen="quecomerenloja"
+          sessionStorageKey="qcl_chat_session_id"
+          historyStorageKey="qcl_chat_history"
+          iconEmoji="🍽️"
+          btnLabel="¿Qué comer en Loja?"
+          tooltipText="¿Buscas dónde comer en Loja? Pregúntame"
+          headerTitle="¿Qué comer en Loja?"
+          headerSubtitle="Restaurantes, platos típicos y aliados"
+          welcomeMessage="¡Hola! 👋 Pregúntame por platos típicos, restaurantes, cafeterías o dónde comer algo rico en Loja."
+          preguntasSugeridas={[
+            '🍲 ¿Dónde comer repe lojano?',
+            '🥟 ¿Dónde hay tamales en Loja?',
+            '☕ ¿Qué cafeterías me recomiendas?',
+            '💵 ¿Qué platos son económicos?',
+          ]}
+        />
       </LanguageProvider>
       </body>
     </html>

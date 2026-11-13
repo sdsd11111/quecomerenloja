@@ -34,7 +34,7 @@ function tokens(texto: string): string[] {
     .filter((t) => t.length > 3);
 }
 
-async function catalogoActivo(): Promise<{ id: number; slug: string; nombre: string; seccion: string }[]> {
+export async function catalogoActivo(): Promise<{ id: number; slug: string; nombre: string; seccion: string }[]> {
   const pool = getGastroPool();
   const [rows] = await pool.query<RowDataPacket[]>(
     'SELECT id, slug, nombre, seccion FROM platos_catalogo WHERE activo = 1'
@@ -47,7 +47,7 @@ async function catalogoActivo(): Promise<{ id: number; slug: string; nombre: str
   }));
 }
 
-async function asegurarPlatoCatalogo(
+export async function asegurarPlatoCatalogo(
   plato: PlatoBorrador,
   catalogo: { id: number; slug: string; nombre: string; seccion: string }[]
 ): Promise<number | null> {
@@ -293,4 +293,71 @@ export async function publicarSolicitud(
   }
 
   return { aliadoId, platosPublicados, enlacesCreados, avisos };
+}
+
+/**
+ * Vincula los platos de una carta a la ficha del restaurante sin publicar la
+ * solicitud completa: asegura el plato en `platos_catalogo` (o lo reutiliza si
+ * ya existe) y crea el enlace en `plato_restaurantes`, que es lo que hace que
+ * el restaurante aparezca en la página `/platos/<slug>`.
+ *
+ * Se usa desde el editor de aliados del panel: así el mismo OCR que lee la
+ * carta alimenta el catálogo de platos que ya tiene el proyecto.
+ */
+export async function vincularPlatosAliado(opciones: {
+  aliadoId: number;
+  nombreComercial: string;
+  direccion: string;
+  categoria?: string | null;
+  platos: (PlatoBorrador & { slugCatalogo?: string | null })[];
+}): Promise<{
+  enlacesCreados: number;
+  platosEnlazados: { slug: string; nombre: string; platoId: number }[];
+}> {
+  const pool = getGastroPool();
+  const catalogo = await catalogoActivo();
+  const enlazados: { slug: string; nombre: string; platoId: number }[] = [];
+  let enlacesCreados = 0;
+
+  for (const plato of opciones.platos) {
+    // Si el panel ya eligió una página del catálogo, se respeta esa elección.
+    const elegido = plato.slugCatalogo
+      ? catalogo.find((c) => c.slug === plato.slugCatalogo)
+      : undefined;
+
+    const platoId = elegido ? elegido.id : await asegurarPlatoCatalogo(plato, catalogo);
+    if (!platoId) continue;
+
+    const entry = elegido || catalogo.find((c) => c.id === platoId);
+    if (entry) enlazados.push({ slug: entry.slug, nombre: entry.nombre, platoId });
+
+    const [existente] = await pool.query<RowDataPacket[]>(
+      'SELECT id FROM plato_restaurantes WHERE aliado_id = ? AND item_carta = ? LIMIT 1',
+      [opciones.aliadoId, plato.nombre]
+    );
+    if (existente && existente.length > 0) continue;
+
+    await pool.query(
+      `INSERT INTO plato_restaurantes
+        (plato_id, nombre_restaurante, item_carta, descripcion_item, precio_textual,
+         precio_numerico, moneda, categoria_excel, direccion, es_aliado_destacado, aliado_id, createdAt)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())`,
+      [
+        platoId,
+        opciones.nombreComercial,
+        plato.nombre.slice(0, 255),
+        (plato.descripcion || '').slice(0, 1000) || null,
+        plato.precio ? `$${plato.precio.toFixed(2)}` : null,
+        plato.precio ?? null,
+        'USD',
+        (opciones.categoria || 'tradicional').slice(0, 100),
+        opciones.direccion,
+        1,
+        opciones.aliadoId,
+      ]
+    );
+    enlacesCreados += 1;
+  }
+
+  return { enlacesCreados, platosEnlazados: enlazados };
 }

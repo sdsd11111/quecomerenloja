@@ -45,7 +45,7 @@ export const UI_TRANSLATIONS: Record<Locale, Record<string, string>> = {
     "section.eventos_encontrados": "eventos encontrados",
 
     // Chatbot Widget
-    "chat.tooltip": "¿Buscas qué hacer u hospedaje en Loja?",
+    "chat.tooltip": "¿Buscas dónde comer en Loja? Pregúntame",
     "chat.btn_label": "¿Qué hacer en Loja?",
     "chat.title": "¿Qué hacer en Loja?",
     "chat.subtitle": "Turismo, Cartelera Cultural & Aliados",
@@ -230,7 +230,7 @@ export const UI_TRANSLATIONS: Record<Locale, Record<string, string>> = {
     "section.eventos_encontrados": "events found",
 
     // Chatbot Widget
-    "chat.tooltip": "Looking for things to do or lodging in Loja?",
+    "chat.tooltip": "Looking for where to eat in Loja? Ask me",
     "chat.btn_label": "What to do in Loja?",
     "chat.title": "What to do in Loja?",
     "chat.subtitle": "Tourism, Cultural Guide & Partners",

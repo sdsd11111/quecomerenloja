@@ -41,6 +41,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# next start lee la config del disco: sin este archivo las imagenes remotas dan 400
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 USER nextjs
 

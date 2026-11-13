@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { PLATOS } from '@/lib/platos-data';
 import { normalizarMenuTexto, type NormalizacionResultado, type PlatoExtraido } from '@/lib/menu-normalizer';
 import { extractGpsFromGoogleMaps } from '@/lib/maps-extractor';
+import { buscarPlatoEnCatalogo, type PlatoCatalogoResumen } from '@/lib/menu-match';
+import type { PlatoBorrador } from '@/lib/formulario';
 
 export interface AliadoSolicitud {
   folio: string;
@@ -77,6 +79,7 @@ const INITIAL_FORM: AliadoItem = {
 
 export function AdminAliadosSection() {
   const [aliados, setAliados] = useState<AliadoItem[]>([]);
+  const [catalogo, setCatalogo] = useState<PlatoCatalogoResumen[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterTipo, setFilterTipo] = useState<'TODOS' | 'GASTRONOMIA' | 'CAFETERIA'>('TODOS');
   const [search, setSearch] = useState('');
@@ -102,10 +105,11 @@ export function AdminAliadosSection() {
   const fetchAliados = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/aliados');
+      const res = await fetch('/api/admin/aliados', { cache: 'no-store' });
       const data = await res.json();
       if (data.success) {
         setAliados(data.aliados || []);
+        if (Array.isArray(data.catalogo)) setCatalogo(data.catalogo);
       } else {
         console.error('Error fetching aliados:', data.error);
       }
@@ -119,6 +123,41 @@ export function AdminAliadosSection() {
   useEffect(() => {
     fetchAliados();
   }, []);
+
+  // Platos que trajo el formulario: el borrador de la IA o, si llegó vacío,
+  // se derivan del texto de la carta para que nunca se muestre "0 platos".
+  const platosOcr = useMemo<PlatoBorrador[]>(() => {
+    const borrador = form.solicitud?.borrador;
+    if (borrador && borrador.length > 0) return borrador;
+
+    const texto = form.solicitud?.cartaTexto || '';
+    if (!texto.trim()) return [];
+
+    return normalizarMenuTexto(texto).platos.map((p) => {
+      const limpio = (p.precio || '').replace(/[^0-9.,]/g, '').replace(',', '.');
+      const numero = limpio ? Number(limpio) : NaN;
+      return {
+        nombre: p.nombre,
+        precio: Number.isFinite(numero) ? numero : null,
+        momento: p.momentoSugerido,
+      };
+    });
+  }, [form.solicitud]);
+
+  // Cada plato del OCR con su plato equivalente en el catálogo del sitio
+  const platosOcrConMatch = useMemo(
+    () =>
+      platosOcr.map((p) => ({
+        plato: p,
+        match: buscarPlatoEnCatalogo(p.nombre, catalogo),
+      })),
+    [platosOcr, catalogo]
+  );
+
+  const coincidenciasOcr = platosOcrConMatch.filter((x) => x.match);
+  const vinculadosOcr = coincidenciasOcr.filter((x) =>
+    (form.platos || []).includes(x.match!.slug)
+  );
 
   const openNewModal = () => {
     setEditingId(null);
@@ -146,7 +185,7 @@ export function AdminAliadosSection() {
       momentos: aliado.momentos || (aliado.tipo === 'CAFETERIA' ? ['desayuno'] : ['almuerzo']),
       platos: aliado.platos || [],
     });
-    setMenuRawInput('');
+    setMenuRawInput(aliado.solicitud?.cartaTexto || '');
     setMenuResultado(null);
     setMessage(null);
     setIsModalOpen(true);
@@ -305,12 +344,37 @@ export function AdminAliadosSection() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.nombre || !form.nombre.trim()) {
+      setMessage({
+        type: 'error',
+        text: 'Ponle un nombre al restaurante antes de guardar (si no, no aparece en la web).',
+      });
+      return;
+    }
+
     setSaving(true);
     setMessage(null);
 
     const isEdit = Boolean(editingId);
     const method = isEdit ? 'PUT' : 'POST';
-    const payload = isEdit ? { ...form, id: editingId } : form;
+
+    // Platos del OCR marcados: se envían con la página del catálogo elegida
+    const platosDetalle =
+      form.solicitud && coincidenciasOcr.length > 0
+        ? platosOcrConMatch
+            .filter(({ match }) => match && (form.platos || []).includes(match.slug))
+            .map(({ plato, match }) => ({
+              nombre: plato.nombre,
+              descripcion: plato.descripcion,
+              precio: plato.precio ?? null,
+              momento: plato.momento,
+              slugCatalogo: match!.slug,
+            }))
+        : undefined;
+
+    const base = isEdit ? { ...form, id: editingId } : form;
+    const payload = platosDetalle && platosDetalle.length > 0 ? { ...base, platosDetalle } : base;
 
     try {
       const res = await fetch('/api/admin/aliados', {
@@ -503,7 +567,12 @@ export function AdminAliadosSection() {
                         )}
                         <div>
                           <div className="font-bold text-gray-900 flex items-center gap-2">
-                            <span>{a.nombre}</span>
+                            <span>{a.nombre || <span className="text-red-500 italic">(sin nombre)</span>}</span>
+                            {!a.nombre?.trim() && (
+                              <span className="rounded-full bg-red-100 text-red-700 text-[9px] font-extrabold px-2 py-0.5">
+                                Corrige el nombre
+                              </span>
+                            )}
                             {a.destacado && (
                               <span className="rounded-full bg-amber-100 text-amber-800 text-[9px] font-extrabold px-2 py-0.5">
                                 ★ Destacado
@@ -718,6 +787,252 @@ export function AdminAliadosSection() {
                 {message.text}
               </div>
             )}
+
+                  {/* ── Datos que llegaron del formulario de alta (PRIMERO) ── */}
+                  {form.solicitud && (
+                    <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/70 p-4 space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-900">
+                            📨 Desde el formulario de alta · {form.solicitud.folio}
+                          </p>
+                          <p className="text-[11px] text-emerald-800/90 mt-0.5">
+                            {form.solicitud.horarios || 'sin horarios'} ·{' '}
+                            {form.solicitud.lat
+                              ? `${form.solicitud.lat.toFixed(4)}, ${form.solicitud.lng?.toFixed(4)}`
+                              : 'sin GPS'}{' '}
+                            · estado: <strong>{form.solicitud.estado}</strong>
+                          </p>
+                        </div>
+                        <Link
+                          href="/admin/solicitudes"
+                          className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
+                        >
+                          Abrir la solicitud ↗
+                        </Link>
+                      </div>
+
+                      {/* 1) EL MENÚ LEÍDO POR LA IA (lo importante) */}
+                      <div className="rounded-xl bg-white border border-emerald-200 p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-[12px] font-extrabold text-gray-900">
+                            📖 Menú leído de la carta por la IA ({platosOcr.length} platos)
+                            {coincidenciasOcr.length > 0 && (
+                              <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                                {vinculadosOcr.length} de {coincidenciasOcr.length} vinculados al catálogo
+                              </span>
+                            )}
+                          </p>
+                          {coincidenciasOcr.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    platos: Array.from(
+                                      new Set([
+                                        ...(prev.platos || []),
+                                        ...coincidenciasOcr.map((x) => x.match!.slug),
+                                      ])
+                                    ),
+                                  }))
+                                }
+                                className="rounded-lg bg-emerald-700 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-emerald-800"
+                              >
+                                ✅ Vincular los {coincidenciasOcr.length} que coinciden
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    platos: (prev.platos || []).filter(
+                                      (s) => !coincidenciasOcr.some((x) => x.match!.slug === s)
+                                    ),
+                                  }))
+                                }
+                                className="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-[10px] font-bold text-gray-700 transition hover:bg-gray-50"
+                              >
+                                Quitar vínculos
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        {platosOcr.length > 0 ? (
+                          <>
+                            <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-gray-200">
+                              <table className="w-full text-[11px]">
+                                <thead className="bg-emerald-50 text-gray-600 sticky top-0">
+                                  <tr>
+                                    <th className="text-left px-2 py-1 font-semibold">Plato de la carta</th>
+                                    <th className="text-left px-2 py-1 font-semibold">Precio</th>
+                                    <th className="text-left px-2 py-1 font-semibold">Página del sitio</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {platosOcrConMatch.map(({ plato, match }, i) => {
+                                    const vinculado = Boolean(
+                                      match && (form.platos || []).includes(match.slug)
+                                    );
+                                    return (
+                                      <tr
+                                        key={i}
+                                        className={vinculado ? 'border-t border-gray-100 bg-emerald-50/40' : 'border-t border-gray-100'}
+                                      >
+                                        <td className="px-2 py-1 font-medium text-gray-900">
+                                          {plato.nombre}
+                                          {plato.descripcion && (
+                                            <span className="block text-[10px] text-gray-500">
+                                              {plato.descripcion}
+                                            </span>
+                                          )}
+                                        </td>
+                                        <td className="px-2 py-1 text-gray-700">
+                                          {plato.precio != null ? `$${Number(plato.precio).toFixed(2)}` : '—'}
+                                        </td>
+                                        <td className="px-2 py-1">
+                                          {match ? (
+                                            <div className="flex items-center gap-1.5">
+                                              <input
+                                                type="checkbox"
+                                                checked={vinculado}
+                                                onChange={() =>
+                                                  setForm((prev) => {
+                                                    const actuales = prev.platos || [];
+                                                    return {
+                                                      ...prev,
+                                                      platos: actuales.includes(match.slug)
+                                                        ? actuales.filter((s) => s !== match.slug)
+                                                        : [...actuales, match.slug],
+                                                    };
+                                                  })
+                                                }
+                                                className="size-3.5 accent-emerald-700"
+                                              />
+                                              <Link
+                                                href={`/platos/${match.slug}`}
+                                                target="_blank"
+                                                className="text-emerald-700 underline decoration-emerald-300 hover:text-emerald-900"
+                                              >
+                                                {match.nombre}
+                                              </Link>
+                                            </div>
+                                          ) : (
+                                            <span className="text-[10px] text-gray-400">
+                                              sin página en el sitio
+                                            </span>
+                                          )}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                            <p className="mt-1.5 text-[10px] text-amber-700">
+                              ⚠️ Revisa los precios: la IA puede leer mal los decimales. Al guardar, los
+                              platos marcados quedan enlazados a las páginas del sitio.
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setMenuRawInput(form.solicitud?.cartaTexto || '');
+                                  setMessage({
+                                    type: 'success',
+                                    text: 'Carta cargada en el bloque de ingesta de menú: revisa y normaliza.',
+                                  });
+                                }}
+                                className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
+                              >
+                                📝 Cargar la carta al menú
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const texto = platosOcr
+                                    .map(
+                                      (p) =>
+                                        `${p.nombre}${p.precio != null ? ` $${Number(p.precio).toFixed(2)}` : ''}`
+                                    )
+                                    .join('\n');
+                                  copiarAlPortapapeles(texto);
+                                }}
+                                className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-50"
+                              >
+                                📋 Copiar los platos
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="mt-2 rounded-lg border border-dashed border-emerald-300 bg-white px-3 py-2 text-[11px] text-gray-600">
+                            La lectura automática no encontró platos. Escríbelos en el bloque de
+                            ingesta de menú (abajo) o pídele la carta al restaurante.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 2) Fotos del restaurante para elegir la imagen principal */}
+                      {form.solicitud.archivos.filter((f) => f.tipo === 'foto').length > 0 && (
+                        <div className="rounded-xl bg-white border border-emerald-200 p-3">
+                          <p className="text-[12px] font-extrabold text-gray-900">
+                            📷 Fotos del restaurante (haz clic para elegir la principal)
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {form.solicitud.archivos
+                              .filter((f) => f.tipo === 'foto')
+                              .map((f) => (
+                                <button
+                                  key={f.id}
+                                  type="button"
+                                  onClick={() => setForm((prev) => ({ ...prev, imagenUrl: f.url }))}
+                                  title={f.nombre}
+                                  className={`relative size-16 rounded-lg overflow-hidden border-2 transition ${
+                                    form.imagenUrl === f.url
+                                      ? 'border-emerald-600 ring-2 ring-emerald-200'
+                                      : 'border-gray-200 hover:border-emerald-400'
+                                  }`}
+                                >
+                                  <img src={f.url} alt={f.nombre} className="size-full object-cover" />
+                                  {form.imagenUrl === f.url && (
+                                    <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] px-1">
+                                      ✓
+                                    </span>
+                                  )}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3) Las cartas por si acaso */}
+                      {form.solicitud.archivos.filter((f) => f.tipo === 'carta').length > 0 && (
+                        <details className="rounded-xl bg-white border border-emerald-200 p-3">
+                          <summary className="cursor-pointer text-[12px] font-extrabold text-gray-900">
+                            🖼️ Cartas originales ({form.solicitud.archivos.filter((f) => f.tipo === 'carta').length})
+                            — por si quieres verlas
+                          </summary>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {form.solicitud.archivos
+                              .filter((f) => f.tipo === 'carta')
+                              .map((f) => (
+                                <a
+                                  key={f.id}
+                                  href={f.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title={f.nombre}
+                                  className="relative size-14 rounded-lg overflow-hidden border border-gray-200 hover:border-emerald-400"
+                                >
+                                  <img src={f.url} alt={f.nombre} className="size-full object-cover" />
+                                </a>
+                              ))}
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  )}
 
             <form onSubmit={handleSave} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1195,141 +1510,7 @@ export function AdminAliadosSection() {
                     />
                   </div>
 
-                  {/* ── Datos que llegaron con el formulario de alta ── */}
-                  {form.solicitud && (
-                    <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                          <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-900">
-                            📨 Datos del formulario de alta · {form.solicitud.folio}
-                          </p>
-                          <p className="text-[11px] text-emerald-800/80 mt-0.5">
-                            Estado: <strong>{form.solicitud.estado}</strong> ·{' '}
-                            {form.solicitud.horarios || 'sin horarios'} ·{' '}
-                            {form.solicitud.lat ? `${form.solicitud.lat.toFixed(4)}, ${form.solicitud.lng?.toFixed(4)}` : 'sin GPS'}
-                          </p>
-                        </div>
-                        <Link
-                          href="/admin/solicitudes"
-                          className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
-                        >
-                          Ver la solicitud ↗
-                        </Link>
-                      </div>
-
-                      {/* Fotos del formulario: click para poner de principal */}
-                      {form.solicitud.archivos.length > 0 && (
-                        <div>
-                          <p className="text-[11px] font-bold text-gray-800 mb-2">
-                            Fotos y carta ({form.solicitud.archivos.length}) · haz clic para usar como
-                            imagen principal
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {form.solicitud.archivos.map((f) => (
-                              <button
-                                key={f.id}
-                                type="button"
-                                onClick={() => setForm((prev) => ({ ...prev, imagenUrl: f.url }))}
-                                title={f.nombre}
-                                className={`relative size-16 rounded-lg overflow-hidden border-2 transition ${
-                                  form.imagenUrl === f.url
-                                    ? 'border-emerald-600 ring-2 ring-emerald-200'
-                                    : 'border-gray-200 hover:border-emerald-400'
-                                }`}
-                              >
-                                <img
-                                  src={f.url}
-                                  alt={f.nombre}
-                                  className="size-full object-cover"
-                                />
-                                <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white px-1 py-0.5 text-center">
-                                  {f.tipo === 'carta' ? 'carta' : 'foto'}
-                                </span>
-                                {form.imagenUrl === f.url && (
-                                  <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] px-1">
-                                    ✓
-                                  </span>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Menú leído por IA */}
-                      <div>
-                        <p className="text-[11px] font-bold text-gray-800 mb-2">
-                          Menú leído por IA ({form.solicitud.borrador?.length || 0} platos)
-                        </p>
-                        {form.solicitud.borrador && form.solicitud.borrador.length > 0 ? (
-                          <>
-                            <div className="max-h-40 overflow-y-auto rounded-lg border border-emerald-200 bg-white">
-                              <table className="w-full text-[11px]">
-                                <thead className="bg-emerald-50 text-gray-600">
-                                  <tr>
-                                    <th className="text-left px-2 py-1 font-semibold">Plato</th>
-                                    <th className="text-left px-2 py-1 font-semibold">Precio</th>
-                                    <th className="text-left px-2 py-1 font-semibold">Momento</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {form.solicitud.borrador.map((p, i) => (
-                                    <tr key={i} className="border-t border-gray-100">
-                                      <td className="px-2 py-1 font-medium text-gray-900">
-                                        {p.nombre}
-                                        {p.descripcion && (
-                                          <span className="block text-[10px] text-gray-500">
-                                            {p.descripcion}
-                                          </span>
-                                        )}
-                                      </td>
-                                      <td className="px-2 py-1 text-gray-700">
-                                        {p.precio != null ? `$${p.precio.toFixed(2)}` : '—'}
-                                      </td>
-                                      <td className="px-2 py-1 text-gray-600">{p.momento || '—'}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setMenuRawInput(form.solicitud?.cartaTexto || '');
-                                  setMessage({
-                                    type: 'success',
-                                    text: 'Carta cargada en el bloque de ingesta de menú. Revisa y normaliza.',
-                                  });
-                                }}
-                                className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
-                              >
-                                📝 Cargar la carta al menú
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const texto = (form.solicitud?.borrador || [])
-                                    .map((p) => `${p.nombre}${p.precio != null ? ` $${p.precio.toFixed(2)}` : ''}`)
-                                    .join('\n');
-                                  copiarAlPortapapeles(texto);
-                                }}
-                                className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-50"
-                              >
-                                📋 Copiar platos
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <p className="rounded-lg border border-dashed border-emerald-300 bg-white px-3 py-2 text-[11px] text-gray-600">
-                            La lectura automática no encontró platos. Revisa la carta en la solicitud o
-                            escribe el menú a mano en el bloque de ingesta.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                                  </div>
 
                 {/* Descripción */}
                 <div className="sm:col-span-2">
@@ -1395,7 +1576,7 @@ export function AdminAliadosSection() {
                       onChange={(e) => setForm({ ...form, activo: e.target.checked })}
                       className="size-4 text-petroleo rounded focus:ring-petroleo"
                     />
-                    <span>Activo (visible en la web pública y chatbot)</span>
+                    <span>Activo — sin esto no aparece en /platos, /restaurantes ni el chatbot</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-800">

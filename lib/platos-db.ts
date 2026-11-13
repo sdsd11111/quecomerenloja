@@ -1,6 +1,7 @@
 import 'server-only';
 import { type RowDataPacket } from 'mysql2/promise';
 import { getGastroPool } from './aliados-db';
+import { conReintento } from './db';
 
 export interface PlatoFaq {
   q: string;
@@ -86,8 +87,10 @@ function parsePlatoRow(r: RowDataPacket | any): PlatoCatalogo {
 export async function getAllPlatosSlugs(): Promise<string[]> {
   try {
     const pool = getGastroPool();
-    const [rows] = await pool.query<RowDataPacket[]>(
-      'SELECT slug FROM platos_catalogo WHERE activo = 1 ORDER BY volumen_busqueda DESC'
+    const [rows] = await conReintento(() =>
+      pool.query<RowDataPacket[]>(
+        'SELECT slug FROM platos_catalogo WHERE activo = 1 ORDER BY volumen_busqueda DESC'
+      )
     );
     return rows.map((r) => r.slug);
   } catch (error) {
@@ -102,8 +105,10 @@ export async function getAllPlatosSlugs(): Promise<string[]> {
 export async function getAllPlatos(): Promise<PlatoCatalogo[]> {
   try {
     const pool = getGastroPool();
-    const [rows] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM platos_catalogo WHERE activo = 1 ORDER BY seccion ASC, volumen_busqueda DESC'
+    const [rows] = await conReintento(() =>
+      pool.query<RowDataPacket[]>(
+        'SELECT * FROM platos_catalogo WHERE activo = 1 ORDER BY seccion ASC, volumen_busqueda DESC'
+      )
     );
     return rows.map(parsePlatoRow);
   } catch (error) {
@@ -118,9 +123,11 @@ export async function getAllPlatos(): Promise<PlatoCatalogo[]> {
 export async function getPlatoBySlug(slug: string): Promise<PlatoCatalogo | null> {
   try {
     const pool = getGastroPool();
-    const [rows] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM platos_catalogo WHERE slug = ? AND activo = 1 LIMIT 1',
-      [slug]
+    const [rows] = await conReintento(() =>
+      pool.query<RowDataPacket[]>(
+        'SELECT * FROM platos_catalogo WHERE slug = ? AND activo = 1 LIMIT 1',
+        [slug]
+      )
     );
     if (!rows || rows.length === 0) return null;
     return parsePlatoRow(rows[0]);
@@ -136,11 +143,13 @@ export async function getPlatoBySlug(slug: string): Promise<PlatoCatalogo | null
 export async function getRestaurantesByPlato(platoId: number): Promise<PlatoRestauranteItem[]> {
   try {
     const pool = getGastroPool();
-    const [rows] = await pool.query<RowDataPacket[]>(
-      `SELECT * FROM plato_restaurantes 
-       WHERE plato_id = ? 
-       ORDER BY es_aliado_destacado DESC, precio_numerico ASC, id ASC`,
-      [platoId]
+    const [rows] = await conReintento(() =>
+      pool.query<RowDataPacket[]>(
+        `SELECT * FROM plato_restaurantes
+         WHERE plato_id = ?
+         ORDER BY es_aliado_destacado DESC, precio_numerico ASC, id ASC`,
+        [platoId]
+      )
     );
 
     return rows.map((r) => ({
@@ -173,11 +182,13 @@ export async function getPlatosBySlugs(slugs: string[]): Promise<PlatoCatalogo[]
     if (!slugs || slugs.length === 0) return [];
     const pool = getGastroPool();
     const placeholders = slugs.map(() => '?').join(',');
-    const [rows] = await pool.query<RowDataPacket[]>(
-      `SELECT * FROM platos_catalogo 
-       WHERE slug IN (${placeholders}) AND activo = 1 
-       ORDER BY FIELD(slug, ${placeholders})`,
-      [...slugs, ...slugs]
+    const [rows] = await conReintento(() =>
+      pool.query<RowDataPacket[]>(
+        `SELECT * FROM platos_catalogo
+         WHERE slug IN (${placeholders}) AND activo = 1
+         ORDER BY FIELD(slug, ${placeholders})`,
+        [...slugs, ...slugs]
+      )
     );
     return rows.map(parsePlatoRow);
   } catch (error) {
