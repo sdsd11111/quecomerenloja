@@ -635,10 +635,22 @@ export default function FormularioAlta() {
                   />
                 </div>
                 {carta.length > 0 && (
-                  <ul className="mt-4 space-y-1 text-left text-xs text-muted">
+                  <ul className="mt-4 space-y-1.5 text-left text-xs text-muted">
                     {carta.map((f) => (
-                      <li key={f.name}>
-                        📄 {f.name} · {(f.size / 1024 / 1024).toFixed(2)} MB
+                      <li
+                        key={`${f.name}-${f.size}`}
+                        className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2"
+                      >
+                        <span className="truncate">
+                          📄 {f.name} · {(f.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setCarta((c) => c.filter((x) => x !== f))}
+                          className="shrink-0 rounded-lg border border-red-200 px-2 py-1 font-bold text-red-600 transition hover:bg-red-50"
+                        >
+                          Quitar
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -666,10 +678,22 @@ export default function FormularioAlta() {
                   />
                 </div>
                 {fotos.length > 0 && (
-                  <ul className="mt-4 space-y-1 text-left text-xs text-muted">
+                  <ul className="mt-4 space-y-1.5 text-left text-xs text-muted">
                     {fotos.map((f) => (
-                      <li key={f.name}>
-                        🖼️ {f.name} · {(f.size / 1024 / 1024).toFixed(2)} MB
+                      <li
+                        key={`${f.name}-${f.size}`}
+                        className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2"
+                      >
+                        <span className="truncate">
+                          🖼️ {f.name} · {(f.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setFotos((c) => c.filter((x) => x !== f))}
+                          className="shrink-0 rounded-lg border border-red-200 px-2 py-1 font-bold text-red-600 transition hover:bg-red-50"
+                        >
+                          Quitar
+                        </button>
                       </li>
                     ))}
                   </ul>

@@ -76,3 +76,38 @@ export async function initDb() {
 }
 
 export const getDbPool = getBlogPool;
+
+/**
+ * Reintenta una consulta si el servidor corta la conexión (hosting compartido:
+ * las conexiones ociosas se cierran y hay que abrir una nueva).
+ */
+const ERRORES_REINTENTABLES = [
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'EPIPE',
+  'ETIMEDOUT',
+  'PROTOCOL_CONNECTION_LOST',
+  'ER_CON_COUNT_ERROR',
+];
+
+export async function conReintento<T>(fn: () => Promise<T>, intentos = 3): Promise<T> {
+  let ultimoError: unknown;
+  for (let i = 0; i < intentos; i++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      ultimoError = err;
+      const codigo = err?.code || err?.errno;
+      const mensaje = String(err?.message || '');
+      const recuperable =
+        ERRORES_REINTENTABLES.includes(codigo) ||
+        /read ECONNRESET|closed|Connection lost|Lost connection/i.test(mensaje);
+      if (!recuperable || i === intentos - 1) throw err;
+      console.warn(
+        `[db] Conexión cortada (${codigo || mensaje}). Reintento ${i + 2}/${intentos}...`
+      );
+      await new Promise((r) => setTimeout(r, 400 * (i + 1)));
+    }
+  }
+  throw ultimoError;
+}

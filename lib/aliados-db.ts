@@ -1,5 +1,6 @@
 import 'server-only';
 import mysql, { type Pool, type RowDataPacket, type ResultSetHeader } from 'mysql2/promise';
+import { conReintento } from './db';
 
 declare global {
   var __gastroPool: Pool | undefined;
@@ -95,7 +96,7 @@ export async function getAliadosActivos(tipo?: 'GASTRONOMIA' | 'CAFETERIA'): Pro
 
   query += ' ORDER BY destacado DESC, createdAt DESC';
 
-  const [rows] = await pool.query<RowDataPacket[]>(query, params);
+  const [rows] = await conReintento(() => pool.query<RowDataPacket[]>(query, params));
   return rows.map(formatAliado);
 }
 
@@ -167,8 +168,10 @@ export async function getAliadoByTelefono(rawPhone: string): Promise<AliadoDb | 
 
   const pool = getGastroPool();
   // Traer aliados activos que tengan teléfono
-  const [rows] = await pool.query<RowDataPacket[]>(
-    'SELECT * FROM aliados WHERE activo = 1 AND telefono IS NOT NULL AND TRIM(telefono) != ""'
+  const [rows] = await conReintento(() =>
+    pool.query<RowDataPacket[]>(
+      'SELECT * FROM aliados WHERE activo = 1 AND telefono IS NOT NULL AND TRIM(telefono) != ""'
+    )
   );
 
   for (const row of rows) {

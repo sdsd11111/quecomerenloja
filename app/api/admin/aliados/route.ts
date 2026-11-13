@@ -20,7 +20,43 @@ export async function GET() {
 
   try {
     const aliados = await getAllAliadosAdmin();
-    return NextResponse.json({ success: true, aliados });
+
+    // Anexar la solicitud de alta relacionada (carta, fotos y menú leído por IA)
+    let porAliado: Record<number, any> = {};
+    try {
+      const { listarSolicitudes } = await import('@/lib/solicitudes-db');
+      const solicitudes = await listarSolicitudes();
+      for (const s of solicitudes) {
+        if (!s.aliadoId) continue;
+        porAliado[s.aliadoId] = {
+          folio: s.folio,
+          estado: s.estado,
+          cartaTexto: s.cartaTexto,
+          borrador: s.borrador,
+          nombreComercial: s.nombreComercial,
+          direccion: s.direccion,
+          horarios: s.horarios,
+          lat: s.lat,
+          lng: s.lng,
+          mapaUrl: s.mapaUrl,
+          archivos: s.archivos.map((a) => ({
+            id: a.id,
+            tipo: a.tipo,
+            nombre: a.nombre,
+            url: a.url,
+          })),
+        };
+      }
+    } catch (e: any) {
+      console.warn('[admin/aliados] No se pudieron anexar las solicitudes:', e?.message);
+    }
+
+    const conSolicitud = aliados.map((a) => ({
+      ...a,
+      solicitud: a.id ? porAliado[a.id] || null : null,
+    }));
+
+    return NextResponse.json({ success: true, aliados: conSolicitud });
   } catch (err: any) {
     console.error('Error al obtener aliados admin:', err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

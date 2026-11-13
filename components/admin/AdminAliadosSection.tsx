@@ -6,6 +6,20 @@ import { PLATOS } from '@/lib/platos-data';
 import { normalizarMenuTexto, type NormalizacionResultado, type PlatoExtraido } from '@/lib/menu-normalizer';
 import { extractGpsFromGoogleMaps } from '@/lib/maps-extractor';
 
+export interface AliadoSolicitud {
+  folio: string;
+  estado: string;
+  cartaTexto: string | null;
+  borrador: { nombre: string; descripcion?: string; precio?: number | null; momento?: string }[] | null;
+  nombreComercial: string;
+  direccion: string;
+  horarios: string | null;
+  lat: number | null;
+  lng: number | null;
+  mapaUrl: string | null;
+  archivos: { id: number; tipo: string; nombre: string; url: string }[];
+}
+
 export interface AliadoItem {
   id?: number;
   nombre: string;
@@ -26,6 +40,7 @@ export interface AliadoItem {
   estrellas: number | null;
   momentos?: ('desayuno' | 'almuerzo' | 'cena')[];
   platos?: string[];
+  solicitud?: AliadoSolicitud | null;
 }
 
 const ZONAS_PREDEFINIDAS_LOJA = [
@@ -492,6 +507,22 @@ export function AdminAliadosSection() {
                             {a.destacado && (
                               <span className="rounded-full bg-amber-100 text-amber-800 text-[9px] font-extrabold px-2 py-0.5">
                                 ★ Destacado
+                              </span>
+                            )}
+                            {a.solicitud && (
+                              <span
+                                title="Viene del formulario de alta: tiene carta, fotos y menú leído por IA"
+                                className="rounded-full bg-emerald-50 text-emerald-800 text-[9px] font-extrabold px-2 py-0.5"
+                              >
+                                📨 {a.solicitud.folio}
+                                {a.solicitud.borrador?.length
+                                  ? ` · ${a.solicitud.borrador.length} platos`
+                                  : ''}
+                              </span>
+                            )}
+                            {!a.activo && (
+                              <span className="rounded-full bg-gray-200 text-gray-700 text-[9px] font-extrabold px-2 py-0.5">
+                                Inactivo
                               </span>
                             )}
                           </div>
@@ -1163,6 +1194,141 @@ export function AdminAliadosSection() {
                       className="w-full bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-petroleo font-mono"
                     />
                   </div>
+
+                  {/* ── Datos que llegaron con el formulario de alta ── */}
+                  {form.solicitud && (
+                    <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-900">
+                            📨 Datos del formulario de alta · {form.solicitud.folio}
+                          </p>
+                          <p className="text-[11px] text-emerald-800/80 mt-0.5">
+                            Estado: <strong>{form.solicitud.estado}</strong> ·{' '}
+                            {form.solicitud.horarios || 'sin horarios'} ·{' '}
+                            {form.solicitud.lat ? `${form.solicitud.lat.toFixed(4)}, ${form.solicitud.lng?.toFixed(4)}` : 'sin GPS'}
+                          </p>
+                        </div>
+                        <Link
+                          href="/admin/solicitudes"
+                          className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
+                        >
+                          Ver la solicitud ↗
+                        </Link>
+                      </div>
+
+                      {/* Fotos del formulario: click para poner de principal */}
+                      {form.solicitud.archivos.length > 0 && (
+                        <div>
+                          <p className="text-[11px] font-bold text-gray-800 mb-2">
+                            Fotos y carta ({form.solicitud.archivos.length}) · haz clic para usar como
+                            imagen principal
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {form.solicitud.archivos.map((f) => (
+                              <button
+                                key={f.id}
+                                type="button"
+                                onClick={() => setForm((prev) => ({ ...prev, imagenUrl: f.url }))}
+                                title={f.nombre}
+                                className={`relative size-16 rounded-lg overflow-hidden border-2 transition ${
+                                  form.imagenUrl === f.url
+                                    ? 'border-emerald-600 ring-2 ring-emerald-200'
+                                    : 'border-gray-200 hover:border-emerald-400'
+                                }`}
+                              >
+                                <img
+                                  src={f.url}
+                                  alt={f.nombre}
+                                  className="size-full object-cover"
+                                />
+                                <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white px-1 py-0.5 text-center">
+                                  {f.tipo === 'carta' ? 'carta' : 'foto'}
+                                </span>
+                                {form.imagenUrl === f.url && (
+                                  <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] px-1">
+                                    ✓
+                                  </span>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Menú leído por IA */}
+                      <div>
+                        <p className="text-[11px] font-bold text-gray-800 mb-2">
+                          Menú leído por IA ({form.solicitud.borrador?.length || 0} platos)
+                        </p>
+                        {form.solicitud.borrador && form.solicitud.borrador.length > 0 ? (
+                          <>
+                            <div className="max-h-40 overflow-y-auto rounded-lg border border-emerald-200 bg-white">
+                              <table className="w-full text-[11px]">
+                                <thead className="bg-emerald-50 text-gray-600">
+                                  <tr>
+                                    <th className="text-left px-2 py-1 font-semibold">Plato</th>
+                                    <th className="text-left px-2 py-1 font-semibold">Precio</th>
+                                    <th className="text-left px-2 py-1 font-semibold">Momento</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {form.solicitud.borrador.map((p, i) => (
+                                    <tr key={i} className="border-t border-gray-100">
+                                      <td className="px-2 py-1 font-medium text-gray-900">
+                                        {p.nombre}
+                                        {p.descripcion && (
+                                          <span className="block text-[10px] text-gray-500">
+                                            {p.descripcion}
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td className="px-2 py-1 text-gray-700">
+                                        {p.precio != null ? `$${p.precio.toFixed(2)}` : '—'}
+                                      </td>
+                                      <td className="px-2 py-1 text-gray-600">{p.momento || '—'}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setMenuRawInput(form.solicitud?.cartaTexto || '');
+                                  setMessage({
+                                    type: 'success',
+                                    text: 'Carta cargada en el bloque de ingesta de menú. Revisa y normaliza.',
+                                  });
+                                }}
+                                className="rounded-lg bg-emerald-700 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-emerald-800"
+                              >
+                                📝 Cargar la carta al menú
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const texto = (form.solicitud?.borrador || [])
+                                    .map((p) => `${p.nombre}${p.precio != null ? ` $${p.precio.toFixed(2)}` : ''}`)
+                                    .join('\n');
+                                  copiarAlPortapapeles(texto);
+                                }}
+                                className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-50"
+                              >
+                                📋 Copiar platos
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="rounded-lg border border-dashed border-emerald-300 bg-white px-3 py-2 text-[11px] text-gray-600">
+                            La lectura automática no encontró platos. Revisa la carta en la solicitud o
+                            escribe el menú a mano en el bloque de ingesta.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Descripción */}

@@ -1,6 +1,7 @@
 import 'server-only';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import { getGastroPool } from '@/lib/aliados-db';
+import { conReintento } from '@/lib/db';
 import {
   type ArchivoSolicitud,
   type EstadoSolicitud,
@@ -74,13 +75,24 @@ export function ensureTablasSolicitudes(): Promise<void> {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
       `);
 
-      // Columnas añadidas después del primer despliegue
-      await pool.query(
-        'ALTER TABLE solicitudes_alta ADD COLUMN IF NOT EXISTS mapa_url VARCHAR(500) NULL AFTER referencias'
+      // Columnas añadidas después del primer despliegue.
+      // Se comprueban antes de alterar: en el hosting compartido un ALTER
+      // puede tardar minutos y no hace falta repetirlo en cada arranque.
+      const [cols] = await pool.query<RowDataPacket[]>(
+        `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+          WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'solicitudes_alta'`
       );
-      await pool.query(
-        'ALTER TABLE solicitudes_alta ADD COLUMN IF NOT EXISTS aliado_id INT NULL AFTER borrador'
-      );
+      const existentes = new Set(cols.map((c) => String(c.COLUMN_NAME)));
+      if (!existentes.has('mapa_url')) {
+        await pool.query(
+          'ALTER TABLE solicitudes_alta ADD COLUMN mapa_url VARCHAR(500) NULL AFTER referencias'
+        );
+      }
+      if (!existentes.has('aliado_id')) {
+        await pool.query(
+          'ALTER TABLE solicitudes_alta ADD COLUMN aliado_id INT NULL AFTER borrador'
+        );
+      }
     })().catch((err) => {
       tablasReady = null;
       throw err;
@@ -164,12 +176,14 @@ async function obtenerArchivos(solicitudIds: number[]): Promise<Map<number, Arch
   const mapa = new Map<number, ArchivoSolicitud[]>();
   if (solicitudIds.length === 0) return mapa;
   const pool = getGastroPool();
-  const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT id, solicitud_id, tipo, nombre, url, mime, tamano, creado_en
-       FROM solicitud_archivos
-      WHERE solicitud_id IN (?)
-      ORDER BY id ASC`,
-    [solicitudIds]
+  const [rows] = await conReintento(() =>
+    pool.query<RowDataPacket[]>(
+      `SELECT id, solicitud_id, tipo, nombre, url, mime, tamano, creado_en
+         FROM solicitud_archivos
+        WHERE solicitud_id IN (?)
+        ORDER BY id ASC`,
+      [solicitudIds]
+    )
   );
   for (const r of rows) {
     const item: ArchivoSolicitud = {
@@ -282,9 +296,11 @@ export async function listarSolicitudes(estado?: EstadoSolicitud): Promise<Solic
   const pool = getGastroPool();
   const where = estado ? 'WHERE estado = ?' : '';
   const params = estado ? [estado] : [];
-  const [rows] = await pool.query<FilaSolicitud[]>(
-    `SELECT * FROM solicitudes_alta ${where} ORDER BY id DESC LIMIT 200`,
-    params
+  const [rows] = await conReintento(() =>
+    pool.query<FilaSolicitud[]>(
+      `SELECT * FROM solicitudes_alta ${where} ORDER BY id DESC LIMIT 200`,
+      params
+    )
   );
   const archivos = await obtenerArchivos(rows.map((r) => Number(r.id)));
   return rows.map((r) => mapearSolicitud(r, archivos.get(Number(r.id)) || []));
@@ -293,9 +309,8 @@ export async function listarSolicitudes(estado?: EstadoSolicitud): Promise<Solic
 export async function obtenerSolicitud(id: number): Promise<Solicitud | null> {
   await ensureTablasSolicitudes();
   const pool = getGastroPool();
-  const [rows] = await pool.query<FilaSolicitud[]>(
-    'SELECT * FROM solicitudes_alta WHERE id = ? LIMIT 1',
-    [id]
+  const [rows] = await conReintento(() =>
+    pool.query<FilaSolicitud[]>('SELECT * FROM solicitudes_alta WHERE id = ? LIMIT 1', [id])
   );
   if (!rows || rows.length === 0) return null;
   const archivos = await obtenerArchivos([id]);
