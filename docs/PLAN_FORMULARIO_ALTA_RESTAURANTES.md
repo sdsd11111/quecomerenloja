@@ -36,7 +36,7 @@
 | Campo | Decisión | Motivo |
 | :--- | :--- | :--- |
 | Nombre comercial | **Se queda** (obligatorio) | Identifica al aliado |
-| RUC o cédula | **Se queda, pero opcional** | Solo hace falta si luego facturamos; hoy la tabla `aliados` ni siquiera tiene esa columna |
+| RUC o cédula | **Se quita** | No facturamos nada: ellos nos pagan por aparecer en la página, no al revés |
 | Teléfono secundario | **Se quita** | El WhatsApp principal basta |
 | Correo personal | **Se quita** | El correo del establecimiento basta |
 | **Cuenta bancaria** | **Se quita** | No la pide el alta y es dato sensible |

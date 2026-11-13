@@ -294,7 +294,6 @@ export default function AdminSolicitudesPage() {
                   </div>
 
                   <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-                    <Dato etiqueta="RUC / cédula" valor={seleccion.ruc} />
                     <Dato etiqueta="WhatsApp" valor={seleccion.telefono} />
                     <Dato etiqueta="Correo" valor={seleccion.email} />
                     <Dato etiqueta="Horarios" valor={seleccion.horarios} />

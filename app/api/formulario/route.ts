@@ -75,7 +75,6 @@ export async function POST(request: Request) {
 
     // ── Validación de datos ────────────────────────────────────────────────
     const nombreComercial = texto(fd, 'nombreComercial');
-    const ruc = texto(fd, 'ruc');
     const telefono = texto(fd, 'telefono');
     const email = texto(fd, 'email');
     const direccion = texto(fd, 'direccion');
@@ -98,9 +97,6 @@ export async function POST(request: Request) {
         { error: `Falta completar: ${faltantes.join(', ')}.` },
         { status: 400 }
       );
-    }
-    if (ruc && !esDocumentoValido(ruc)) {
-      return NextResponse.json({ error: 'El RUC o la cédula no parece válido (13 o 10 dígitos).' }, { status: 400 });
     }
     if (!esTelefonoValido(telefono)) {
       return NextResponse.json({ error: 'El número de WhatsApp no parece válido (9 dígitos, con 0 inicial).' }, { status: 400 });
@@ -173,7 +169,7 @@ export async function POST(request: Request) {
 
     const { id, folio } = await crearSolicitud({
       nombreComercial,
-      ruc: ruc || null,
+      ruc: null,
       propietario: texto(fd, 'propietario') || null,
       telefono: normalizarTelefonoEC(telefono),
       telefonoAlt: null,

@@ -14,7 +14,6 @@ const CENTRO_LOJA: [number, number] = [-3.9965, -79.205];
 
 type Datos = {
   nombreComercial: string;
-  ruc: string;
   propietario: string;
   telefono: string;
   email: string;
@@ -33,7 +32,6 @@ type Datos = {
 
 const DATOS_INICIALES: Datos = {
   nombreComercial: '',
-  ruc: '',
   propietario: '',
   telefono: '',
   email: '',
@@ -230,8 +228,6 @@ export default function FormularioAlta() {
   const validarPaso = (n: number): string => {
     if (n === 1) {
       if (!datos.nombreComercial.trim()) return 'Escribe el nombre comercial del restaurante.';
-      if (!/^\d{10}$|^\d{13}$/.test(datos.ruc.replace(/\D/g, '')) && datos.ruc.trim())
-        return 'El RUC o la cédula debe tener 13 o 10 dígitos.';
       if (datos.telefono.replace(/\D/g, '').length < 9) return 'Escribe tu WhatsApp de pedidos.';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email.trim())) return 'Revisa el correo.';
       if (!datos.direccion.trim()) return 'Escribe la dirección del restaurante.';
@@ -482,16 +478,6 @@ export default function FormularioAlta() {
                   />
                 </Campo>
               </div>
-
-              <Campo etiqueta="RUC o cédula" ayuda="Opcional: solo si te facturamos">
-                <input
-                  className="input"
-                  inputMode="numeric"
-                  value={datos.ruc}
-                  onChange={(e) => set('ruc', e.target.value.replace(/\D/g, ''))}
-                  placeholder="0999999999000"
-                />
-              </Campo>
 
               <fieldset>
                 <legend className="mb-2 text-sm font-bold text-petroleo">Tipo de restaurante</legend>
