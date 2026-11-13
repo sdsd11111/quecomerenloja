@@ -121,6 +121,14 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'ID de aliado es requerido' }, { status: 400 });
     }
 
+    // El nombre es obligatorio: sin él el aliado no aparece en la web.
+    if (typeof updateData?.nombre === 'string' && !updateData.nombre.trim()) {
+      return NextResponse.json(
+        { error: 'El aliado necesita un nombre para aparecer en /platos, /restaurantes y el chatbot' },
+        { status: 400 }
+      );
+    }
+
     const ok = await updateAliado(Number(id), updateData);
     if (!ok) {
       return NextResponse.json({ error: 'Aliado no encontrado o sin cambios' }, { status: 404 });

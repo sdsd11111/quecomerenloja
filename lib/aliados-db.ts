@@ -254,104 +254,84 @@ export async function createAliado(data: Partial<AliadoDb>): Promise<number> {
 /**
  * Actualizar un aliado existente
  */
+const CAMPOS_ALIADO: Array<[string, string]> = [
+  ["nombre", "nombre"],
+  ["tipo", "tipo"],
+  ["imagenUrl", "imagenUrl"],
+  ["servicios", "servicios"],
+  ["telefono", "telefono"],
+  ["descripcion", "descripcion"],
+  ["mapaUrl", "mapaUrl"],
+  ["rangoPrecio", "rangoPrecio"],
+  ["redesUrl", "redesUrl"],
+  ["ubicacion", "ubicacion"],
+  ["websiteUrl", "websiteUrl"],
+  ["ubicacionLat", "ubicacionLat"],
+  ["ubicacionLng", "ubicacionLng"],
+  ["estrellas", "estrellas"],
+];
+
+/**
+ * Actualizar un aliado existente.
+ *
+ * IMPORTANTE: solo se escriben los campos que llegan en `data`. Antes se
+ * enviaba un UPDATE con todas las columnas y cualquier llamada parcial (por
+ * ejemplo el interruptor Activo/Inactivo del panel) borraba el nombre, la
+ * descripcion, el telefono y la ubicacion del aliado.
+ */
 export async function updateAliado(id: number, data: Partial<AliadoDb>): Promise<boolean> {
   const pool = getGastroPool();
+  const actual = await getAliadoById(id);
+  if (!actual) return false;
+
+  const sets: string[] = [];
+  const params: any[] = [];
+  const agregar = (columna: string, valor: any) => {
+    sets.push(`${columna} = ?`);
+    params.push(valor);
+  };
+
+  for (const [campo, columna] of CAMPOS_ALIADO) {
+    const valor = (data as any)[campo];
+    if (valor !== undefined) agregar(columna, valor ?? null);
+  }
+  if (data.destacado !== undefined) agregar("destacado", data.destacado ? 1 : 0);
+  if (data.activo !== undefined) agregar("activo", data.activo ? 1 : 0);
 
   // Si se envían momentos o platos, actualizamos el JSON en 'cuartos'
-  let cuartosJson = data.cuartos;
   if (data.momentos !== undefined || data.platos !== undefined) {
-    const current = await getAliadoById(id);
     const meta: AliadoMetadata = {
-      momentos: data.momentos !== undefined ? data.momentos : (current?.momentos || []),
-      platos: data.platos !== undefined ? data.platos : (current?.platos || []),
+      momentos: data.momentos !== undefined ? data.momentos : (actual.momentos || []),
+      platos: data.platos !== undefined ? data.platos : (actual.platos || []),
     };
-    cuartosJson = JSON.stringify(meta);
+    agregar("cuartos", JSON.stringify(meta));
+  } else if (typeof data.cuartos === "string" && data.cuartos) {
+    agregar("cuartos", data.cuartos);
   }
 
-  const query = `
-    UPDATE aliados SET
-      nombre = ?,
-      tipo = ?,
-      imagenUrl = ?,
-      servicios = ?,
-      telefono = ?,
-      destacado = ?,
-      activo = ?,
-      descripcion = ?,
-      mapaUrl = ?,
-      rangoPrecio = ?,
-      redesUrl = ?,
-      ubicacion = ?,
-      websiteUrl = ?,
-      ubicacionLat = ?,
-      ubicacionLng = ?,
-      estrellas = ?,
-      cuartos = COALESCE(?, cuartos)
-    WHERE id = ?
-  `;
-  const params = [
-    data.nombre ?? '',
-    data.tipo ?? 'GASTRONOMIA',
-    data.imagenUrl ?? null,
-    data.servicios ?? null,
-    data.telefono ?? null,
-    data.destacado ? 1 : 0,
-    data.activo ? 1 : 0,
-    data.descripcion ?? '',
-    data.mapaUrl ?? null,
-    data.rangoPrecio ?? null,
-    data.redesUrl ?? null,
-    data.ubicacion ?? '',
-    data.websiteUrl ?? null,
-    data.ubicacionLat ?? null,
-    data.ubicacionLng ?? null,
-    data.estrellas ?? 5,
-    cuartosJson ?? null,
-    id,
-  ];
+  // Nada que actualizar: no tocamos la fila (evita borrados accidentales).
+  if (sets.length === 0) return false;
 
-  const [result] = await pool.query<ResultSetHeader>(query, params);
+  params.push(id);
+  await conReintento(() =>
+    pool.query<ResultSetHeader>(`UPDATE aliados SET ${sets.join(", ")} WHERE id = ?`, params)
+  );
 
-  // Sincronizar actualización con CHATBOT_DB_URL buscando por nombre o id
+  // Sincronizar con CHATBOT_DB_URL buscando por nombre o id
   if (process.env.CHATBOT_DB_URL) {
     try {
       const botPool = mysql.createPool({ uri: process.env.CHATBOT_DB_URL });
       await botPool.query(
-        `UPDATE aliados SET
-          tipo = ?, imagenUrl = ?, servicios = ?, telefono = ?,
-          destacado = ?, activo = ?, descripcion = ?, mapaUrl = ?,
-          rangoPrecio = ?, redesUrl = ?, ubicacion = ?, websiteUrl = ?,
-          ubicacionLat = ?, ubicacionLng = ?, estrellas = ?, cuartos = COALESCE(?, cuartos)
-        WHERE nombre = ? OR (id = ? AND tipo = ?)`,
-        [
-          data.tipo ?? 'GASTRONOMIA',
-          data.imagenUrl ?? null,
-          data.servicios ?? null,
-          data.telefono ?? null,
-          data.destacado ? 1 : 0,
-          data.activo ? 1 : 0,
-          data.descripcion ?? '',
-          data.mapaUrl ?? null,
-          data.rangoPrecio ?? null,
-          data.redesUrl ?? null,
-          data.ubicacion ?? '',
-          data.websiteUrl ?? null,
-          data.ubicacionLat ?? null,
-          data.ubicacionLng ?? null,
-          data.estrellas ?? 5,
-          cuartosJson ?? null,
-          data.nombre,
-          id,
-          data.tipo,
-        ]
+        `UPDATE aliados SET ${sets.join(", ")} WHERE nombre = ? OR (id = ? AND tipo = ?)`,
+        [...params.slice(0, -1), actual.nombre, id, actual.tipo]
       );
       await botPool.end();
     } catch (e: any) {
-      console.warn('Advertencia: no se pudo replicar actualización a CHATBOT_DB_URL:', e.message);
+      console.warn("Advertencia: no se pudo replicar actualizacion a CHATBOT_DB_URL:", e.message);
     }
   }
 
-  return result.affectedRows > 0;
+  return true;
 }
 
 /**
