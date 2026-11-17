@@ -41,28 +41,34 @@ ${enlace}
 
 Si deseas cambiarlo o actualizarlo, envíame tu nuevo menú o afiche. 🙌`;
 
-const MSG_CONFIRMACION_PUBLICADO = (nombre: string, titulo: string, precio: string | null, enlace: string) =>
-  `🎉 *¡Tu menú ya está en vivo, ${nombre}!*
+const MSG_CONFIRMACION_PUBLICADO = (nombre: string, titulo: string, precio: string | null, enlace: string, tipo?: string) => {
+  const esNavidad = tipo === 'CENA_NAVIDENA';
+  return `🎉 *¡Tu ${esNavidad ? 'Cena Navideña' : 'menú'} ya está en vivo, ${nombre}!*
 
-🍽️ *${titulo}*${precio ? `\n💰 *Precio:* ${precio}` : ''}
+${esNavidad ? '🎄' : '🍽️'} *${titulo}*${precio ? `\n💰 *Precio:* ${precio}` : ''}
 
 🔗 *Tu enlace oficial:*
 ${enlace}
 
-📲 Ya lo pueden ver todas las personas que buscan qué comer hoy en Loja. ¡Muchos éxitos en las ventas! 🙌🍴`;
+📲 Ya lo pueden ver todas las personas que buscan ${esNavidad ? 'cenas navideñas y paquetes corporativos' : 'qué comer hoy'} en Loja. ¡Muchos éxitos en las ventas! 🙌🍴`;
+};
 
-const MSG_PROPUESTA_BORRADOR = (nombre: string, titulo: string, precio: string | null, platosDesc: string) =>
-  `🍽️ *Menú detectado para ${nombre}:*
+const MSG_PROPUESTA_BORRADOR = (nombre: string, titulo: string, precio: string | null, platosDesc: string, tipo?: string) => {
+  const esNavidad = tipo === 'CENA_NAVIDENA';
+  return `${esNavidad ? '🎄 *Cena Navideña detectada' : '🍽️ *Menú detectado'} para ${nombre}:*
 
 📌 *Título:* ${titulo}
 ${precio ? `💰 *Precio:* ${precio}` : '💰 *Precio:* No detectado'}
+🏷️ *Tipo:* ${esNavidad ? 'Cena / Paquete Navideño 🎅' : 'Menú del Día 🍽️'}
 
 📋 *Detalle:*
 ${platosDesc.slice(0, 350)}
 
 ─────────────────────
 👉 ¿Está todo correcto? Responde *SI* para publicarlo.
-👉 Si deseas corregir algo (ej: el precio o un plato), solo escríbelo (ej: _precio $3.00_).`;
+👉 Para cambiar de tipo responde *MENU* o *NAVIDAD*.
+👉 Si deseas corregir algo (ej: precio), solo escríbelo (ej: _precio $15.00_).`;
+};
 
 
 // ─── Endpoint principal ────────────────────────────────────────────────────
@@ -169,8 +175,10 @@ export async function POST(req: NextRequest) {
       marcarPublicacionHoy(aliado.id, promoId);
 
       // Enlace directo a la publicación generada
-      const enlaceDirecto = `https://www.quecomerenloja.com/promos/${promoSlug}`;
-      const msgConfirm = MSG_CONFIRMACION_PUBLICADO(aliado.nombre, borradorActual.titulo, borradorActual.precioPromo, enlaceDirecto);
+      const enlaceDirecto = borradorActual.tipo === 'CENA_NAVIDENA'
+        ? `https://www.quecomerenloja.com/cenas-navidenas-loja`
+        : `https://www.quecomerenloja.com/promos/${promoSlug}`;
+      const msgConfirm = MSG_CONFIRMACION_PUBLICADO(aliado.nombre, borradorActual.titulo, borradorActual.precioPromo, enlaceDirecto, borradorActual.tipo);
       await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgConfirm });
 
       await registrarLog({
@@ -184,6 +192,27 @@ export async function POST(req: NextRequest) {
 
       console.log(`[WA Bot] ✅ Promo confirmada y publicada: ${enlaceDirecto}`);
       return NextResponse.json({ success: true, status: 'published', promoSlug, enlaceDirecto });
+    }
+
+    // Si hay un borrador y el usuario envía 'MENU' o 'NAVIDAD' para conmutar el tipo
+    if (borradorActual && /^(menu|menú|almuerzo)$/i.test(textoLower) && !hasImage) {
+      borradorActual.tipo = 'PROMO';
+      const now = new Date();
+      borradorActual.fechaFinStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} 23:59:59`;
+      guardarBorrador(numeroRemitente, borradorActual);
+      const msgCambio = `🔄 *Cambiado a: Menú del Día 🍽️*\n\nVigencia: Solo por hoy.\n¿Confirmas la publicación? Responde *SI* para publicar.`;
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgCambio });
+      return NextResponse.json({ status: 'draft_type_switched', tipo: 'PROMO' });
+    }
+
+    if (borradorActual && /^(navidad|cena|cena navidena|cena navideña|navideno|navideño)$/i.test(textoLower) && !hasImage) {
+      borradorActual.tipo = 'CENA_NAVIDENA';
+      const now = new Date();
+      borradorActual.fechaFinStr = `${now.getFullYear()}-12-31 23:59:59`;
+      guardarBorrador(numeroRemitente, borradorActual);
+      const msgCambio = `🎄 *Cambiado a: Cena Navideña / Paquete de Diciembre 🎅*\n\nVigencia: Activo hasta fin de año en /cenas-navidenas-loja.\n¿Confirmas la publicación? Responde *SI* para publicar.`;
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgCambio });
+      return NextResponse.json({ status: 'draft_type_switched', tipo: 'CENA_NAVIDENA' });
     }
 
     // Si hay un borrador y el usuario envía una corrección de precio directa (ej: "precio $3.00" o "$3.25")
@@ -231,7 +260,13 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 6. Extraer detalles y parsear menú ───────────────────────────────
-    const { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
+    let { tienePrefijo, textoLimpio, tipoDetectado } = extraerPrefijoMenu(textoCombinado);
+
+    // Heurística de detección automática de Navidad si contiene términos festivos
+    const contieneTerminoNavideno = /(cena\s*navide[ñn]a|pavo|pernil|navidad|navide[ñn]o|brindis|a[ñn]o\s*nuevo|fin\s*de\s*a[ñn]o|corporativ[ao]s)/i.test(textoCombinado);
+    if (contieneTerminoNavideno && tipoDetectado !== 'CENA_NAVIDENA') {
+      tipoDetectado = 'CENA_NAVIDENA';
+    }
 
     // REGLA ESTRICTA:
     // Para que se inicie un borrador, debe:
@@ -258,7 +293,10 @@ export async function POST(req: NextRequest) {
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const fechaInicioStr = `${yyyy}-${mm}-${dd} 00:00:00`;
-    const fechaFinStr = `${yyyy}-${mm}-${dd} 23:59:59`;
+    // Si es Cena Navideña, la vigencia va hasta el 31 de diciembre de ese año; si es menú regular, vence hoy mismo
+    const fechaFinStr = parsed.tipo === 'CENA_NAVIDENA'
+      ? `${yyyy}-12-31 23:59:59`
+      : `${yyyy}-${mm}-${dd} 23:59:59`;
 
     // ── 8. Guardar como BORRADOR pendiente de confirmación ───────────────
     const nuevoBorrador: BorradorMenu = {
@@ -286,7 +324,8 @@ export async function POST(req: NextRequest) {
       aliado.nombre,
       parsed.titulo,
       parsed.precioPromo,
-      parsed.descripcion
+      parsed.descripcion,
+      parsed.tipo
     );
 
     await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgPropuesta });

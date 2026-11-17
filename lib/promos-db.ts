@@ -2,7 +2,7 @@ import 'server-only';
 import { getGastroPool } from '@/lib/aliados-db';
 import { type RowDataPacket, type ResultSetHeader } from 'mysql2/promise';
 
-export type PromoTipo = 'PROMO' | 'EVENTO' | 'NOVEDAD' | 'OFERTA';
+export type PromoTipo = 'PROMO' | 'EVENTO' | 'NOVEDAD' | 'OFERTA' | 'CENA_NAVIDENA';
 export type PromoEstado = 'PENDIENTE' | 'ACTIVO' | 'VENCIDO' | 'CANCELADO';
 
 export interface PromoAliado {
@@ -86,6 +86,26 @@ export async function getPromosActivas(limit = 50): Promise<PromoAliado[]> {
     return rows.map(formatPromo);
   } catch (e) {
     console.error('[getPromosActivas]', e);
+    return [];
+  }
+}
+
+/** Cenas navideñas vigentes para /cenas-navidenas-loja */
+export async function getCenasNavidenas(limit = 60): Promise<PromoAliado[]> {
+  try {
+    const pool = getGastroPool();
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT * FROM promociones_aliados
+       WHERE estado = 'ACTIVO'
+         AND tipo = 'CENA_NAVIDENA'
+         AND (fecha_fin IS NULL OR fecha_fin >= NOW())
+       ORDER BY destacado DESC, createdAt DESC
+       LIMIT ?`,
+      [limit]
+    );
+    return rows.map(formatPromo);
+  } catch (e) {
+    console.error('[getCenasNavidenas]', e);
     return [];
   }
 }

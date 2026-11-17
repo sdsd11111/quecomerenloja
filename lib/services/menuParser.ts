@@ -25,10 +25,16 @@ export function extraerPrefijoMenu(texto: string): { tienePrefijo: boolean; text
   const lower = textoTrim.toLowerCase();
 
   // Expresiones regulares para los comandos de inicio
+  const navidadRegex = /^(#?(cena\s*navide[ñn]a|navidad|pavo|cena\s*de\s*navidad)\s*:?\s*)/i;
   const menuRegex = /^(#?men[uú](\s*del\s*d[ií]a)?\s*:?\s*)/i;
   const promoRegex = /^(#?promo(ci[oó]n)?\s*:?\s*)/i;
   const ofertaRegex = /^(#?oferta\s*:?\s*)/i;
   const eventoRegex = /^(#?evento\s*:?\s*)/i;
+
+  if (navidadRegex.test(lower)) {
+    const textoLimpio = textoTrim.replace(navidadRegex, '').trim();
+    return { tienePrefijo: true, textoLimpio, tipoDetectado: 'CENA_NAVIDENA' };
+  }
 
   if (menuRegex.test(lower)) {
     const textoLimpio = textoTrim.replace(menuRegex, '').trim();
@@ -121,7 +127,7 @@ IMPORTANTE: Responde ÚNICAMENTE con el objeto JSON válido, sin texto adicional
             return {
               titulo: String(parsed.titulo).slice(0, 100),
               descripcion: String(parsed.descripcion),
-              tipo: ['PROMO', 'EVENTO', 'NOVEDAD', 'OFERTA'].includes(parsed.tipo) ? parsed.tipo : tipoDetectado,
+              tipo: ['PROMO', 'EVENTO', 'NOVEDAD', 'OFERTA', 'CENA_NAVIDENA'].includes(parsed.tipo) ? parsed.tipo : tipoDetectado,
               precioPromo: parsed.precioPromo ? String(parsed.precioPromo) : null,
               precioOriginal: parsed.precioOriginal ? String(parsed.precioOriginal) : null,
             };
