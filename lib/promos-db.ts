@@ -60,16 +60,49 @@ function formatPromo(r: RowDataPacket | any): PromoAliado {
   };
 }
 
-/** Genera slug único para una promo */
-export function slugifyPromo(titulo: string, aliado: string): string {
+/**
+ * Genera fecha formateada en zona horaria de Loja, Ecuador (America/Guayaquil)
+ * Formato: DD-MM-YYYY (ej: 18-11-2026)
+ */
+export function obtenerFechaLojaString(): string {
+  const ahora = new Date();
+  const formato = new Intl.DateTimeFormat('es-EC', {
+    timeZone: 'America/Guayaquil',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  const partes = formato.formatToParts(ahora);
+  const dia = partes.find((p) => p.type === 'day')?.value || String(ahora.getDate()).padStart(2, '0');
+  const mes = partes.find((p) => p.type === 'month')?.value || String(ahora.getMonth() + 1).padStart(2, '0');
+  const anio = partes.find((p) => p.type === 'year')?.value || String(ahora.getFullYear());
+  return `${dia}-${mes}-${anio}`;
+}
+
+/** 
+ * Genera slug único para una promo incluyendo la fecha del día para separar
+ * menús de un día a otro, y un micro-código para evitar colisiones.
+ * Ejemplo Menú del día: `don-pepe-menu-del-dia-18-11-2026-k8m2`
+ * Ejemplo Cena Navideña: `picanteria-loja-cena-navidena-2026-w9x1`
+ */
+export function slugifyPromo(titulo: string, aliado: string, tipo?: PromoTipo): string {
   const base = `${aliado}-${titulo}`
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 120);
-  return `${base}-${Date.now().toString(36)}`;
+    .slice(0, 100);
+
+  const fechaLoja = obtenerFechaLojaString();
+  const microHash = Math.random().toString(36).substring(2, 6);
+
+  if (tipo === 'CENA_NAVIDENA') {
+    const anio = fechaLoja.split('-')[2] || '2026';
+    return `${base}-navidad-${anio}-${microHash}`;
+  }
+
+  return `${base}-${fechaLoja}-${microHash}`;
 }
 
 /** Promos ACTIVAS de hoy en adelante (para Home) */
@@ -227,7 +260,7 @@ export async function createPromo(data: {
   color_marca?: string;
 }): Promise<{ id: number; slug: string }> {
   const pool = getGastroPool();
-  const slug = slugifyPromo(data.titulo, data.aliado_slug);
+  const slug = slugifyPromo(data.titulo, data.aliado_slug, data.tipo);
   const [result] = await pool.query<ResultSetHeader>(
     `INSERT INTO promociones_aliados
      (aliado_slug, aliado_nombre, titulo, slug, tipo, descripcion,
