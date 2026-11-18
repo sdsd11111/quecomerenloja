@@ -76,7 +76,15 @@ export default async function PromoDetailPage({ params }: Props) {
           <nav className="mb-6 flex items-center gap-2 text-xs text-muted">
             <Link href="/" className="hover:text-petroleo">Home</Link>
             <span>/</span>
-            <Link href="/#home-search-trigger" className="hover:text-petroleo">Promociones</Link>
+            {promo.tipo === 'CENA_NAVIDENA' ? (
+              <Link href="/cenas-navidenas-loja" className="hover:text-petroleo font-semibold text-emerald-800">
+                🎄 Cenas Navideñas
+              </Link>
+            ) : (
+              <Link href="/#home-search-trigger" className="hover:text-petroleo">
+                Promociones
+              </Link>
+            )}
             <span>/</span>
             <span className="text-grafito font-medium line-clamp-1">{promo.titulo}</span>
           </nav>
@@ -119,9 +127,15 @@ export default async function PromoDetailPage({ params }: Props) {
                   <span className="rounded-full bg-emerald-100 border border-emerald-200 px-3 py-1 text-xs font-extrabold text-emerald-800">
                     📍 {promo.aliado_nombre}
                   </span>
-                  <span className="rounded-full bg-petroleo text-white px-3 py-1 text-xs font-bold">
-                    {promo.tipo}
-                  </span>
+                  {promo.tipo === 'CENA_NAVIDENA' ? (
+                    <span className="rounded-full bg-red-700 text-white px-3.5 py-1 text-xs font-black shadow-xs tracking-wide">
+                      🎄 CENA NAVIDEÑA
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-petroleo text-white px-3 py-1 text-xs font-bold">
+                      {promo.tipo === 'PROMO' ? '🍽️ MENÚ DEL DÍA' : promo.tipo}
+                    </span>
+                  )}
                 </div>
 
                 {promo.precio_promo && (
