@@ -91,30 +91,44 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    // 2. Determinar si es Cena Navideña o Menú del Día
+    // 2. Imagen recibida del bot (prioridad: body.imagen_url, body.imagenUrl, body.imagen, o de aliado)
+    const imagenRecibida =
+      (typeof body.imagen_url === 'string' && body.imagen_url.trim()) ||
+      (typeof body.imagenUrl === 'string' && body.imagenUrl.trim()) ||
+      (typeof body.imagen === 'string' && body.imagen.trim()) ||
+      (typeof body.foto === 'string' && body.foto.trim()) ||
+      aliado.imagenUrl ||
+      null;
+
+    // 3. Determinar si es Cena Navideña o Menú del Día
     const textoDetectar = `${nombreRestaurante} ${descripcion || ''}`.toLowerCase();
     const esNavidad = /(cena\s*navide[ñn]a|pavo|pernil|navidad|navide[ñn]o|brindis|a[ñn]o\s*nuevo|fin\s*de\s*a[ñn]o)/i.test(textoDetectar);
 
-    const tipoPromo: PromoTipo = esNavidad ? 'CENA_NAVIDENA' : 'PROMO';
-    const tituloPromo = esNavidad
-      ? `Cena Navideña: ${nombreRestaurante}`
-      : `Menú del Día: ${nombreRestaurante}`;
+    const platoNombre = (body.datos?.plato && typeof body.datos.plato === 'string' && body.datos.plato.trim()) || null;
 
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
+    let tituloPromo: string;
+    if (esNavidad) {
+      tituloPromo = platoNombre ? `Cena Navideña: ${platoNombre}` : `Cena Navideña: ${nombreRestaurante}`;
+    } else {
+      tituloPromo = platoNombre ? `Menú del Día: ${platoNombre}` : `Menú del Día: ${nombreRestaurante}`;
+    }
+
+    // Fechas en zona horaria de Loja / Ecuador (America/Guayaquil)
+    const nowLoja = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Guayaquil' }));
+    const yyyy = nowLoja.getFullYear();
+    const mm = String(nowLoja.getMonth() + 1).padStart(2, '0');
+    const dd = String(nowLoja.getDate()).padStart(2, '0');
     const fechaInicioStr = `${yyyy}-${mm}-${dd} 00:00:00`;
     const fechaFinStr = esNavidad ? `${yyyy}-12-31 23:59:59` : `${yyyy}-${mm}-${dd} 23:59:59`;
 
-    // 3. Crear la publicación directa en la base de datos
+    // 4. Crear la publicación directa en la base de datos
     const { id: promoId, slug: promoSlug } = await createPromo({
       aliado_slug: slugBase || `restaurante-${aliado.id}`,
       aliado_nombre: nombreRestaurante,
       titulo: tituloPromo,
-      tipo: tipoPromo,
+      tipo: esNavidad ? 'CENA_NAVIDENA' : 'PROMO',
       descripcion: descripcion || 'Menú y platos especiales preparados para hoy.',
-      imagen_url: aliado.imagenUrl || null,
+      imagen_url: imagenRecibida,
       precio_promo: precio || null,
       fecha_inicio: fechaInicioStr,
       fecha_fin: fechaFinStr,
@@ -130,7 +144,7 @@ export async function POST(req: NextRequest) {
       aliado_nombre: nombreRestaurante,
       numero: telContacto,
       tipo: 'PUBLICADO',
-      mensaje_in: `[BRIDGE-PUBLICAR-PRUEBA] ${descripcion || ''} (Precio: ${precio || 'N/A'})`,
+      mensaje_in: `[BRIDGE-PUBLICAR-PRUEBA] ${descripcion || ''} (Precio: ${precio || 'N/A'}) (Img: ${imagenRecibida ? 'Sí' : 'No'})`,
       respuesta_out: `Publicación creada: ${linkPublicacion}`,
       promo_id: promoId,
     });
@@ -142,6 +156,8 @@ export async function POST(req: NextRequest) {
       permalink: linkPublicacion,
       promoId,
       promoSlug,
+      imagen_url: imagenRecibida,
+      imagenUrl: imagenRecibida,
     });
   } catch (err: any) {
     console.error('[BRIDGE:PUBLICAR_PRUEBA:ERROR]', err);

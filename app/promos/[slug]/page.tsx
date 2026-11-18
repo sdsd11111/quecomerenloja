@@ -18,8 +18,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${promo.titulo} - ${promo.aliado_nombre} | Qué Comer en Loja`;
-  const description = promo.descripcion.slice(0, 160);
+  const cleanTitulo = promo.titulo || 'Promoción';
+  const cleanAliado = promo.aliado_nombre || '';
+  const tituloTieneAliado = cleanAliado && cleanTitulo.toLowerCase().includes(cleanAliado.toLowerCase());
+  
+  const title = tituloTieneAliado
+    ? `${cleanTitulo} | Qué Comer en Loja`
+    : `${cleanTitulo} - ${cleanAliado} | Qué Comer en Loja`;
+  const description = promo.descripcion ? promo.descripcion.slice(0, 160) : 'Descubre las mejores promociones gastronómicas de Loja.';
+  const ogImage = promo.imagen_url || 'https://mvps.b-cdn.net/quecomerenloja/home/hero-home.webp';
 
   return {
     title,
@@ -27,7 +34,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      images: promo.imagen_url ? [{ url: promo.imagen_url }] : [],
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: cleanTitulo,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -161,8 +181,27 @@ export default async function PromoDetailPage({ params }: Props) {
                 <div className="flex items-center gap-1.5">
                   <span className="text-base">📅</span>
                   <span>
-                    Válido: {new Date(promo.fecha_inicio).toLocaleDateString('es-EC', { timeZone: 'America/Guayaquil', day: 'numeric', month: 'long', year: 'numeric' })}
-                    {promo.fecha_fin ? ` al ${new Date(promo.fecha_fin).toLocaleDateString('es-EC', { timeZone: 'America/Guayaquil', day: 'numeric', month: 'long', year: 'numeric' })}` : ''}
+                    {(() => {
+                      const fechaInicioEC = new Date(promo.fecha_inicio).toLocaleDateString('es-EC', {
+                        timeZone: 'America/Guayaquil',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      });
+                      const fechaFinEC = promo.fecha_fin
+                        ? new Date(promo.fecha_fin).toLocaleDateString('es-EC', {
+                            timeZone: 'America/Guayaquil',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })
+                        : null;
+
+                      if (!fechaFinEC || fechaInicioEC === fechaFinEC) {
+                        return `Válido: ${fechaInicioEC}`;
+                      }
+                      return `Válido: ${fechaInicioEC} al ${fechaFinEC}`;
+                    })()}
                   </span>
                 </div>
 
