@@ -14,6 +14,7 @@ import {
   guardarBorrador,
   obtenerBorrador,
   eliminarBorrador,
+  verificarTrialVencido,
   type BorradorMenu,
 } from '@/lib/services/botState';
 
@@ -135,6 +136,14 @@ export async function POST(req: NextRequest) {
         mensaje_in: rawText.slice(0, 500),
       });
       return NextResponse.json({ status: 'ignored', reason: 'unauthorized_sender' });
+    }
+
+    // ── Verificar si el aliado tiene trial vencido ───────────────────────────
+    const trialVencido = await verificarTrialVencido(aliado.id);
+    if (trialVencido) {
+      const msgVencido = `Hola *${aliado.nombre}* 👋\n\nTu período de prueba gratuita ha terminado.\n\n¿Te gustó el servicio? Escríbenos para activar tu cuenta completa y seguir publicando en *Qué Comer en Loja* 🍽️\n\n📞 Contáctanos: https://wa.me/593XXXXXXXX`;
+      await sendEvolutionWhatsApp({ number: numeroRemitente, text: msgVencido });
+      return NextResponse.json({ status: 'ignored', reason: 'trial_expired' });
     }
 
     const aliadoSlug = aliado.nombre

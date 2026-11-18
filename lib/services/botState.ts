@@ -216,6 +216,30 @@ export async function getBotLogs(limit = 100, offset = 0): Promise<BotLog[]> {
 }
 
 /**
+ * Verifica si un aliado tiene trial y si ya venció.
+ * Retorna true si el aliado es trial Y ya expiró → debe ser bloqueado.
+ * Retorna false si: (a) no es trial, (b) el trial aún está vigente.
+ */
+export async function verificarTrialVencido(aliadoId: number): Promise<boolean> {
+  try {
+    const pool = getGastroPool();
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT trial, trial_expira FROM aliados WHERE id = ? LIMIT 1`,
+      [aliadoId]
+    );
+    if (!rows.length) return false;
+    const { trial, trial_expira } = rows[0];
+    if (!trial) return false; // no es trial, siempre pasa
+    if (!trial_expira) return false; // trial sin fecha = sin límite
+    const hoy = new Date().toISOString().slice(0, 10);
+    return trial_expira < hoy; // vencido si la fecha de expiración ya pasó
+  } catch {
+    return false; // ante error, no bloqueamos
+  }
+}
+
+
+/**
  * Verifica si es la primera vez que este número nos escribe (para la bienvenida).
  * "Primera vez" = no tiene ningún log previo de tipo PUBLICADO o BIENVENIDA.
  */
