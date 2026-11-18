@@ -123,9 +123,8 @@ export async function POST(req: NextRequest) {
       color_marca: '#153E3E',
     });
 
-    const linkPublicacion = esNavidad
-      ? `https://www.quecomerenloja.com/cenas-navidenas-loja`
-      : `https://www.quecomerenloja.com/promos/${promoSlug}`;
+    // Siempre devolvemos el enlace directo individual con su slug propio
+    const linkPublicacion = `https://www.quecomerenloja.com/promos/${promoSlug}`;
 
     await registrarLog({
       aliado_nombre: nombreRestaurante,

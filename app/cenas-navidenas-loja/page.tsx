@@ -195,7 +195,9 @@ export default async function CenasNavidenasPage() {
                       </div>
 
                       <h3 className="font-bold text-lg text-[#0F2D2A] leading-snug line-clamp-2">
-                        {cena.titulo}
+                        <Link href={`/promos/${cena.slug}`} className="hover:underline">
+                          {cena.titulo}
+                        </Link>
                       </h3>
 
                       <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
@@ -204,7 +206,13 @@ export default async function CenasNavidenasPage() {
                     </div>
                   </div>
 
-                  <div className="p-5 pt-0">
+                  <div className="p-5 pt-0 space-y-2">
+                    <Link
+                      href={`/promos/${cena.slug}`}
+                      className="block text-center text-xs font-bold text-[#8C7355] hover:text-[#0F2D2A] transition-colors py-1"
+                    >
+                      Ver menú completo y detalles →
+                    </Link>
                     {cena.whatsapp_url ? (
                       <a
                         href={cena.whatsapp_url}
