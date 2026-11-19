@@ -22,9 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cleanAliado = promo.aliado_nombre || '';
   const tituloTieneAliado = cleanAliado && cleanTitulo.toLowerCase().includes(cleanAliado.toLowerCase());
   
+  // Nota: Next.js en layout.tsx agrega el template "%s | Qué Comer en Loja"
   const title = tituloTieneAliado
-    ? `${cleanTitulo} | Qué Comer en Loja`
-    : `${cleanTitulo} - ${cleanAliado} | Qué Comer en Loja`;
+    ? cleanTitulo
+    : `${cleanTitulo} - ${cleanAliado}`;
   const description = promo.descripcion ? promo.descripcion.slice(0, 160) : 'Descubre las mejores promociones gastronómicas de Loja.';
   const ogImage = promo.imagen_url || 'https://mvps.b-cdn.net/quecomerenloja/home/hero-home.webp';
 
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Qué Comer en Loja`,
       description,
       images: [
         {
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: `${title} | Qué Comer en Loja`,
       description,
       images: [ogImage],
     },
@@ -182,15 +183,29 @@ export default async function PromoDetailPage({ params }: Props) {
                   <span className="text-base">📅</span>
                   <span>
                     {(() => {
-                      const fechaInicioEC = new Date(promo.fecha_inicio).toLocaleDateString('es-EC', {
-                        timeZone: 'America/Guayaquil',
+                      const parseECDate = (dateVal: string | Date) => {
+                        if (typeof dateVal === 'string') {
+                          // Si viene como "YYYY-MM-DD..." o formato ISO
+                          const m = dateVal.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                          if (m) {
+                            const [_, y, mo, d] = m;
+                            // Creamos fecha fija al mediodía local para evitar cualquier salto horario
+                            return new Date(Number(y), Number(mo) - 1, Number(d), 12, 0, 0);
+                          }
+                        }
+                        return new Date(dateVal);
+                      };
+
+                      const dInicio = parseECDate(promo.fecha_inicio);
+                      const fechaInicioEC = dInicio.toLocaleDateString('es-EC', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric',
                       });
-                      const fechaFinEC = promo.fecha_fin
-                        ? new Date(promo.fecha_fin).toLocaleDateString('es-EC', {
-                            timeZone: 'America/Guayaquil',
+
+                      const dFin = promo.fecha_fin ? parseECDate(promo.fecha_fin) : null;
+                      const fechaFinEC = dFin
+                        ? dFin.toLocaleDateString('es-EC', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric',
