@@ -2,15 +2,11 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getPostBySlug, getPublishedPosts } from '@/lib/blog';
-import { renderContent, getVideoEmbedHtml } from '@/lib/markdown';
+import { renderContent } from '@/lib/markdown';
 import { ArticleMedia } from '@/components/ArticleMedia';
 
-// ─────────────────────────────────────────────────────────
-// ⚙️  PERSONALIZA ESTOS VALORES PARA TU PROYECTO
-// ─────────────────────────────────────────────────────────
-const SITE_NAME = 'Mi Sitio';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mi-sitio.com';
-// ─────────────────────────────────────────────────────────
+const SITE_NAME = 'Qué Comer en Loja';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quecomerenloja.com';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -27,13 +23,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const postUrl = `${SITE_URL}/blog/${post.slug}`;
+  const metaTitle = `${post.titulo} | ${SITE_NAME}`;
 
   return {
-    title: `${post.titulo} | Blog ${SITE_NAME}`,
+    title: metaTitle,
     description: post.resumen,
     keywords: [
       post.categoria,
       ...(post.etiquetas || []),
+      'gastronomía lojana',
+      'donde comer en loja',
       SITE_NAME,
     ],
     authors: [{ name: post.autor || SITE_NAME }],
@@ -41,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: postUrl,
     },
     openGraph: {
-      title: post.titulo,
+      title: metaTitle,
       description: post.resumen,
       url: postUrl,
       type: 'article',
@@ -50,11 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       tags: post.etiquetas,
       images: [
         {
-          url: post.imagen
-            ? (post.imagen.startsWith('http')
-                ? post.imagen
-                : `${SITE_URL}/api/blog/${post.slug}/image`)
-            : `${SITE_URL}/og-image.png`,
+          url: post.imagen || `${SITE_URL}/og-default.jpg`,
           alt: post.imagen_alt || post.titulo,
           width: 1200,
           height: 630,
@@ -63,15 +58,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.titulo,
+      title: metaTitle,
       description: post.resumen,
-      images: [
-        post.imagen
-          ? (post.imagen.startsWith('http')
-              ? post.imagen
-              : `${SITE_URL}/api/blog/${post.slug}/image`)
-          : `${SITE_URL}/og-image.png`,
-      ],
+      images: [post.imagen || `${SITE_URL}/og-default.jpg`],
     },
   };
 }
@@ -90,7 +79,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   const allPosts = await getPublishedPosts();
   const relatedPosts = allPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
-  // Schema.org BlogPosting estructurado
+  // Schema.org BlogPosting estructurado oficial
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -111,6 +100,11 @@ export default async function BlogPostPage({ params }: PageProps) {
     publisher: {
       '@type': 'Organization',
       name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo-oficial.png`,
+      },
     },
     articleSection: post.categoria,
     keywords: post.etiquetas?.join(', '),
@@ -123,123 +117,144 @@ export default async function BlogPostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
 
-      <article className="min-h-screen bg-gray-50 text-gray-900 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Contenedor Principal: Paleta Oficial Porcelana (#F5F6F1) */}
+      <div className="min-h-screen bg-[#F5F6F1] text-[#1F2928] pt-24 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-gray-500 mb-8 font-medium">
-            <Link href="/" className="hover:text-blue-600 transition">Inicio</Link>
-            <span>/</span>
-            <Link href="/blog" className="hover:text-blue-600 transition">Blog</Link>
-            <span>/</span>
-            <span className="text-gray-900 truncate max-w-xs">{post.titulo}</span>
+          {/* Breadcrumb Gastronómico */}
+          <nav className="flex items-center gap-2 text-xs sm:text-sm text-[#5C7270] mb-8 font-medium">
+            <Link href="/" className="hover:text-[#153E3E] transition-colors">
+              Inicio
+            </Link>
+            <span className="text-[#DCE4E0]">/</span>
+            <Link href="/blog" className="hover:text-[#153E3E] transition-colors">
+              Blog
+            </Link>
+            <span className="text-[#DCE4E0]">/</span>
+            <span className="text-[#153E3E] font-semibold truncate max-w-[200px] sm:max-w-sm">
+              {post.titulo}
+            </span>
           </nav>
 
-          {/* Header del post */}
-          <header className="mb-8">
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold px-3 py-1 rounded-full">
-                {post.categoria}
-              </span>
-              <span className="text-xs text-gray-500">📅 {post.fecha_publicacion}</span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs text-gray-500">⏱️ {post.tiempo_lectura || 5} min de lectura</span>
-            </div>
+          {/* Tarjeta Editorial Central */}
+          <article className="bg-[#FFFFFF] rounded-3xl p-6 sm:p-12 border border-[#DCE4E0] shadow-[0_8px_32px_-8px_rgba(21,62,62,0.06)] overflow-hidden">
+            {/* Header del post */}
+            <header className="mb-10">
+              <div className="flex flex-wrap items-center gap-3 mb-5">
+                <span className="bg-[#153E3E] text-[#D0DB61] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-sm border border-[#D0DB61]/25 tracking-wide">
+                  {post.categoria || 'Gastronomía'}
+                </span>
+                <span className="text-xs text-[#5C7270]">
+                  📅 {post.fecha_publicacion ? String(post.fecha_publicacion).split('T')[0] : ''}
+                </span>
+                <span className="text-xs text-[#DCE4E0]">•</span>
+                <span className="text-xs text-[#5C7270]">
+                  ⏱️ {post.tiempo_lectura || 5} min de lectura
+                </span>
+              </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-6 break-words [overflow-wrap:anywhere]">
-              {post.titulo}
-            </h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#153E3E] tracking-tight leading-[1.15] mb-6 font-['League_Spartan',sans-serif]">
+                {post.titulo}
+              </h1>
 
-            <p className="text-lg text-gray-500 leading-relaxed border-l-4 border-blue-500 pl-4 bg-blue-50 py-3 rounded-r-2xl break-words [overflow-wrap:anywhere]">
-              {post.resumen}
-            </p>
-          </header>
+              {/* Lead Paragraph con Borde de Acento Cítrico */}
+              <div className="text-base sm:text-lg text-[#2D3A39] leading-relaxed border-l-4 border-[#153E3E] pl-4 sm:pl-5 bg-[#153E3E]/5 py-3.5 rounded-r-2xl">
+                <p className="font-normal italic">
+                  {post.resumen}
+                </p>
+              </div>
+            </header>
 
-          {/* Multimedia del Artículo */}
-          <ArticleMedia
-            image={post.imagen}
-            imageAlt={post.imagen_alt}
-            videoUrl={post.video_url || undefined}
-            title={post.titulo}
-          />
+            {/* Multimedia de Cabecera (Imagen / Video Tabs) */}
+            <ArticleMedia
+              image={post.imagen}
+              imageAlt={post.imagen_alt || post.titulo}
+              videoUrl={post.video_url || undefined}
+              title={post.titulo}
+            />
 
-          {/* Contenido del Artículo */}
-          <div
-            className="prose prose-lg max-w-none break-words overflow-hidden [overflow-wrap:anywhere]"
-            dangerouslySetInnerHTML={{ __html: renderContent(post.contenido).trim() }}
-            suppressHydrationWarning
-          />
+            {/* Contenido Editorial con Tipografía y Espaciado Armónico */}
+            <div
+              className="blog-prose"
+              dangerouslySetInnerHTML={{ __html: renderContent(post.contenido).trim() }}
+              suppressHydrationWarning
+            />
 
-          {/* Tags */}
-          {post.etiquetas && post.etiquetas.length > 0 && (
-            <div className="mt-12 pt-6 border-t border-gray-200">
-              <h3 className="text-xs uppercase tracking-wider text-gray-500 font-bold mb-3">
-                Temas relacionados:
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {post.etiquetas.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="text-xs bg-gray-100 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg font-medium"
-                  >
-                    #{tag}
-                  </span>
-                ))}
+            {/* Etiquetas del Post */}
+            {post.etiquetas && post.etiquetas.length > 0 && (
+              <div className="mt-14 pt-8 border-t border-[#DCE4E0]">
+                <h3 className="text-xs uppercase tracking-wider text-[#5C7270] font-bold mb-3.5">
+                  Rutas y conceptos clave:
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {post.etiquetas.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs bg-[#F5F6F1] border border-[#DCE4E0] text-[#153E3E] font-medium px-3.5 py-1.5 rounded-lg hover:border-[#153E3E] transition-colors"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Caja de Autor y Compromiso Local */}
+            <div className="mt-10 bg-[#F5F6F1] border border-[#DCE4E0] rounded-2xl p-5 sm:p-6 flex items-center gap-4">
+              <div className="size-12 rounded-xl bg-[#153E3E] text-[#D0DB61] font-bold flex items-center justify-center shrink-0 text-xl shadow-sm">
+                🍴
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#153E3E]">
+                  {post.autor || 'Equipo Editorial Qué Comer en Loja'}
+                </div>
+                <div className="text-xs text-[#5C7270] mt-0.5">
+                  Promovemos la gastronomía auténtica, huecas centenarias y el café de altura de la provincia de Loja.
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Autor Card */}
-          <div className="mt-8 bg-white border border-gray-200 rounded-3xl p-6 flex items-center gap-4 shadow-sm">
-            <div className="size-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-2xl">
-              ✍️
-            </div>
-            <div>
-              <div className="text-sm font-bold text-gray-900">{post.autor || SITE_NAME}</div>
-              <div className="text-xs text-gray-500 mt-0.5">
-                {SITE_NAME} — Blog oficial.
-              </div>
-            </div>
-          </div>
+          </article>
 
           {/* Artículos Recomendados */}
           {relatedPosts.length > 0 && (
-            <section className="mt-16 pt-12 border-t border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Continúa Leyendo
+            <section className="mt-16 pt-10 border-t border-[#DCE4E0]">
+              <h2 className="text-2xl font-bold text-[#153E3E] mb-6 font-['League_Spartan',sans-serif]">
+                Continúa Descubriendo Sabores
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedPosts.map((rel) => (
                   <Link
                     key={rel.id || rel.slug}
                     href={`/blog/${rel.slug}`}
-                    className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-blue-400 hover:shadow-md transition group flex flex-col justify-between"
+                    className="bg-white border border-[#DCE4E0] rounded-2xl p-4 hover:border-[#153E3E] hover:shadow-[0_8px_24px_-8px_rgba(21,62,62,0.12)] transition-all group flex flex-col justify-between"
                   >
                     <div>
-                      <span className="text-[11px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">
-                        {rel.categoria}
+                      <span className="text-[11px] text-[#153E3E] font-bold bg-[#DCE4E0]/40 px-2.5 py-1 rounded-full inline-block">
+                        {rel.categoria || 'Gastronomía'}
                       </span>
-                      <h4 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition mt-2 line-clamp-2">
+                      <h4 className="text-sm font-bold text-[#1F2928] group-hover:text-[#153E3E] transition-colors mt-3 line-clamp-2 leading-snug">
                         {rel.titulo}
                       </h4>
                     </div>
-                    <span className="text-xs text-gray-500 mt-3 block font-medium">Leer más →</span>
+                    <span className="text-xs font-bold text-[#153E3E] mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      Leer artículo →
+                    </span>
                   </Link>
                 ))}
               </div>
             </section>
           )}
 
-          {/* Volver */}
+          {/* Enlace de Retorno */}
           <div className="mt-12 text-center">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-bold"
+              className="inline-flex items-center gap-2 text-sm font-bold text-[#153E3E] hover:text-[#0E2E2E] bg-white border border-[#DCE4E0] hover:border-[#153E3E] px-6 py-2.5 rounded-full shadow-sm transition-all"
             >
-              ← Volver a todos los artículos
+              ← Volver a todos los artículos gastronómicos
             </Link>
           </div>
         </div>
-      </article>
+      </div>
     </>
   );
 }

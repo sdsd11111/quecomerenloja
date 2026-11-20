@@ -38,12 +38,12 @@ export function ArticleMedia({ image, imageAlt, videoUrl, title }: ArticleMediaP
   // Solo imagen, sin video
   if (hasImage && !hasVideo) {
     return (
-      <div className="mb-10 rounded-3xl overflow-hidden border border-gray-200 shadow-md">
+      <div className="mb-10 rounded-2xl sm:rounded-3xl overflow-hidden border border-[#DCE4E0] shadow-[0_4px_24px_-4px_rgba(21,62,62,0.08)] bg-[#DCE4E0]/20">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={image!}
           alt={imageAlt || title}
-          className="w-full h-auto max-h-[520px] object-cover"
+          className="w-full h-auto max-h-[440px] sm:max-h-[480px] object-cover"
         />
       </div>
     );
@@ -56,33 +56,33 @@ export function ArticleMedia({ image, imageAlt, videoUrl, title }: ArticleMediaP
       <div className="flex gap-2 mb-3">
         <button
           onClick={() => setActiveTab('image')}
-          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition border ${
+          className={`px-4 py-1.5 rounded-full text-xs font-bold transition border ${
             activeTab === 'image'
-              ? 'bg-gray-900 text-white border-gray-900'
-              : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+              ? 'bg-[#153E3E] text-[#D0DB61] border-[#153E3E] shadow-sm'
+              : 'bg-white text-[#1F2928] border-[#DCE4E0] hover:border-[#153E3E]'
           }`}
         >
-          📷 Foto
+          📷 Foto del Plato
         </button>
         <button
           onClick={() => setActiveTab('video')}
-          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition border ${
+          className={`px-4 py-1.5 rounded-full text-xs font-bold transition border ${
             activeTab === 'video'
-              ? 'bg-gray-900 text-white border-gray-900'
-              : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+              ? 'bg-[#153E3E] text-[#D0DB61] border-[#153E3E] shadow-sm'
+              : 'bg-white text-[#1F2928] border-[#DCE4E0] hover:border-[#153E3E]'
           }`}
         >
-          🎥 Video
+          🎥 Ver Video
         </button>
       </div>
 
       {activeTab === 'image' ? (
-        <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-md">
+        <div className="rounded-2xl sm:rounded-3xl overflow-hidden border border-[#DCE4E0] shadow-[0_4px_24px_-4px_rgba(21,62,62,0.08)] bg-[#DCE4E0]/20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image!}
             alt={imageAlt || title}
-            className="w-full h-auto max-h-[520px] object-cover"
+            className="w-full h-auto max-h-[440px] sm:max-h-[480px] object-cover"
           />
         </div>
       ) : (
