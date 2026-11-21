@@ -167,6 +167,7 @@ export default async function OGImage({ params }: Props) {
           >
             <div
               style={{
+                display: 'flex',
                 fontSize: '15px',
                 fontWeight: 700,
                 color: '#D0DB61',
@@ -188,6 +189,7 @@ export default async function OGImage({ params }: Props) {
             />
             <div
               style={{
+                display: 'flex',
                 fontSize: '14px',
                 color: '#DCE4E0',
                 opacity: 0.75,
@@ -214,6 +216,7 @@ export default async function OGImage({ params }: Props) {
             >
               <div
                 style={{
+                  display: 'flex',
                   backgroundColor: '#D0DB61',
                   color: '#153E3E',
                   fontSize: '14px',
@@ -231,6 +234,7 @@ export default async function OGImage({ params }: Props) {
             {/* Article title — the hero */}
             <div
               style={{
+                display: 'flex',
                 fontSize: title.length > 50 ? '44px' : '52px',
                 fontWeight: 900,
                 color: '#F5F6F1',
@@ -245,6 +249,7 @@ export default async function OGImage({ params }: Props) {
             {/* Resumen excerpt */}
             <div
               style={{
+                display: 'flex',
                 fontSize: '20px',
                 fontWeight: 400,
                 color: '#DCE4E0',
@@ -275,6 +280,7 @@ export default async function OGImage({ params }: Props) {
             />
             <div
               style={{
+                display: 'flex',
                 fontSize: '15px',
                 color: '#DCE4E0',
                 fontWeight: 500,
