@@ -7,6 +7,7 @@ import { ArticleMedia } from '@/components/ArticleMedia';
 
 const SITE_NAME = 'Qué Comer en Loja';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quecomerenloja.com';
+const LOCALE = 'es_EC';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -24,8 +25,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const postUrl = `${SITE_URL}/blog/${post.slug}`;
   const metaTitle = `${post.titulo} | ${SITE_NAME}`;
+  // Auto-generated OG image route — takes priority over external imagen URL
+  // when the redactor sends an image, the opengraph-image.tsx composites it
+  // as branded background. If no imagen, the branded card is shown alone.
+  const ogImageUrl = `${SITE_URL}/blog/${post.slug}/opengraph-image`;
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: metaTitle,
     description: post.resumen,
     keywords: [
@@ -43,16 +49,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: metaTitle,
       description: post.resumen,
       url: postUrl,
+      siteName: SITE_NAME,
+      locale: LOCALE,
       type: 'article',
       publishedTime: post.fecha_publicacion,
+      modifiedTime: post.fecha_modificacion || post.fecha_publicacion,
       authors: [post.autor || SITE_NAME],
       tags: post.etiquetas,
+      // article:section maps to categoria for Facebook/LinkedIn article indexing
+      section: post.categoria,
       images: [
         {
-          url: post.imagen || `${SITE_URL}/og-default.jpg`,
+          url: ogImageUrl,
           alt: post.imagen_alt || post.titulo,
           width: 1200,
           height: 630,
+          type: 'image/png',
         },
       ],
     },
@@ -60,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title: metaTitle,
       description: post.resumen,
-      images: [post.imagen || `${SITE_URL}/og-default.jpg`],
+      images: [ogImageUrl],
     },
   };
 }
